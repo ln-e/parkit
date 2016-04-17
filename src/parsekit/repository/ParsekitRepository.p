@@ -9,6 +9,7 @@ ParsekitRepository
 
 @USE
 BaseRepository.p
+RepositoryUtils.p
 
 @OPTIONS
 locals
@@ -21,7 +22,57 @@ BaseRepository
 
 
 @create[]
-    ^BASE::create[^hash::create[
-        $.providerUrl[http://igor.bodnar.ws/p/{package}.json]
-    ]]
+    $self.repoConfig[]
+    $self.options[
+        $.parsekitURL[http://igor.bodnar.ws]
+        $.providerURL[http://igor.bodnar.ws/packages.json]
+        $.protocol[1]
+    ]
+    $self.lazyPackages[^hash::create[]]
+
+    ^init[]
+###
+
+
+@init[][result]
+    $packagesJsonFile[^JsonFile::create[$self.options.providerURL]]
+    $self.repoConfig[^packagesJsonFile.read[]]
+    ^validateConfig[]
+
+    ^repoConfig.packages.foreach[packageName;packageInfo]{
+        ^self.addPackage[^PackageFactory:createPackage[$packageName;$packageInfo]]
+    }
+
+    ^repoConfig.providers.foreach[providerMask;providerConfig]{
+        ^self.loadProvider[${self.options.parsekitURL}^RepositoryUtils:maskedUrl[$providerMask;$providerConfig]]
+    }
+
+
+    ^dstop[$self.lazyPackages]
+
+###
+
+
+@loadProvider[url][result]
+
+    $providerJsonFile[^JsonFile::create[$url]]
+    $providerJson[^providerJsonFile.read[]]
+
+    ^providerJson.providers.foreach[packageName;packageConfig]{
+        $self.lazyPackages.$packageName[$packgeConfig]
+    }
+
+###
+
+@validateConfig[][result]
+$[
+
+Package version used differ protocol version.
+Update your parsekit to latest version:
+
+^$ ./parserkit selfupdate
+]
+    ^if($self.repoConfig.protocol != $self.options.protocol){
+        ^throw[protocol.version.differ;$errorText]
+    }
 ###

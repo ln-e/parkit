@@ -20,9 +20,8 @@ RepositoryInterface
 ###
 
 
-#:param options type Hash
-@create[options]
-  $self.options[$options]
+@create[]
+    $self.packages[^hash::create[]]
 ###
 
 

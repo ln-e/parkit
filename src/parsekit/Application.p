@@ -11,6 +11,7 @@ Application
 Command/InitCommand.p
 Command/RequireCommand.p
 Version/VersionParser.p
+Repository/ParsekitRepository.p
 
 @OPTIONS
 locals
@@ -33,6 +34,7 @@ locals
 @run[]
     $result[
 ]
+    $repo[^ParsekitRepository::create[]]
     $commandName[$request:argv.1]
     ^if(!def $commandName || !^self.hasCommand[$commandName]){
         $result[^showHelp[]]

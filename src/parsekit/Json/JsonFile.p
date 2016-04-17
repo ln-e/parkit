@@ -84,7 +84,7 @@ locals
 #It should validate schema
 #:result bool
 @validateSchema[]
-    ^rem{ TODO add real validating throw http://jsonschema.org }
+    ^rem{ TODO add real validating throw http://jsonschema.org and appropriciate schema (package/provider/etc.)}
     $result(true)
 ###
 
