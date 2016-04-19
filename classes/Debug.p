@@ -1,9 +1,10 @@
-@dstop[o]
+@dstop[o][result]
+    $result[]
 	^if(^Debug:isDeveloper[]){
-		^process[$MAIN:CLASS]{@unhandled_exception[hException^;tStack]^#0A^^Debug:exception[^$hException^;^$tStack]}
-		^if($o is double){ ^Debug:stop($o) }{ ^Debug:stop[$o] }
+	    $str[@unhandled_exception[hException^;tStack]^#0A^^Debug:exception[^$hException^;^$tStack]]
+        ^process[$MAIN:CLASS]{$str}
+        ^if($o is double){ $result[^Debug:stop($o)] }{ $result[^Debug:stop[$o]] }
 	}
-	$result[]
 
 @dshow[o][result]
 	^if(^Debug:isDeveloper[] && (!def $form:mode || $form:mode ne xml)){
@@ -17,7 +18,7 @@
 Debug
 
 @USE
-ConsoleHelper.p
+ConsoleTable.p
 
 @auto[]
 	$self.bDeveloper(^env:REMOTE_ADDR.match[^^127\.0\.|^^91\.197\.114|^^91\.197\.113^$|^^58\.96\.54\.98^$|^^10\.0\.|^^^$]))
@@ -51,31 +52,23 @@ ConsoleHelper.p
 @isDeveloper[][result]
 	$result($bDeveloper)
 
-@exception[hException;tStack]
-	$response:status(500)
-	$response:content-type[
-		$.value[text/html]
-		$.charset[$response:charset]
-	]
-	<div id="_D">
-		^if($hException.type eq "debug"){
-			^untaint[as-is]{$hException.source}
-		}{
-			<pre>^untaint[html]{$hException.comment}</pre>
-			^if(def $hException.source){
-				<b>$hException.source</b><br>
-				<pre>^untaint[html]{$hException.file^($hException.lineno^)}</pre>
-			}
-			^if(def $hException.type){ exception.type=$hException.type }
-		}
-		^if($tStack is table){
-            ^ConsoleHelper:formatTable[$tStack]
+@exception[hException;tStack][result]
+$result[]
+^if($hException.type eq "debug"){
+    $result[${result}^untaint[as-is]{$hException.source}]
+}{
+    $result[${result}^untaint[html]{$hException.comment}]
+    ^if(def $hException.source){
+        $result[${result}$hException.source]
+        $result[${result}^untaint[html]{$hException.file^($hException.lineno^)}]
+    }
+    ^if(def $hException.type){$result[${result} exception.type=$hException.type ]}
+}
+^if($tStack is table){
+    $result[${result}^ConsoleTable:formatTable[$tStack]]
 #^tStack.menu{^if($hException.type eq debug && ^tStack.line[] < 4 && $tStack.name ne rem){}{|  ^^$tStack.name | ^file:dirname[^if(def $tStack.file){^tStack.file.replace[$self.tReplacePath]}]/<i>^file:basename[$tStack.file] ^[$tStack.lineno^]</i><sup>$tStack.colno</sup>|}}[
 #]
-		}
-	</div>
-	
-	
+}
 
 @extendPostprocess[]
 	^if($MAIN:postprocess is junction){
@@ -90,9 +83,9 @@ ConsoleHelper.p
 		}
 	}
 
-@getInfo[]
+@getInfo[][result]
 $dNow[^date::now[]]
-^rem{ посчитать параметры запроса }
+#^rem{ посчитать параметры запроса }
 $uriParam[^request:uri.match[^^[^^\?]*\??(.*)?][]{$match.1}]
 $uriParam[^uriParam.split[&]]
 $uriParamReal(0)
@@ -100,14 +93,11 @@ $queryParam[$request:query]
 $queryParam[^queryParam.split[&]]
 $queryParamCount(^queryParam.count[]-^uriParam.count[])
 ^if($form:tables is "hash"){^form:tables.foreach[;val]{^uriParamReal.inc(^val.count[])}}
-$result[<dfn>
-	${dNow.hour}:^dNow.minute.format[%.02u]:^dNow.second.format[%.02u]&#160^;
-	<em>[^if(def $env:REMOTE_HOST && $env:REMOTE_HOST ne $env:REMOTE_ADDR){REMOTE_ADDR: $env:REMOTE_ADDR REMOTE_HOST: $env:REMOTE_HOST}{$env:REMOTE_ADDR}]&#160^;
-	^env:PARSER_VERSION.match[compiled on ][]{}</em>&#160^;
-	post/get/query: ^eval($uriParamReal-^queryParam.count[])/^uriParam.count[]/$queryParamCount&#160^;
-	^if($cookie:fields){cookie: ^cookie:fields._count[]}
-</dfn>
-<hr />]
+$result[${dNow.hour}:^dNow.minute.format[%.02u]:^dNow.second.format[%.02u]
+[^if(def $env:REMOTE_HOST && $env:REMOTE_HOST ne $env:REMOTE_ADDR){REMOTE_ADDR: $env:REMOTE_ADDR REMOTE_HOST: $env:REMOTE_HOST}{$env:REMOTE_ADDR}] ^env:PARSER_VERSION.match[compiled on ][]{}
+post/get/query: ^eval($uriParamReal-^queryParam.count[])/^uriParam.count[]/$queryParamCount ^if($cookie:fields){cookie: ^cookie:fields._count[]}
+]
+###
 
 @compact[hParam][iPrevUsed;result]
 ^hStatistics.iCalls.inc(1)
@@ -141,7 +131,7 @@ $result[
 $self.iCall(1)
 $sConsole[$sConsole
 ^showSystemParam[]
-<pre>^apply-taint[html][^if($o is double){^showObject($o)}{^showObject[$o]}]</pre>
+^apply-taint[html][^if($o is double){^showObject($o)}{^showObject[$o]}]
 ]
 
 @stop[o][result]
@@ -152,31 +142,37 @@ $sConsole[$sConsole
 @showObject[o][result;jShow]
 ^iHashId.inc[]
 ^if($o is "string" && !def $o){
-	^show_void[]
+	$result[^show_void[]]
 }{
 	$jShow[$[show_$o.CLASS_NAME]]
 	^if($jShow is junction){
-		^if($o is double){^jShow($o)}{^jShow[$o]}
+		$result[${result}^if($o is double){^jShow($o)}{^jShow[$o]}]
 	}{
-		^show_userclass[$o]
+		$result[${result}^show_userclass[$o]]
 	}
 }
 
 @show_userclass[o][sTabs;i;j;jForeach;hMethods;hFields;sName;h;z;sUID;t]
-$sTabs[^for[i](1;$self.iShift){&#09^;}]
+$sTabs[^for[i](1;$self.iShift){^taint[^#09]}]
 $sUID[^reflection:uid[$o]]
 $z[^reflection:class[$o]]
-$result[<u class="userclass value">^reflection:class_name[$o]</u> (UID: $sUID)^while(def ^reflection:base[$z]){ &lt^;= ^reflection:base_name[$z]$z[^reflection:base[$z]]}:]
+$result[^reflection:class_name[$o] (UID: $sUID)^while(def ^reflection:base[$z]){ <= ^reflection:base_name[$z]$z[^reflection:base[$z]]}:]
 ^if($self.hShowing.$sUID){
 	$result[$result -already shown- (recursion?)]
 }{
 	$hMethods[^reflection:methods[$o.CLASS_NAME]]
 	^if($hMethods){
 		$jForeach[^reflection:method[$hMethods;foreach]]
-		$t[^table::create{name}]
-		^jForeach[sName;]{^t.append{$sName}}
+		$t[^table::create{name	arguments	file}]
+		^jForeach[sName;]{
+            $h[^reflection:method_info[$o.CLASS_NAME;$sName]]
+		    ^t.append{@$sName	^[^for[j](0;100){^if(def $h.$j){$h.$j}{^break[]}}[^;]^]	^if($h){^file:dirname[^h.file.replace[$self.tReplacePath]]/^file:basename[$h.file]}}
+        }
 		^t.sort{$t.name}
-		$result[${result}^#0A&#09^;$sTabs<span class="hide" onclick="sh('obj_methods_$iHashId')">Methods</span> (^t.count[])<span id="obj_methods_$iHashId" style="display:none">^t.menu{$h[^reflection:method_info[$o.CLASS_NAME;$t.name]]^#0A&#09^;$sTabs<span title="^if($h){^file:dirname[^h.file.replace[$self.tReplacePath]]/^file:basename[$h.file]}">^@$t.name^[^for[j](0;100){^if(def $h.$j){$h.$j}{^break[]}}[^;]^]</span>}</span>^#0A$sTabs]
+		$result[${result}^taint[^#0A]^taint[^#09]$sTabs Methods (^t.count[])
+		^ConsoleTable:formatTable[$t]
+#		^t.menu{$h[^reflection:method_info[$o.CLASS_NAME;$t.name]]^taint[^#0A]^taint[^#09]$sTabs^if($h){^file:dirname[^h.file.replace[$self.tReplacePath]]/^file:basename[$h.file]} ^@$t.name^[^for[j](0;100){^if(def $h.$j){$h.$j}{^break[]}}[^;]^]}^taint[^#0A]
+		$sTabs]
 	}
 	$self.hShowing.$sUID(true)
 	$hFields[^reflection:fields[$o]]
@@ -187,35 +183,36 @@ $result[<u class="userclass value">^reflection:class_name[$o]</u> (UID: $sUID)^w
 }
 
 @show_void[o]
-$result[<span class="void value">void</span>]
+$result[void]
 
 @show_bool[o]
-$result[<span class="bool value">^if($o){true}{false}</span>]
+$result[^if($o){true}{false}]
 
 @show_string[o]
-$result[<span class="string value">^taint[$o]</span>]
+$result[^taint[$o]]
 
 @show_int[o]
-$result[<span class="numeric value">$o</span>]
+$result[$o]
 
 @show_double[o]
-$result[<span class="numeric value">$o</span>]
+$result[$o]
 
 @show_date[d]
 $result[<del>^^date::create^[</del><span class="date value">^d.sql-string[]</span><del>^]</del>]
 
-@show_hash[h;b;sort][k;v;sTabs;i;j;sUID;s]
+@show_hash[h;b;sort][result;k;v;sTabs;i;j;sUID;s]
+
 $sUID[^reflection:uid[$h]]
 ^if($self.hShowing.$sUID){
 	$result[$result -already shown- (recursion?)]
 }{
 	$self.hShowing.$sUID(true)
 	^self.iShift.inc[]
-	$sTabs[^for[i](2;$self.iShift){&#09^;}]
+	$sTabs[^for[i](2;$self.iShift){^taint[^#09]}]
 	$j[^reflection:method[$h;foreach]]
 	$result[^if($h){
-<span class="hash value">^j[k;v]{$s[^k.match[(.*[^^a-zа-я0-9_\-].*)][i]{<s>^[</s>$match.1<s>^]</s>}]&#09^;$sTabs^switch(true){^case($v is "double" || $v is "int" || $v is "bool"){<var>^$.$s</var>(^self.showObject($v))}^case($v is "junction"){<var>^$.$s</var>^{-junction-here-^}}^case($v is "string" || $v is "date"){<var>^$.$s</var>^[^self.showObject[$v]^]}^case[DEFAULT]{<var>^$.<span class="hide" onclick="sh('hash_$iHashId', true)"^if($v is "hash" || $v is "table"){ title="Items: ^eval($v)"}>$s</span></var>^[<span id="hash_$iHashId">^self.showObject[$v]</span>^]}}
-}</span>$sTabs}{<del>^^hash::create^[</del>-empty-hash-here-<del>^]</del>}]
+^j[k;v]{$s[^k.match[(.*[^^a-zа-я0-9_\-].*)][i]{^[$match.1^]}]^taint[^#09]$sTabs^switch(true){^case($v is "double" || $v is "int" || $v is "bool"){^$.$s(^self.showObject($v))}^case($v is "junction"){^$.$s^{-junction-here-^}}^case($v is "string" || $v is "date"){^$.$s^[^self.showObject[$v]^]}^case[DEFAULT]{^$.$s^[^self.showObject[$v]^]}}}
+$sTabs}{<del>^^hash::create^[</del>-empty-hash-here-<del>^]</del>}]
 	^self.iShift.dec[]
 	^self.hShowing.delete[$sUID]
 }
@@ -231,7 +228,7 @@ $sUID[^reflection:uid[$h]]
 	}{
 		$bNamless(false)
 	}
-	$sTabs[^for[i](1;$self.iShift){&#09^;}]
+	$sTabs[^for[i](1;$self.iShift){^taint[^#09]}]
 	$fMarginLeft($self.iShift*5)
 	^if($self.iShift > 0){^fMarginLeft.inc(5)}
 	$bF(false)
@@ -300,7 +297,7 @@ $result[<u class="image value">image</u> (UID: ^reflection:uid[$i]): ^self.show_
 	^self.prepareFormat[$x]
 	$s[^x.string[ $.omit-xml-declaration[no] $.method[xml] $.indent[yes]]]
 
-	$sTabs[^for[i](1;$self.iShift){&#09^;}]
+	$sTabs[^for[i](1;$self.iShift){^taint[^#09]}]
 	$fMarginLeft($self.iShift*5)
 	^if($self.iShift > 0){^fMarginLeft.inc(5)}
 

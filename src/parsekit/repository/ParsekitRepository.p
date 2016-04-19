@@ -50,7 +50,7 @@ BaseRepository
     }
 
 
-    ^dstop[$self.lazyPackages]
+    ^dstop[$self]
 
 ###
 

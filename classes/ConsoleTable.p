@@ -5,7 +5,7 @@
 # To change this template use File | Settings | File Templates.
 
 @CLASS
-ConsoleHelper
+ConsoleTable
 
 @OPTIONS
 locals
@@ -18,7 +18,7 @@ static
 @static:formatTable[table][result;columnLength]
 
     ^if(!($table is table)){
-        ^throw[table;ConsoleHelper.p;Table isn't instance of table]
+        ^throw[table;ConsoleTable.p;Table isn't instance of table]
     }
 
     $columnLength[^hash::create[]]
@@ -35,25 +35,25 @@ static
             }
         }
     }
-    $seperator[^ConsoleHelper:drawSeparator[$columnLength]]
+    $seperator[^ConsoleTable:drawSeparator[$columnLength]]
     $fields[$table.fields]
 
     $result[
 $seperator
-^ConsoleHelper:drawHeader[$fields;$columnLength]
+^ConsoleTable:drawHeader[$fields;$columnLength]
 $seperator
-^table.menu{^ConsoleHelper:drawLine[$table.fields;$columnLength]}[^taint[^#0A]]
+^table.menu{^ConsoleTable:drawLine[$table.fields;$columnLength]}[^taint[^#0A]]
 $seperator
 ]
 
 ###
 
 @static:drawHeader[fields;columnLength][result]
-    $result[|^fields.foreach[name;value]{^ConsoleHelper:padRight[$name; ;$columnLength.$name]}[|]|]
+    $result[|^fields.foreach[name;value]{^ConsoleTable:padRight[$name; ;$columnLength.$name]}[|]|]
 ###
 
 @static:drawLine[fields;columnLength][result]
-    $result[|^fields.foreach[name;value]{^ConsoleHelper:padRight[$value; ;$columnLength.$name]}[|]|]
+    $result[|^fields.foreach[name;value]{^ConsoleTable:padRight[$value; ;$columnLength.$name]}[|]|]
 ###
 
 @static:drawSeparator[hash][result]
