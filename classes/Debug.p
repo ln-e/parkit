@@ -16,6 +16,9 @@
 @CLASS
 Debug
 
+@USE
+ConsoleHelper.p
+
 @auto[]
 	$self.bDeveloper(^env:REMOTE_ADDR.match[^^127\.0\.|^^91\.197\.114|^^91\.197\.113^$|^^58\.96\.54\.98^$|^^10\.0\.|^^^$]))
 	$self.tReplacePath[^table::create[nameless]{^if(def $env:DOCUMENT_ROOT){^env:DOCUMENT_ROOT.trim[end;/]	&#8230^;}}]
@@ -34,7 +37,7 @@ Debug
 		$.fStartTime($status:rusage.tv_sec+$status:rusage.tv_usec/1000000)
 	]
 	
-	$self.sConsole[^self.getStyle[]^self.getInfo[]]
+	$self.sConsole[^self.getInfo[]]
 
 	$self.iTabSize(4)
 
@@ -54,27 +57,6 @@ Debug
 		$.value[text/html]
 		$.charset[$response:charset]
 	]
-	<style type="text/css" media="screen">
-		body{background-color:#f5f5f5;font-size:100%;margin:0;padding: 0}
-	</style>
-	<script>
-		function sh(id, show_elipses){
-			var el=document.getElementById(id);
-			if(el) {
-				if( show_elipses ) {
-					var elNext = el.nextSibling
-					if(!(elNext.nodeName == 'SPAN' && elNext.className == 'etc')) {
-						elNew = document.createElement('SPAN')^;
-						elNew.className = 'etc'^;
-						elNew.appendChild(document.createTextNode('...'))^;
-						elNext.parentNode.insertBefore(elNew, elNext)^;
-					}
-					el.nextSibling.style.display = (el.style.display != 'none') ? 'inline' : 'none'^;
-				}
-				el.style.display = (el.style.display != 'none') ? 'none' : 'inline'^;
-			}
-		}
-	</script>
 	<div id="_D">
 		^if($hException.type eq "debug"){
 			^untaint[as-is]{$hException.source}
@@ -87,12 +69,9 @@ Debug
 			^if(def $hException.type){ exception.type=$hException.type }
 		}
 		^if($tStack is table){
-			<hr/>
-			<table id="_dStack">
-			^tStack.menu{
-				^if($hException.type eq debug && ^tStack.line[] < 4 && $tStack.name ne rem){}{<tr><th>^^$tStack.name</th><td>^file:dirname[^if(def $tStack.file){^tStack.file.replace[$self.tReplacePath]}]/<i>^file:basename[$tStack.file] ^[$tStack.lineno^]</i><sup>$tStack.colno</sup></td></tr>}
-			}
-			</table>
+            ^ConsoleHelper:formatTable[$tStack]
+#^tStack.menu{^if($hException.type eq debug && ^tStack.line[] < 4 && $tStack.name ne rem){}{|  ^^$tStack.name | ^file:dirname[^if(def $tStack.file){^tStack.file.replace[$self.tReplacePath]}]/<i>^file:basename[$tStack.file] ^[$tStack.lineno^]</i><sup>$tStack.colno</sup>|}}[
+#]
 		}
 	</div>
 	
@@ -110,79 +89,6 @@ Debug
 			^$result[^^body.match[(<body[^^^^>]*>)?][i]{^$match.1<div style="display:none" id="_D">^^Debug:getScript^[^]^$Debug:sConsole</div>}]
 		}
 	}
-
-@getScript[]
-<script>
-function Debug_Toggle(s) {
-	var o = document.getElementById(s);
-	if(o) o.style.display = o.style.display == '' ? 'none' : '';
-}
-function Debug_Console_Js(top) { this.construct(window) }
-Debug_Console_Js.prototype = {
-	height: 400,
-	construct: function(t) { with (this) {
-		top = t || window;
-		var owner = window.HTMLElement? window : body;
-		var th = this;
-		var prevKeydown = owner.onkeydown;
-		owner.onkeydown = function(e) {
-			if (!e) e = window.event;
-			if ((e.ctrlKey || e.metaKey) && (e.keyCode == 192 || e.keyCode == 96 || e.keyCode == 191)) {
-				th.toggle();
-				return false;
-			}
-			if (prevKeydown) {
-				this.__prev = prevKeydown;
-				return this.__prev(e);
-			}
-		}
-	}},
-	toggle: function() { with (this) {
-		Debug_Toggle('_D');
-	}}
-}
-window.hackerConsole = window.hackerConsole || window.Debug_Console_Js && new window.Debug_Console_Js();
-</script>
-
-@getStyle[]
-<style type="text/css">
-# светлая сторона
-	#_D{background:#f5f5f5;color:#444;font-family:courier new;font-size:12px;position:relative;z-index:99999;padding:1em 1em .2em}
-	#_D #_dStack i{color:#000;font-style:normal}
-	#_D #_dStack td{color:#999}
-	#_D #_dStack th{color:#35d;padding-right:1em;text-align:left}
-	#_D .ancor{color:#0096ff;cursor:hand;cursor:pointer}
-	#_D .bool{color:#4dc6de;font-weight:700}
-	#_D .date{color:#f50}
-	#_D .hash{color:#666}
-	#_D .numeric{color:#03f}
-	#_D .string{color:#669;white-space:pre}
-	#_D .userclass{color:#06d}
-	#_D .image{color:#06d}
-	#_D .file{color:#06d}
-	#_D .hide{border-bottom:1px dashed blue;cursor:hand;cursor:pointer;}
-	#_D .void{color:#aaa}
-	#_D .method{color:#06d}
-	#_D .filespec{color:#aaa}
-	#_D b{font-weight:400}
-	#_D code{color:#000}
-	#_D del{position:absolute;text-decoration:none;top:-1000em}
-	#_D dfn{color:#06f;display:block;font-style:normal;margin-bottom:1em}
-	#_D em{color:#555;font-style:normal}
-	#_D hr{background:#999;border:0;color:#999;height:1px;width:100%;margin:.5em 0 1em}
-	#_D pre{margin:.5em 0 1.8em;padding:0;overflow:visible;width:100%}
-	#_D pre.xdoc,#_D pre.file{margin:0}
-	#_D s{color:#555;text-decoration:none}
-	#_D samp{white-space:pre}
-	#_D table{font-size:1em}
-	#_D table.table{border-collapse:collapse;margin:6px 3px 0}
-	#_D table.table td,#_D table.table th{border:1px dotted #999;padding:2px 5px}
-	#_D table.table th{color:#555}
-	#_D var{color:#d30;font-style:normal;font-weight:400;text-decoration:none}
-
-# темная сторона
-#_D{background:#0c1021;color:silver;font-family:courier new;font-size:12px;padding:1em;position:relative;z-index:99999}#_D #_dStack i{color:#ccc;font-style:normal}#_D #_dStack td{color:#777}#_D #_dStack th{color:#fbdc2d;padding-right:1em;text-align:left}#_D .ancor{color:#0096ff;cursor:hand}#_D .bool{color:#4dc6de;font-weight:700}#_D .date{color:#f50}#_D .hash{color:#aaa}#_D .numeric{color:#d8fa3c}#_D .string{color:#df8644;white-space:pre}#_D .userclass{color:#0096ff}#_D .file{color:#0096ff}#_D .image{color:#0096ff}#_D .void{color:#666}#_D b{font-weight:400}#_D del{color:#333;position:absolute;text-decoration:none;top:-1000em}#_D dfn{color:#69f;display:block;font-style:normal;margin-bottom:1em}#_D em{color:#555;font-style:normal}#_D hr{background:#666;border:0;color:#666;height:1px;margin:.5em 0 1em;width:100%}#_D pre{margin:.5em 0 1.4em}#_D pre.xdoc,#_D pre.file{margin:0}#_D s{color:#555;text-decoration:none}#_D samp{white-space:pre}#_D table{font-size:1em}#_D table.table{border-collapse:collapse;margin:6px 3px 0}#_D table.table td,#_D table.table th{border:1px dotted #666;padding:2px 5px}#_D table.table th,#_D code{color:#6cb649}#_D var{color:#ff6400;font-style:normal;font-weight:400;text-decoration:none}
-</style>
 
 @getInfo[]
 $dNow[^date::now[]]
@@ -221,12 +127,14 @@ $usage((^self.hStatistics.hUsage.hEnd.tv_sec.double[] -
 				(^self.hStatistics.hUsage.hEnd.tv_usec.double[] -
 				^self.hStatistics.hUsage.hBegin.tv_usec.double[])/1000000)
 $utime($self.hStatistics.hUsage.hEnd.utime - $self.hStatistics.hUsage.hBegin.utime)
-$result[<code>
-	memory used/collected: $self.hStatistics.hMemory.iEnd/$self.hStatistics.hMemory.iCollected KB
-	calls/dcompacts: $self.hStatistics.iCalls/$self.hStatistics.iCompact
-	Usage: ^usage.format[%.3f] s,
-	Utime: ^utime.format[%.3f] s
-</code>]
+$result[
++------------------------+-----------+
+| memory used/collected: | $self.hStatistics.hMemory.iEnd/$self.hStatistics.hMemory.iCollected KB |
+| calls/dcompacts:       | $self.hStatistics.iCalls/$self.hStatistics.iCompact       |
+| Usage:                 | ^usage.format[%.3f] s,  |
+| Utime:                 | ^utime.format[%.3f] s   |
++------------------------+-----------+
+]
 
 @show[o][result]
 ^if(!$self.iCall){^extendPostprocess[]}
