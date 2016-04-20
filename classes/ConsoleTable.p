@@ -15,7 +15,7 @@ static
 ###
 
 
-@static:formatTable[table][result;columnLength]
+@static:formatTable[table;prefix][result;columnLength]
 
     ^if(!($table is table)){
         ^throw[table;ConsoleTable.p;Table isn't instance of table]
@@ -39,11 +39,11 @@ static
     $fields[$table.fields]
 
     $result[
-$seperator
-^ConsoleTable:drawHeader[$fields;$columnLength]
-$seperator
-^table.menu{^ConsoleTable:drawLine[$table.fields;$columnLength]}[^taint[^#0A]]
-$seperator
+${prefix}$seperator
+${prefix}^ConsoleTable:drawHeader[$fields;$columnLength]
+${prefix}$seperator
+^table.menu{${prefix}^ConsoleTable:drawLine[$table.fields;$columnLength]}[^taint[^#0A]]
+${prefix}$seperator
 ]
 
 ###

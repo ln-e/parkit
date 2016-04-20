@@ -198,7 +198,7 @@ $result[$o]
 $result[$o]
 
 @show_date[d]
-$result[<del>^^date::create^[</del><span class="date value">^d.sql-string[]</span><del>^]</del>]
+$result[^^date::create^[^d.sql-string[]^]]
 
 @show_hash[h;b;sort][result;k;v;sTabs;i;j;sUID;s]
 
@@ -211,8 +211,13 @@ $sUID[^reflection:uid[$h]]
 	$sTabs[^for[i](2;$self.iShift){^taint[^#09]}]
 	$j[^reflection:method[$h;foreach]]
 	$result[^if($h){
-^j[k;v]{$s[^k.match[(.*[^^a-zа-я0-9_\-].*)][i]{^[$match.1^]}]^taint[^#09]$sTabs^switch(true){^case($v is "double" || $v is "int" || $v is "bool"){^$.$s(^self.showObject($v))}^case($v is "junction"){^$.$s^{-junction-here-^}}^case($v is "string" || $v is "date"){^$.$s^[^self.showObject[$v]^]}^case[DEFAULT]{^$.$s^[^self.showObject[$v]^]}}}
-$sTabs}{<del>^^hash::create^[</del>-empty-hash-here-<del>^]</del>}]
+^j[k;v]{$s[^k.match[(.*[^^a-zа-я0-9_\-].*)][i]{^[$match.1^]}]^taint[^#09]$sTabs^switch(true){
+^case($v is "double" || $v is "int" || $v is "bool"){^$.$s(^self.showObject($v))}
+^case($v is "junction"){^$.$s^{-junction-here-^}}
+^case($v is "string" || $v is "date"){^$.$s^[^self.showObject[$v]^]
+}
+^case[DEFAULT]{^$.$s^[^self.showObject[$v]^]
+}}}$sTabs}{^^hash::create^[-empty-hash-here-^]}]
 	^self.iShift.dec[]
 	^self.hShowing.delete[$sUID]
 }
@@ -228,14 +233,11 @@ $sTabs}{<del>^^hash::create^[</del>-empty-hash-here-<del>^]</del>}]
 	}{
 		$bNamless(false)
 	}
-	$sTabs[^for[i](1;$self.iShift){^taint[^#09]}]
-	$fMarginLeft($self.iShift*5)
-	^if($self.iShift > 0){^fMarginLeft.inc(5)}
-	$bF(false)
-	$result[<del>^^table::create^if($bNamless){^[nameless^]}^{</del>^if($t || !$bNamless){<table class="table value" style="margin-left: ${fMarginLeft}em">^if(!$bNamless){^#0A<tr>^tCol.menu{<th>$tCol.column</th>}</tr>}^t.menu{^#0A<tr>^tCol.menu{<td>^show_string[$t.fields.[$tCol.column]]</td>}</tr>}^#0A</table><del>^}</del>$sTabs}{-empty-nameless-table-here-<del>^}</del>}]
+	$sTabs[^for[i](1;$self.iShift+1){^taint[^#09]}]
+	$result[^ConsoleTable:formatTable[$t;$sTabs]]
 
 @show_file[f]
-$result[<u class="file value">file</u> (UID: ^reflection:uid[$f]): ^self.show_hash[
+$result[FILE (UID: ^reflection:uid[$f]): ^self.show_hash[
 	$.name[$f.name]
 	$.size[$f.size bytes]
 	^if(def $f.mode){
@@ -270,10 +272,10 @@ $result[<u class="file value">file</u> (UID: ^reflection:uid[$f]): ^self.show_ha
 ]]
 
 @show_regex[r]
-$result[<del>^^regex::create^[</del>$r.pattern<del>^]^[$r.options^]</del>]
+$result[^^regex::create^[$r.pattern^]^[$r.options^]]
 
 @show_image[i][f]
-$result[<u class="image value">image</u> (UID: ^reflection:uid[$i]): ^self.show_hash[
+$result[IMAGE (UID: ^reflection:uid[$i]): ^self.show_hash[
 	$.width[$i.width px]
 	$.height[$i.height px]
 	^if(def $i.src){
@@ -301,7 +303,7 @@ $result[<u class="image value">image</u> (UID: ^reflection:uid[$i]): ^self.show_
 	$fMarginLeft($self.iShift*5)
 	^if($self.iShift > 0){^fMarginLeft.inc(5)}
 
-	$result[<pre class="xdoc value" style="margin-left: ${fMarginLeft}em"><del>^^xdoc::create^{</del>^taint[^s.trim[end]]<del>^}</del></pre>$sTabs]
+	$result[^^xdoc::create^{^taint[^s.trim[end]]^}$sTabs]
 
 @show_xnode[x][result]
 	$result[^switch($x.nodeType){
@@ -320,7 +322,7 @@ $result[<u class="image value">image</u> (UID: ^reflection:uid[$i]): ^self.show_
 	$result[^taint[^apply-taint[html][^taint[$x.nodeValue]]]]
 
 @show_Array[a][result]
-	$result[Array(^eval($a)): <br/> ^show_hash[^hash::create[$a];;1]]
+	$result[Array(^eval($a)): ^taint[^#10] ^show_hash[^hash::create[$a];;1]]
 
 @showXObject[o]
 	$result[<span style="color:red">$o.typeName</span>
