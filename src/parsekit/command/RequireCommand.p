@@ -10,7 +10,7 @@ RequireCommand
 @USE
 CommandInterface.p
 CommandArgument.p
-Parsekit/Repository/BaseRepository.p
+Parsekit/Repository/RepositoryFactory.p
 
 @OPTIONS
 locals
@@ -57,11 +57,15 @@ CommandInterface
 #:param arguments type hash
 #------------------------------------------------------------------------------
 @execute[arguments]
+
+
     $jsonFile[^JsonFile::create[/parsekit.json]]
     $data[^jsonFile.read[]]
     $data.require.[$arguments.packageName][v0.0.1-beta]
 
     ^jsonFile.write[$data]
-    $repository[^BaseRepository::create[]]
-    $result[founded: ^repository.findPackage[$arguments.packageName]]
+
+    $reposityManager[^RepositoryFactory:getManager[]]
+
+    $result[founded: ]
 ###

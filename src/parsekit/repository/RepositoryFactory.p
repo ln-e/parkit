@@ -11,6 +11,9 @@ RepositoryFactory
 locals
 static
 
+@USE
+Parsekit/Repository/RepositoryManager.p
+
 @auto[]
 ###
 
@@ -24,8 +27,9 @@ static
 #------------------------------------------------------------------------------
 #:result RepositoryManager
 #------------------------------------------------------------------------------
-@createManager[]
-    $repositoryManager[^RepositoryManager:create[]]
-    ^repositoryManager:addRepositoryClass['parserkit']['ru/parsekit/repository/ParsekitRepository']
-    $result[$repositoryManager]
+@static:getManager[]
+    $manager[^RepositoryManager:create[]]
+    $RepositoryFactory:repositoryManager[$manager]
+#    ^manager.addRepositoryClass['parserkit';'ru/parsekit/repository/ParsekitRepository']
+    $result[$manager]
 ###
