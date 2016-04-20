@@ -10,13 +10,17 @@ VersionParser
 @OPTIONS
 locals
 
+#------------------------------------------------------------------------------
+#Static constructor
+#------------------------------------------------------------------------------
 @auto[]
+
 # Regex to match pre-release data (sort of).
 #
 # Due to backwards compatibility:
 #  - Instead of enforcing hyphen, an underscore, dot or nothing at all are also accepted.
-#  - Only stabilities as recognized by Composer are allowed to precede a numerical identifier.
-#  - Numerical-only pre-release identifiers are not supported, see tests.
+#  - Only stabilities as recognized are allowed to precede a numerical identifier.
+#  - Numerical-only pre-release identifiers are not supported.
 #
 #                        |--------------|
 # [major].[minor].[patch] -[pre-release] +[build-metadata]
@@ -32,12 +36,17 @@ dev
 ###
 
 
+#------------------------------------------------------------------------------
+#:constructor
+#------------------------------------------------------------------------------
 @create[]
 ###
 
 
-# Returns a stability
+#------------------------------------------------------------------------------
+#Returns a stability
 #:param version type string String representation on version
+#------------------------------------------------------------------------------
 @static:parseStability[version][result]
 #Stripped out #hash of version
     $version[^version.match[#.*^$][i]{}]
@@ -65,8 +74,10 @@ dev
 ###
 
 
+#------------------------------------------------------------------------------
 #:param stability type string
 #:result string
+#------------------------------------------------------------------------------
 @static:normalizeStability[stability][result]
     $result[^stability.lower[]]
 
@@ -74,8 +85,10 @@ dev
 ###
 
 
+#------------------------------------------------------------------------------
 #:param branchName type string
 #:result string
+#------------------------------------------------------------------------------
 @static:normalizeBranch[branchName][result]
 
     $name[^branchName.trim[]]
@@ -109,8 +122,10 @@ dev
 ###
 
 
+#------------------------------------------------------------------------------
 #:param branchName type string
 #:result string
+#------------------------------------------------------------------------------
 @static:parseNumericAliasPrefix[branchName][result]
     ^branchName.match[^^((\d++\.)*\d++)(?:\.x)?-dev^$][i]{
         $result[${match.1}.]
@@ -120,8 +135,10 @@ dev
 ###
 
 
+#------------------------------------------------------------------------------
 # TODO probably broken method
 #:param version type string
+#------------------------------------------------------------------------------
 @static:normalize[version][result]
 
     $result[qwe]
@@ -187,3 +204,4 @@ dev
     ^if(!def $result){
         ^throw[Invalid version string $fullVersion]
     }
+###

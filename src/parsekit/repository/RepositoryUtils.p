@@ -14,9 +14,11 @@ locals
 ###
 
 
-#TODO change replace to table and use native method replace?
+#------------------------------------------------------------------------------
+#TODO change replace type from hash to table and use native method replace?
 #:param url type string
 #:param replace type hash
+#------------------------------------------------------------------------------
 @static:maskedUrl[url;replace][result]
     $result[$url]
     ^replace.foreach[name;value]{

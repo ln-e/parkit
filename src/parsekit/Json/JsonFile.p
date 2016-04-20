@@ -13,8 +13,11 @@ locals
 @auto[]
 ###
 
+
+#------------------------------------------------------------------------------
 #:constructor
 #:param path type string Path to the json file
+#------------------------------------------------------------------------------
 @create[path]
     $self.path[$path]
     $self.isLocal(!^self.path.match[^^https?])
@@ -25,15 +28,20 @@ locals
 ###
 
 
-# Returns path to file
+#------------------------------------------------------------------------------
+#Returns path to file
+#
 #:result string
+#------------------------------------------------------------------------------
 @getPath[]
     $result[$self.path]
 ###
 
-
+#------------------------------------------------------------------------------
 #Check whatever file exists
+#
 #:result bool
+#------------------------------------------------------------------------------
 @exists[]
     ^if($self.isLocal){
         $result(-f $path)
@@ -46,8 +54,11 @@ locals
 ###
 
 
+#------------------------------------------------------------------------------
 #Return contents of the file
+#
 #:result hash
+#------------------------------------------------------------------------------
 @read[]
     $result[]
     ^try{
@@ -64,8 +75,11 @@ locals
 ###
 
 
+#------------------------------------------------------------------------------
 #Saves new hash to file
+#
 #:param data type hash
+#------------------------------------------------------------------------------
 @write[data]
     $result(false)
     ^if(!$self.isLocal){
@@ -81,18 +95,24 @@ locals
 ###
 
 
+#------------------------------------------------------------------------------
 #It should validate schema
+#
 #:result bool
+#------------------------------------------------------------------------------
 @validateSchema[]
     ^rem{ TODO add real validating throw http://jsonschema.org and appropriciate schema (package/provider/etc.)}
     $result(true)
 ###
 
 
+#------------------------------------------------------------------------------
 #Encodes data
+#
 #:param data type string
 #:param options type hash
 #:result string
+#------------------------------------------------------------------------------
 @static:encode[data;options]
     $mergedOptions[
         $.indent(true)
@@ -103,9 +123,12 @@ locals
 ###
 
 
+#------------------------------------------------------------------------------
 #Decodes string
+#
 #:param string type string
 #:result hash
+#------------------------------------------------------------------------------
 @static:decode[string]
     $result[^json:parse[$string;
         $.distinct[first]

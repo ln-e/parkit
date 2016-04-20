@@ -14,9 +14,16 @@ static
 @auto[]
 ###
 
+#------------------------------------------------------------------------------
+#:constructor
+#------------------------------------------------------------------------------
 @create[]
 ###
 
+
+#------------------------------------------------------------------------------
+#:result RepositoryManager
+#------------------------------------------------------------------------------
 @createManager[]
     $repositoryManager[^RepositoryManager:create[]]
     ^repositoryManager:addRepositoryClass['parserkit']['ru/parsekit/repository/ParsekitRepository']
