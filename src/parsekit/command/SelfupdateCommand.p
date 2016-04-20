@@ -5,7 +5,7 @@
 # To change this template use File | Settings | File Templates.
 
 @CLASS
-InitCommand
+SelfupdateCommand
 
 @USE
 Json/JsonFile.p
@@ -16,6 +16,7 @@ locals
 
 @BASE
 CommandInterface
+
 
 #------------------------------------------------------------------------------
 #Dynamic constructor
@@ -28,7 +29,7 @@ CommandInterface
 #:result string
 #------------------------------------------------------------------------------
 @GET_description[]
-    $result[initialize new project in current directory]
+    $result[updates parsekit to the latest version]
 ###
 
 
@@ -41,35 +42,8 @@ CommandInterface
 
 
 #------------------------------------------------------------------------------
-#Command execution
-#
 #:param arguments type hash
 #------------------------------------------------------------------------------
-@execute[arguments]
-    $jsonFile[^JsonFile::create[/parsekit.json]]
-
-    ^if(^jsonFile.exists[]){
-        $result[Cound not reinitialize parsekit.json]
-    }{
-        ^if(^jsonFile.write[^createBaseJson[]]){
-            $result[parsekit.json has been created]
-        }{
-            $result[Could not create parsekit.json file. Check file permissions.]
-        }
-    }
-###
-
-
-#------------------------------------------------------------------------------
-#:result hash
-#------------------------------------------------------------------------------
-@createBaseJson[]
-# TODO add interactive questions like project name, author etc
-    $hash[
-        $.project[New Project]
-        $.require[
-            $.parser[>=3.4.3]
-        ]
-    ]
-    $result[$hash]
+@execute[arguments][result]
+    $result[self update not yet implemented]
 ###

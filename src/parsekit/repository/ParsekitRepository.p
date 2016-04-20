@@ -21,6 +21,9 @@ BaseRepository
 ###
 
 
+#------------------------------------------------------------------------------
+#Dynamic constructor
+#------------------------------------------------------------------------------
 @create[]
     $self.repoConfig[]
     $self.options[
@@ -34,7 +37,9 @@ BaseRepository
 ###
 
 
-#Makes all initializations, such as loading
+#------------------------------------------------------------------------------
+#Makes all initializations, such as loading repository json data
+#------------------------------------------------------------------------------
 @init[][result]
     $packagesJsonFile[^JsonFile::create[$self.options.providerURL]]
     $self.repoConfig[^packagesJsonFile.read[]]
@@ -49,13 +54,14 @@ BaseRepository
         ^self.loadProvider[${self.options.parsekitURL}^RepositoryUtils:maskedUrl[$providerMask;$providerConfig]]
     }
 
-    ^dstop[$self]
-
 ###
 
 
+#------------------------------------------------------------------------------
 #Loaded from the separated json files ~(providers) available packages
+#
 #:param url param string URL where provider is located (may be remote or local)
+#------------------------------------------------------------------------------
 @loadProvider[url][result]
     $providerJsonFile[^JsonFile::create[$url]]
     $providerJson[^providerJsonFile.read[]]
@@ -66,16 +72,18 @@ BaseRepository
 ###
 
 
+#------------------------------------------------------------------------------
 #Validates main repository configuration by protocol version.
+#------------------------------------------------------------------------------
 @validateConfig[][result]
 $[
 
-Package version used differ protocol version.
+Package.json version used differ protocol version.
 Update your parsekit to latest version:
 
 ^$ ./parserkit selfupdate
 ]
     ^if($self.repoConfig.protocol != $self.options.protocol){
-        ^throw[protocol.version.differ;$self.repoConfig.protocol;$errorText]
+        ^throw[protocol.version.differ;ParsekitRepository.p;$errorText]
     }
 ###

@@ -10,24 +10,53 @@ CommandArgument
 @OPTIONS
 locals
 
+
+#------------------------------------------------------------------------------
+#Dynamic costructor
+#:param name type string
+#:param required type boolean
+#------------------------------------------------------------------------------
 @create[name;required]
     $self.name[$name]
     $self.required[$required]
 ###
 
 
+#------------------------------------------------------------------------------
+#Get name of the argument
+#
+#:result string
+#------------------------------------------------------------------------------
 @getName[]
     $result[$self.name]
 ###
 
+
+#------------------------------------------------------------------------------
+#Set name of the argument
+#
+#:param name type string
+#------------------------------------------------------------------------------
 @setName[name]
     $self.name[$name]
 ###
 
+
+#------------------------------------------------------------------------------
+#Check whatever argument is required
+#
+#:result boolean
+#------------------------------------------------------------------------------
 @isRequired[]
     $result[^self.required.bool[]]
 ###
 
+
+#------------------------------------------------------------------------------
+#Set flag that argument is required
+#
+#:param isRequired type boolean
+#------------------------------------------------------------------------------
 @setRequired[isRequired]
     $self.required[^isRequired.bool[]]
 ###

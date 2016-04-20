@@ -10,53 +10,82 @@ Application
 @USE
 Command/InitCommand.p
 Command/RequireCommand.p
+Command/SelfupdateCommand.p
 Version/VersionParser.p
-Repository/ParsekitRepository.p
 
 @OPTIONS
 locals
 
+#------------------------------------------------------------------------------
+#Dynamic constructor
+#------------------------------------------------------------------------------
 @create[]
     ^configureCommands[]
 ###
 
-@configureCommands[]
+#------------------------------------------------------------------------------
+#Configures list of available commands
+#------------------------------------------------------------------------------
+@configureCommands[][result]
     $self.commands[
         $.init[^InitCommand::create[]]
         $.require[^RequireCommand::create[]]
+        $.selfupdate[^SelfupdateCommand::create[]]
     ]
 ###
 
-@hasCommand[commandName]
+
+#------------------------------------------------------------------------------
+#Check whatever command exists
+#
+#:param commandName type string Name of the command to check
+#------------------------------------------------------------------------------
+@hasCommand[commandName][result]
     $result[^commands.contains[$commandName]]
 ###
 
-@run[]
-    $result[
-]
-    $repo[^ParsekitRepository::create[]]
+
+#------------------------------------------------------------------------------
+#Starts application
+#------------------------------------------------------------------------------
+@run[][result]
+    $result[^taint[^#0A]]
     $commandName[$request:argv.1]
     ^if(!def $commandName || !^self.hasCommand[$commandName]){
         $result[^showHelp[]]
     }{
-        $arguments[^hash::create[]]
-        ^for[i](2;^request:argv._count[]){
-            ^if(def $request:argv.$i){
-                $arguments.$i[$request:argv.$i]
-            }
-        }
+        $arguments[^self.prepareArguments[]]
         $result[$result^self.commands.$commandName.run[$arguments]]
     }
 ###
 
 
-@showHelp[]
-$result[
+#------------------------------------------------------------------------------
+#Displays list of command.
+#------------------------------------------------------------------------------
+@showHelp[][result]
+    $t[^table::create[nameless]{}]
+
+    ^commands.foreach[key;value]{
+        ^t.append[$key	$value.description]
+    }
+    $result[
 Usage:
   command [arguments]
 
 Available commands:
+^ConsoleTable:formatTable[$t;  ]]
+###
 
-^commands.foreach[key;value]{  $key^: $value.description
-}[]]
+
+#------------------------------------------------------------------------------
+#Parses and converts arguments from command line
+#------------------------------------------------------------------------------
+@prepareArguments[][result]
+    $result[^hash::create[]]
+    ^for[i](2;^request:argv._count[]){
+        ^if(def $request:argv.$i){
+            $result.$i[$request:argv.$i]
+        }
+    }
 ###

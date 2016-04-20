@@ -3,17 +3,23 @@
 Debug.p
 Application.p
 
-@main[]
+
+#------------------------------------------------------------------------------
+#Main Do application initialization
+#------------------------------------------------------------------------------
+@main[][result]
     $app[^Application::create[]]
 
-    $result[^info[]
-    ^app.run[]
-]
-###
+    $result[$result^info[]]
+    $result[$result^taint[^#0A]]
+    $result[$result^app.run[]]
+    $result[$result^taint[^#0A]]
+#--- end of main
 
-@info[]
+
+#------------------------------------------------------------------------------
+#Main::info - Prints information for each call
+#------------------------------------------------------------------------------
+@info[][result]
     $result[Parsekit 0.0.1 by Igor Bodnar. Tool for managing project dependency in parser3.]
-###
-
-
-
+#---

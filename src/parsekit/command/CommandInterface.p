@@ -10,14 +10,28 @@ CommandInterface
 @OPTIONS
 locals
 
+
+#------------------------------------------------------------------------------
+#:result string
+#------------------------------------------------------------------------------
 @GET_description[]
     ^throw[Abstract method not defined]
 ###
 
+
+#------------------------------------------------------------------------------
+#:result hash
+#------------------------------------------------------------------------------
 @GET_argumentsConfig[]
     ^throw[Abstract method not defined]
 ###
 
+
+#------------------------------------------------------------------------------
+#Common command execution start checks. Validate count of arguments.
+#
+#:param arguments type hash
+#------------------------------------------------------------------------------
 @run[arguments]
     $result[]
 
@@ -40,6 +54,12 @@ locals
     }
 ###
 
+
+#------------------------------------------------------------------------------
+#Abstract method for command execution
+#
+#:param arguments type hash
+#------------------------------------------------------------------------------
 @execute[arguments]
     ^throw[Abstract method not defined]
 ###
