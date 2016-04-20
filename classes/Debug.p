@@ -117,14 +117,13 @@ $usage((^self.hStatistics.hUsage.hEnd.tv_sec.double[] -
 				(^self.hStatistics.hUsage.hEnd.tv_usec.double[] -
 				^self.hStatistics.hUsage.hBegin.tv_usec.double[])/1000000)
 $utime($self.hStatistics.hUsage.hEnd.utime - $self.hStatistics.hUsage.hBegin.utime)
-$result[
-+------------------------+-----------+
-| memory used/collected: | $self.hStatistics.hMemory.iEnd/$self.hStatistics.hMemory.iCollected KB |
-| calls/dcompacts:       | $self.hStatistics.iCalls/$self.hStatistics.iCompact       |
-| Usage:                 | ^usage.format[%.3f] s,  |
-| Utime:                 | ^utime.format[%.3f] s   |
-+------------------------+-----------+
-]
+$t[^table::create[nameless]{
+memory used/collected:	$self.hStatistics.hMemory.iEnd/$self.hStatistics.hMemory.iCollected KB
+calls/dcompacts:	$self.hStatistics.iCalls/$self.hStatistics.iCompact
+Usage:	^usage.format[%.3f] s
+Utime:	^utime.format[%.3f] s
+}]
+$result[^ConsoleTable:formatTable[$t]]
 
 @show[o][result]
 ^if(!$self.iCall){^extendPostprocess[]}

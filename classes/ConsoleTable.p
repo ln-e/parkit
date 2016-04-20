@@ -38,9 +38,9 @@ static
     $seperator[^ConsoleTable:drawSeparator[$columnLength]]
     $fields[$table.fields]
 
-    $result[
+    $result[^if(^table.columns[]){
 ${prefix}$seperator
-${prefix}^ConsoleTable:drawHeader[$fields;$columnLength]
+${prefix}^ConsoleTable:drawHeader[$fields;$columnLength]}
 ${prefix}$seperator
 ^table.menu{${prefix}^ConsoleTable:drawLine[$table.fields;$columnLength]}[^taint[^#0A]]
 ${prefix}$seperator
