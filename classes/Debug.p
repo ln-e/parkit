@@ -65,7 +65,7 @@ $result[]
     ^if(def $hException.type){$result[${result} exception.type=$hException.type ]}
 }
 ^if($tStack is table){
-    $result[${result}^ConsoleTable:formatTable[$tStack]]
+    $result[${result}^ConsoleTable:formatTable[$tStack]^taint[^#0A]]
 #^tStack.menu{^if($hException.type eq debug && ^tStack.line[] < 4 && $tStack.name ne rem){}{|  ^^$tStack.name | ^file:dirname[^if(def $tStack.file){^tStack.file.replace[$self.tReplacePath]}]/<i>^file:basename[$tStack.file] ^[$tStack.lineno^]</i><sup>$tStack.colno</sup>|}}[
 #]
 }

@@ -43,11 +43,11 @@ RepositoryInterface
 #:param package type PackageInterface
 #------------------------------------------------------------------------------
 @addPackage[package][result]
-    if(!def $self.packages || !$self.packages is hash){
+    ^if(!def $self.packages || !$self.packages is hash){
         $self.packages[^hash::create[]]
     }
 
-    ${self.packages}.^package:getUniqueName[][$package]
+    $self.packages.[^package:getUniqueName[]][$package]
     ^package:setRepository[$self]
 ###
 
@@ -57,7 +57,7 @@ RepositoryInterface
 #:result boolean
 #------------------------------------------------------------------------------
 @hasPackage[package][result]
-    if (!$package is PackageInterface){
+    ^if(!$package is PackageInterface){
         ^throw[Argument package should be type PackageInterface $package.CLASS_NAME found]
     }
 
@@ -72,8 +72,8 @@ RepositoryInterface
 #------------------------------------------------------------------------------
 @findPackage[name;constraint][result]
     ^self.packages.foreach[uniqueName;packageInterface]{
-        if($name eq ^packageInterface:getName[]){
-            ^rem{ TODO handle constraints throught some constraint parser }
+        ^if($name eq ^packageInterface:getName[]){
+#TODO handle constraints throught some constraint parser
             $result[$packageInterface]
             ^break[]
         }
@@ -85,7 +85,7 @@ RepositoryInterface
 #:result hash
 #------------------------------------------------------------------------------
 @getPackages[][result]
-    if(!def $self.packages || !$self.packages is hash){
+    ^if(!def $self.packages || !$self.packages is hash){
         ^throw[Repository was not configured properly. ^$self.packages not found]
     }
 
