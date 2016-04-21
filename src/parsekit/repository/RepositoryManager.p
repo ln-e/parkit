@@ -22,7 +22,7 @@ locals
 
 
 #------------------------------------------------------------------------------
-#:param package type PackageInterface
+#:param package type RootPackage
 #------------------------------------------------------------------------------
 @extractRootRepositories[package]
     $result[

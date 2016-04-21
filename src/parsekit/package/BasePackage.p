@@ -51,11 +51,30 @@ PackageInterface
 
 
 #------------------------------------------------------------------------------
+#Stores the package type, e.g. library, project, etc
+#
+#:param type type string
+#------------------------------------------------------------------------------
+@setType[type][result]
+    $self.type[$type]
+###
+
+
+#------------------------------------------------------------------------------
 #Returns the package type, e.g. library, project, etc
+#
 #:result string
 #------------------------------------------------------------------------------
-@getType[]
+@getType[][result]
     $result[$self.type]
+###
+
+
+#------------------------------------------------------------------------------
+#:param targetDir type string
+#------------------------------------------------------------------------------
+@setTargetDir[targetDir][result]
+    $self.targetDir[$targetDir]
 ###
 
 
@@ -64,6 +83,16 @@ PackageInterface
 #------------------------------------------------------------------------------
 @getTargetDir[][result]
     $result[$self.targetDir]
+###
+
+
+#------------------------------------------------------------------------------
+#Stores the repository type of this package, e.g. git, svn
+#
+#:param sourceType type string
+#------------------------------------------------------------------------------
+@setSourceType[sourceType][result]
+    $self.sourceType[$sourceType]
 ###
 
 
@@ -78,6 +107,16 @@ PackageInterface
 
 
 #------------------------------------------------------------------------------
+#Stores the repository url of this package
+#
+#:param sourceUrl type string
+#------------------------------------------------------------------------------
+@getSourceUrl[sourceUrl][result]
+    $self.sourceUrl[$sourceUrl]
+###
+
+
+#------------------------------------------------------------------------------
 #Returns the repository url of this package
 #
 #:result string
@@ -86,6 +125,15 @@ PackageInterface
     $result[$self.sourceUrl]
 ###
 
+
+#------------------------------------------------------------------------------
+#Stores the repository reference of this package, e.g. master, 1.0.0 or a commit hash for git
+#
+#:param sourceReference type string
+#------------------------------------------------------------------------------
+@setSourceReference[sourceReference][result]
+    $self.sourceReference[$sourceReference]
+###
 
 #------------------------------------------------------------------------------
 #Returns the repository reference of this package, e.g. master, 1.0.0 or a commit hash for git
@@ -100,10 +148,30 @@ PackageInterface
 #------------------------------------------------------------------------------
 #Returns the version of this package
 #
+#:param version type string
+#------------------------------------------------------------------------------
+@setVersion[version][result]
+    $self.version[$version]
+###
+
+
+#------------------------------------------------------------------------------
+#Returns the version of this package
+#
 #:result string
 #------------------------------------------------------------------------------
 @getVersion[]
     $result[$self.version]
+###
+
+
+#------------------------------------------------------------------------------
+#Stores the pretty (i.e. non-normalized) version string of this package
+#
+#:param prettyVersion type string
+#------------------------------------------------------------------------------
+@setPrettyVersion[prettyVersion][result]
+    $self.prettyVersion[$prettyVersion]
 ###
 
 
@@ -118,9 +186,18 @@ PackageInterface
 
 
 #------------------------------------------------------------------------------
-#Returns the pretty version string plus a git or hg commit hash of this package
-#$truncate If the source reference is a sha1 hash, truncate it
+#Stores the pretty version string plus a git or hg commit hash of this package
 #
+#:param fullPrettyVersion type string
+#------------------------------------------------------------------------------
+@setFullPrettyVersion[fullPrettyVersion][result]
+    $self.fullPrettyVersion[$fullPrettyVersion]
+###
+
+#------------------------------------------------------------------------------
+#Returns the pretty version string plus a git or hg commit hash of this package
+#
+#:param truncate type boolean If the source reference is a sha1 hash, truncate it
 #:result string
 #------------------------------------------------------------------------------
 @getFullPrettyVersion[truncate]
@@ -129,10 +206,28 @@ PackageInterface
 
 
 #------------------------------------------------------------------------------
+#:param date type date
+#------------------------------------------------------------------------------
+@setReleaseDate[date][result]
+    $self.releaseDate[$date]
+###
+
+
+#------------------------------------------------------------------------------
 #:result date
 #------------------------------------------------------------------------------
 @getReleaseDate[]
     $result[$self.releaseDate]
+###
+
+
+#------------------------------------------------------------------------------
+#Stores the stability of this package: one of (dev, alpha, beta, RC, stable)
+#
+#:param stability type string
+#------------------------------------------------------------------------------
+@setStability[stability][result]
+    $self.stability[$stability]
 ###
 
 
@@ -147,12 +242,51 @@ PackageInterface
 
 
 #------------------------------------------------------------------------------
+#Stores a hash of links to packages which need to be installed before this package can be installed
+#
+#:result hash
+#------------------------------------------------------------------------------
+@setRequires[requires][result]
+    $self.requires.[$requires.name][$requires]
+###
+
+#------------------------------------------------------------------------------
+#Adds to a hash of links to packages which need to be installed before this package can be installed
+#
+#:param require type PackageInterface
+#------------------------------------------------------------------------------
+@addRequire[require][result]
+    $self.requires.[$require.name][$require]
+###
+
+
+#------------------------------------------------------------------------------
 #Returns a hash of links to packages which need to be installed before this package can be installed
 #
 #:result hash
 #------------------------------------------------------------------------------
 @getRequires[]
     $result[$self.requires]
+###
+
+
+#------------------------------------------------------------------------------
+#Stores a set of links to packages which must not be installed at the same time as this package
+#
+#:param conflicts type hash
+#------------------------------------------------------------------------------
+@setConflicts[conflicts]
+    $self.conflicts[$conflicts]
+###
+
+
+#------------------------------------------------------------------------------
+#Adds to a set of links to packages which must not be installed at the same time as this package
+#
+#:param package type PackageInterface
+#------------------------------------------------------------------------------
+@addConflict[package]
+    $self.conflicts.[$package.name][$package]
 ###
 
 
@@ -176,12 +310,12 @@ PackageInterface
 ###
 
 #------------------------------------------------------------------------------
-#Stores a set of links to packages which are required to develop this package. These are installed if in dev mode.
+#Adds a set of links to packages which are required to develop this package. These are installed if in dev mode.
 #
 #:param packageInterface type PackageInterface
 #------------------------------------------------------------------------------
 @addDevRequire[packageInterface]
-    $self.devRequires.${packageInterface.name}[$packageInterface]
+    $self.devRequires.[$packageInterface.name][$packageInterface]
 ###
 
 

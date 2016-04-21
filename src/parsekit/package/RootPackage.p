@@ -23,6 +23,31 @@ BasePackage
 #------------------------------------------------------------------------------
 #:constructor
 #------------------------------------------------------------------------------
-@create[]
-    ^BASE::create[]
+@create[name]
+    ^BASE:create[$name]
+    $self.customRepositories[^hash::create[]]
+###
+
+
+#------------------------------------------------------------------------------
+#:param customRepositories type hash
+#------------------------------------------------------------------------------
+@setCustomRepositories[customRepositories][result]
+    $self.customRepositories[$customRepositories]
+###
+
+
+#------------------------------------------------------------------------------
+#:param packageInterface type RepositoryInterface
+#------------------------------------------------------------------------------
+@addCustomRepository[repository][result]
+    $self.customRepositories.[$repository.name][$repository]
+###
+
+
+#------------------------------------------------------------------------------
+#:result hash
+#------------------------------------------------------------------------------
+@getCustomRepositories[][result]
+    $result[$self.customRepositories]
 ###

@@ -66,7 +66,7 @@ CommandInterface
 @createBaseJson[]
 # TODO add interactive questions like project name, author etc
     $hash[
-        $.project[New Project]
+        $.name[New Project]
         $.require[
             $.parser[>=3.4.3]
         ]

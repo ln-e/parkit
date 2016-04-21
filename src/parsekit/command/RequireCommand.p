@@ -11,6 +11,7 @@ RequireCommand
 CommandInterface.p
 CommandArgument.p
 Parsekit/Repository/RepositoryFactory.p
+Parsekit/Package/PackageManager.p
 
 @OPTIONS
 locals
@@ -66,6 +67,10 @@ CommandInterface
     ^jsonFile.write[$data]
 
     $reposityManager[^RepositoryFactory:getManager[]]
+
+    $rootPackage[^PackageManager:createRootPackage[$data]]
+
+    ^dstop[$rootPackage]
 
     $result[founded: ]
 ###
