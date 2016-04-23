@@ -10,22 +10,26 @@ RepositoryManager
 @OPTIONS
 locals
 
+@USE
+Repository/ParsekitRepository.p
+
 @auto[]
 ###
-
 
 #------------------------------------------------------------------------------
 #:constructor
 #------------------------------------------------------------------------------
 @create[]
+    $self.parsekitRepository[^ParsekitRepository::create[]]
 ###
 
 
 #------------------------------------------------------------------------------
-#:param package type RootPackage
+#:param rootPackage type RootPackage
 #------------------------------------------------------------------------------
-@extractRootRepositories[package]
+@getRpositories[rootPackage][result]
+# TODO gets extra repositories from rootPackage
     $result[
-      $.0[]
+      $.0[$self.parsekitRepository]
     ]
 ###

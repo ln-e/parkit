@@ -26,7 +26,6 @@ BasePackage
 @create[name]
     ^BASE:create[$name]
     $self.customRepositories[^hash::create[]]
-    $self.packageList[^hash::create[]]
 ###
 
 
@@ -51,11 +50,4 @@ BasePackage
 #------------------------------------------------------------------------------
 @getCustomRepositories[][result]
     $result[$self.customRepositories]
-###
-
-
-#------------------------------------------------------------------------------
-#:result hash
-#------------------------------------------------------------------------------
-@addToPackageList[packageName;constraint]
 ###

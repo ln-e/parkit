@@ -35,6 +35,7 @@ PackageInterface
     $self.fullPrettyVersion[]
     $self.releaseDate[]
     $self.stability[]
+    $self.packagesList[^hash::create[]]
     $self.requires[^hash::create[]]
     $self.conflicts[^hash::create[]]
     $self.devRequires[^hash::create[]]
@@ -364,4 +365,35 @@ PackageInterface
 #------------------------------------------------------------------------------
 @getUniqueName[]
     $result[$self.uniqueName]
+###
+
+
+#------------------------------------------------------------------------------
+#:param list type hash
+#------------------------------------------------------------------------------
+@setPackagesList[list][result]
+    $self.packagesList[$list]
+###
+
+
+#------------------------------------------------------------------------------
+#:result hash
+#------------------------------------------------------------------------------
+@getPackagesList[][result]
+    $result[$self.packagesList]
+###
+
+
+#------------------------------------------------------------------------------
+#:param packageName type string
+#:param constraint type string
+#------------------------------------------------------------------------------
+@addToPackageList[packageName;constraint][result]
+    $result[]
+    ^if(!$self.packagesList.$packageName is hash){
+        $self.packgesList.$packageName[^hash::create[]]
+    }
+# Join constraint with space, which means AND
+    $newConstraint[$self.packagesList.$packageName $constraint]
+    $self.packagesList.$packageName[^newConstraint.trim[]]
 ###

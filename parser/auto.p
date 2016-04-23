@@ -94,7 +94,7 @@ $body]
 $result[$result^fatal_error[Unhandled Exception^if(def $exception.type){ ($exception.type)};$exception.source;]]
 $result[$result^untaint[html]{$exception.comment}]
 ^if(def $exception.file){
-	$result[$result^untaint[html]{$exception.file^(${exception.lineno}:$exception.colno^)}]
+	$result[$result^untaint[html]{$exception.file^:${exception.lineno}:$exception.colno}^taint[^#0A]]
 }
 ^if($stack){
     $result[$result^ConsoleTable:formatTable[$stack]]

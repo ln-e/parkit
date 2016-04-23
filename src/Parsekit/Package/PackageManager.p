@@ -9,7 +9,6 @@ PackageManager
 
 @OPTIONS
 locals
-static
 
 @USE
 BasePackage.p
@@ -21,17 +20,51 @@ RootPackage.p
 
 #------------------------------------------------------------------------------
 #:constructor
+#:param repositoryManager type RepositoryManager
 #------------------------------------------------------------------------------
-@create[]
+@create[repositoryManager]
+    $self.repositoryManager[$repositoryManager]
+    $self.packages[^hash::create[]]
 ###
+
+
+@getPackages[name][result]
+# TODO get list of repositories instead of direct access to parsekitRepository
+    $parsekitRepository[$self.repositoryManager.parsekitRepository]
+
+    ^if(!def $parsekitRepository.lazyPackages.$name){
+        ^throw[lazypackagenotfound]
+    }
+
+# Если еще не был загружен этот пакет
+    ^if(!def $self.packages.$name){
+        $config[^parsekitRepository.loadPackages[$name]]
+
+        ^config.foreach[packageName;packagesConfig]{
+            ^if(!def $self.packages.$packageName){
+                $self.packages.$packageName[^hash::create[]]
+            }
+# Перебираем все пакеты и создаем из них классы
+            ^packagesConfig.foreach[tag;config]{
+                $package[^self.createPackage[$parsekitRepository;$config]]
+                $index[^self.packages.$packageName._count[]]
+                $self.packages.$packageName.$index[$package]
+            }
+        }
+
+    }
+
+    $result[$self.packages.$name]
+##
 
 
 #------------------------------------------------------------------------------
 #:param config type hash
 #:result PackageInterface
 #------------------------------------------------------------------------------
-@static:createRootPackage[config][result]
-    $package[^PackageManager:configurePackage[^RootPackage::create[$config.name];$config]]
+@createRootPackage[config][result]
+    $root[^RootPackage::create[$config.name]]
+    $package[^self.configurePackage[$root;$config]]
     $result[$package]
 ###
 
@@ -41,20 +74,19 @@ RootPackage.p
 #:param config type hash
 #:result PackageInterface
 #------------------------------------------------------------------------------
-@static:createPackage[repository;config][result]
-    $package[^PackageManager:configurePackage[^BasePackage::create[$config.name]]]
+@createPackage[repository;config][result]
+    $package[^self.configurePackage[^BasePackage::create[$config.name]]]
     $package.setRepository[$repository]
-    $result[package]
+    $result[$package]
 ###
 
 
 #------------------------------------------------------------------------------
-#:param root type PackageInterface
 #:param package type PackageInterface
 #:param config type hash
 #:result PackageInterface
 #------------------------------------------------------------------------------
-@static:configurePackage[root;package;config][result]
+@configurePackage[package;config][result]
 
     $package.setType[$config.type]
     $package.setTargetDir[$config.targetDir]
@@ -72,15 +104,14 @@ RootPackage.p
 
     ^if($config.require is hash){
         ^config.require.foreach[packageName;constraint]{
-# ho ho ho but we should have here PackageInterface ?
-            ^package.addRequire[
-                $.name[$packageName]
-                $.constraint[$constraint]
-            ]
+            ^if(^packageName.lower[] eq parser){
+                ^continue[]
+            }
+            ^package.addToPackageList[$packageName;$constraint]
         }
     }
 
-    ^if($config.devRequire is hash){
+    ^rem{^if($config.devRequire is hash){
         ^config.devRequire.foreach[packageName;constraint]{
 # ho ho ho but we should have here PackageInterface ?
             ^package.addRequire[
@@ -88,7 +119,7 @@ RootPackage.p
                 $.constraint[$constraint]
             ]
         }
-    }
+    }}
 
 #    $package.setRequires[^hash::create[]$config.requires]
 #    $package.setDevRequires[^hash::create[]$config.devRequires]

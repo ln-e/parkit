@@ -8,10 +8,12 @@
 Application
 
 @USE
+DI/DI.p
 Command/InitCommand.p
 Command/RequireCommand.p
 Command/SelfupdateCommand.p
 Version/VersionParser.p
+Resolver/Resolver.p
 
 @OPTIONS
 locals
@@ -27,6 +29,18 @@ locals
 #Configures list of available commands
 #------------------------------------------------------------------------------
 @configureCommands[][result]
+
+
+    $jsonFile[^JsonFile::create[/parsekit.json]]
+    $data[^jsonFile.read[]]
+
+    $rootPackage[^DI:packageManager.createRootPackage[$data]]
+
+    $resolver[$DI:resolver]
+
+    ^dstop[^resolver.resolve[$rootPackage]]
+
+
     $self.commands[
         $.init[^InitCommand::create[]]
         $.require[^RequireCommand::create[]]

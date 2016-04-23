@@ -10,6 +10,7 @@ ParsekitRepository
 @USE
 BaseRepository.p
 RepositoryUtils.p
+Json/JsonFile.p
 
 @OPTIONS
 locals
@@ -69,6 +70,19 @@ BaseRepository
     ^providerJson.providers.foreach[packageName;packageConfig]{
         $self.lazyPackages.$packageName[$packageConfig]
     }
+###
+
+
+#------------------------------------------------------------------------------
+#:param packageName param
+#:result hash
+#------------------------------------------------------------------------------
+@loadPackages[packageName][result]
+    $url[${self.options.parsekitURL}/p/${packageName}.json]
+    $packagesJsonFile[^JsonFile::create[$url]]
+    $packagesJson[^packagesJsonFile.read[]]
+
+    $result[$packagesJson.packages]
 ###
 
 

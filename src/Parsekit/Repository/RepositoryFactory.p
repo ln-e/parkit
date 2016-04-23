@@ -27,9 +27,11 @@ Parsekit/Repository/RepositoryManager.p
 #------------------------------------------------------------------------------
 #:result RepositoryManager
 #------------------------------------------------------------------------------
-@static:getManager[]
-    $manager[^RepositoryManager:create[]]
-    $RepositoryFactory:repositoryManager[$manager]
+@static:getManager[][result]
+    ^if(!def $RepositoryFactory:repositoryManager){
+        $RepositoryFactory:repositoryManager[^RepositoryManager::create[]]
+    }
+
 #    ^manager.addRepositoryClass['parserkit';'ru/parsekit/repository/ParsekitRepository']
-    $result[$manager]
+    $result[$RepositoryFactory:repositoryManager]
 ###
