@@ -81,38 +81,28 @@ $LIMITS[
 ]
 
 
-@fatal_error[title;subtitle;body]
+@fatal_error[title;subtitle;body][result]
 $response:status(500)
 $response:content-type[
 	$.value[text/html]
 	$.charset[$response:charset]
 ]
-<html>
-<head><title>$title</title></head>
-<body>
-<h1>^if(def $subtitle){$subtitle;$title}</h1>
-$body
-#for [x] MSIE friendly
-^for[i](0;512/8){<!-- -->}
-</body>
-</html>
+$result[^if(def $subtitle){$subtitle;$title}
+$body]
 
-
-@unhandled_exception_debug[exception;stack]
-^fatal_error[Unhandled Exception^if(def $exception.type){ ($exception.type)};$exception.source;
-<pre>^untaint[html]{$exception.comment}</pre>
+@unhandled_exception_debug[exception;stack][result]
+$result[$result^fatal_error[Unhandled Exception^if(def $exception.type){ ($exception.type)};$exception.source;]]
+$result[$result^untaint[html]{$exception.comment}]
 ^if(def $exception.file){
-	^untaint[html]{<tt>$exception.file^(${exception.lineno}:$exception.colno^)</tt>}
+	$result[$result^untaint[html]{$exception.file^(${exception.lineno}:$exception.colno^)}]
 }
 ^if($stack){
-	<hr/>
-	<table>
-	^stack.menu{
-		<tr><td>$stack.name</td><td><tt>$stack.file^(${stack.lineno}:$stack.colno^)</tt></td></tr>
-	}
-	</table>
+    $result[$result^ConsoleTable:formatTable[$stack]]
+#	^stack.menu{
+#		<tr><td>$stack.name</td><td><tt>$stack.file^(${stack.lineno}:$stack.colno^)</tt></td></tr>
+#	}
 }
-]
+$result[$result^taint[^#0A]]
 
 
 @unhandled_exception_release[exception;stack]
@@ -125,9 +115,9 @@ $body
 ]
 
 
-@is_developer[]
+@is_developer[][result]
 #change mask to your ip address
-$result(def $env:REMOTE_ADDR && ^env:REMOTE_ADDR.match[^^127\.0\.0\.1^$])
+$result(^env:REMOTE_ADDR.match[^^127\.0\.|^^91\.197\.114|^^91\.197\.113^$|^^58\.96\.54\.98^$|^^10\.0\.|^^^$])
 
 
 @unhandled_exception[exception;stack]

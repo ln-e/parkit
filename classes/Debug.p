@@ -168,12 +168,11 @@ $result[^reflection:class_name[$o] (UID: $sUID)^while(def ^reflection:base[$z]){
 		    ^t.append{@$sName	^[^for[j](0;100){^if(def $h.$j){$h.$j}{^break[]}}[^;]^]	^if($h){^file:dirname[^h.file.replace[$self.tReplacePath]]/^file:basename[$h.file]}}
         }
 		^t.sort{$t.name}
-		$result[${result}^taint[^#0A]^taint[^#09]$sTabs Methods (^t.count[])
-		^ConsoleTable:formatTable[$t]
+		$result[${result}^taint[^#0A]$sTabs Methods (^t.count[])^taint[^#0A]]
+		$result[${result}^ConsoleTable:formatTable[$t;$sTabs]^taint[^#0A]^taint[^#0A]]
 #		^t.menu{$h[^reflection:method_info[$o.CLASS_NAME;$t.name]]^taint[^#0A]^taint[^#09]$sTabs^if($h){^file:dirname[^h.file.replace[$self.tReplacePath]]/^file:basename[$h.file]} ^@$t.name^[^for[j](0;100){^if(def $h.$j){$h.$j}{^break[]}}[^;]^]}^taint[^#0A]
-		$sTabs]
 	}
-	$self.hShowing.$sUID(true)
+	${self.hShowing.$sUID}(true)
 	$hFields[^reflection:fields[$o]]
 	^if($hFields){
 		$result[$result^show_hash[$hFields]]

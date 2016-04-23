@@ -49,11 +49,12 @@ RootPackage.p
 
 
 #------------------------------------------------------------------------------
+#:param root type PackageInterface
 #:param package type PackageInterface
 #:param config type hash
 #:result PackageInterface
 #------------------------------------------------------------------------------
-@static:configurePackage[package;config][result]
+@static:configurePackage[root;package;config][result]
 
     $package.setType[$config.type]
     $package.setTargetDir[$config.targetDir]
