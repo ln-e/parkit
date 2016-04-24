@@ -108,6 +108,26 @@ PackageInterface
 
 
 #------------------------------------------------------------------------------
+#Stores the repository url of this package, e.g. git, svn
+#
+#:param sourceUrl type string
+#------------------------------------------------------------------------------
+@setSourceUrl[sourceUrl][result]
+    $self.sourceUrl[$sourceUrl]
+###
+
+
+#------------------------------------------------------------------------------
+#Returns the repository url of this package, e.g. git, svn
+#
+#:result string
+#------------------------------------------------------------------------------
+@getSourceUrl[][result]
+    $result[$self.sourceUrl]
+###
+
+
+#------------------------------------------------------------------------------
 #Stores the repository url of this package
 #
 #:param sourceUrl type string

@@ -38,14 +38,13 @@ locals
 @step[newRequirements]
     $req[^hash::create[$newRequirements]]
     $pickedPackages[^hash::create[]]
+
     ^newRequirements.foreach[packageName;constraint]{
         $packages[^self.packageManager.getPackages[$packageName]]
 # Pick package nearest to $constraint top boundary
-        ^rem{
-            $package[somehowpackage]
-            $index[^pickedPackages._count[]]
-            $pickedPackages.$index[$package]
-        }
+        $package[^self.pickPackageByStrategy[max;$packages;$constraint]]
+        $index[^pickedPackages._count[]]
+        $pickedPackages.$index[$package]
     }
 
     $extendResult[^self.extendRequirements[$req;$pickedPackages]]
@@ -64,7 +63,32 @@ locals
 
 #:TODO expand req constraint by pickedPackagesConstraint
 @extendRequirements[req;pickedPackages][result]
+
+    ^dstop[$pickedPackages]
+
     $result[
         $.conflicts(false)
     ]
+###
+
+
+#:param strategy type string
+#:param packages type hash
+#:param constraint type string
+#:result PackageInterface
+@pickPackageByStrategy[strategy;packages;constraint][result]
+    ^if($strategy ne max){
+        ^throw[unknown.strategy;Resolver.p;Strategy $strategy is not implemented]
+    }
+    ^if(^packages._count[] <= 0){
+        ^throw[empty.packages;Resolver.p;Packages list is empty]
+    }
+    $pickedPackage[$packages._at(0)]
+    ^packages.foreach[key;package]{
+        ^if(^reflection:uid[$package] ne ^reflection:uid[$pickedPackage]){
+            ^dstop[^VersionParser:normalize[$package.version]]
+        }
+    }
+    ^dstop[$packages]
+    ^dstop[$constraint]
 ###

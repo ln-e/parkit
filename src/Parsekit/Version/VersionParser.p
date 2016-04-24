@@ -141,8 +141,6 @@ dev
 #------------------------------------------------------------------------------
 @static:normalize[version][result]
 
-    $result[qwe]
-
     $version[^version.trim[]]
 
     $fullVersion[$version]

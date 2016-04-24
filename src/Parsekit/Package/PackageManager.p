@@ -75,7 +75,7 @@ RootPackage.p
 #:result PackageInterface
 #------------------------------------------------------------------------------
 @createPackage[repository;config][result]
-    $package[^self.configurePackage[^BasePackage::create[$config.name]]]
+    $package[^self.configurePackage[^BasePackage::create[$config.name];$config]]
     $package.setRepository[$repository]
     $result[$package]
 ###
@@ -88,19 +88,19 @@ RootPackage.p
 #------------------------------------------------------------------------------
 @configurePackage[package;config][result]
 
-    $package.setType[$config.type]
-    $package.setTargetDir[$config.targetDir]
-    $package.setSourceType[$config.sourceType]
-    $package.setSourceUrl[$config.sourceUrl]
-    $package.setSourceReference[$config.sourceReference]
-    $package.setReleaseDate[$config.releaseDate]
+    ^package.setType[$config.type]
+    ^package.setTargetDir[$config.targetDir]
+    ^package.setSourceType[$config.sourceType]
+    ^package.setSourceUrl[$config.sourceUrl]
+    ^package.setSourceReference[$config.sourceReference]
+    ^package.setReleaseDate[$config.releaseDate]
 
-    $package.setUniqueName[$config.uniqueName]
+    ^package.setUniqueName[$config.uniqueName]
 
-    $package.setVersion[$config.version]
-    $package.setPrettyVersion[$config.prettyVersion]
-    $package.setFullPrettyVersion[$config.fullPrettyVersion]
-    $package.setStability[$config.stability]
+    ^package.setVersion[$config.version]
+    ^package.setPrettyVersion[$config.prettyVersion]
+    ^package.setFullPrettyVersion[$config.fullPrettyVersion]
+    ^package.setStability[$config.stability]
 
     ^if($config.require is hash){
         ^config.require.foreach[packageName;constraint]{
