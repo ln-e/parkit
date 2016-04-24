@@ -14,6 +14,9 @@ locals
 Package/PackageManager.p
 Repository/RepositoryManager.p
 Resolver/Resolver.p
+Version/Comparator.p
+Version/VersionParser.p
+Version/Semver.p
 
 
 #Dummiest mock for future di container implementation
@@ -22,6 +25,9 @@ Resolver/Resolver.p
     $self.repositoryManager[^RepositoryManager::create[]]
     $self.packageManager[^PackageManager::create[$self.repositoryManager]]
     $self.resolver[^Resolver::create[$self.packageManager]]
+    $self.versionParser[^VersionParser::create[]]
+    $self.comparator[^Comparator::create[]]
+    $self.semver[^Semver::create[$self.versionParser];$self.comparator]
 ###
 
 
