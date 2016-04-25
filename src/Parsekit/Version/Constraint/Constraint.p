@@ -197,6 +197,7 @@ ConstraintInterface
     }
 ###
 
+
 #------------------------------------------------------------------------------
 #:param version type string
 #
@@ -204,6 +205,8 @@ ConstraintInterface
 #------------------------------------------------------------------------------
 @pointize[version][result]
     $version[^version.match[([\+\-\_])][g]{.}]
-    $version[^version.match[([^^\.\d])][g]{.$match[1].}]
-    $t[^version.split[.]]
+    $version[^version.match[[^^\.\d]+][g]{.$match[1].}]
+    $version[^version.trim[.]]
+
+    $result[^version.split[.]]
 ###
