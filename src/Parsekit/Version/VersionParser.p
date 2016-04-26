@@ -27,7 +27,7 @@ Constraint/MultiConstraint.p
 #
 #                        |--------------|
 # [major].[minor].[patch] -[pre-release] +[build-metadata]
-$self.modifierRegex[[._-]?(?:(stable|beta|b|RC|alpha|a|patch|pl|p)((?:[.-]?\d+)*+)?)?([.-]?dev)?^$]
+$self.modifierRegex[[._-]?(?:(stable|beta|b|RC|alpha|a|patch|pl|p)((?:[.-]?\d+)*+)?)?([.-]?dev)?]
 
 $self.stabilities[^table::create{stability
 stable
@@ -163,46 +163,72 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
     }
 
 # match master-like branches
-
     $matches[^version.match[^^(?:dev-)?(?:master|trunk|default)^$][i]]
     ^if(def $matches){
         $result[9999999-dev]
-    }{
+    }
+
 # add somehow lower to if's version mid
-        ^if('dev-' eq ^version.mid(0;4)){
-            $result[dev-^version.mid(4)]
+    ^if(!def $result && 'dev-' eq ^version.mid(0;4)){
+        $result[dev-^version.mid(4)]
+    }{
+        $matches[^version.match[^^v?(\d{1,5})(\.\d+)?(\.\d+)?(\.\d+)?$self.modifierRegex^$][i]]
+        ^if(def $matches){
+            $version[]
+            ^for[i](1;4){
+                $version[${version}^if(def $matches.$i)[$matches.$i][.0]]
+            }
+            $index(5)
         }{
-            $matches[^version.match[^^v?(\d{1,5})(\.\d+)?(\.\d+)?(\.\d+)?$self.modifierRegex^$][i]]
-            ^if(def $matches){
-                $version[]
-                ^for[i](1;4){
-                    $version[${version}^if(def $matches.$i)[$matches.$i][.0]]
-                }
-                $index(5)
-            }{
-                $matches[^version.match[^^v?(\d{4}(?:[.:-]?\d{2}){1,6}(?:[.:-]?\d{1,3})?)$self.modifierRegex^$]]
-                ^if($matches){
-                    $tmp[$matches.1]
-                    $version[^tmp.match[\D][g]{.}]
-                    $index(2)
+            $matches[^version.match[^^v?(\d{4}(?:[.:-]?\d{2}){1,6}(?:[.:-]?\d{1,3})?)$self.modifierRegex^$]]
+            ^if($matches){
+                $tmp[$matches.1]
+                $version[^tmp.match[\D][g]{.}]
+                $index(2)
+            }
+        }
+
+        ^if(def $index && $index > 0){
+            ^if(def $matches.$index && $matches.$index ne ''){
+                ^if(stable eq $matches.$index){
+                    $result[$version]
+                }{
+                    $indNext($index+1)
+                    $matchNext[$matches.$indNext]
+                    $version[${version}-^self.expandStability[$matches.$index]^if(def $matchNext){^matchNext.trim[left;.-]}]
                 }
             }
+            $ind2($index+2)
+            ^if(def $matches.$ind2){
+                $version[${version}-dev]
+            }
 
-            ^if(def $index){
-# TODO expand stability!
+            ^if(!def $result){
                 $result[$version]
+            }
+        }{
+
+            $matches[^version.match[(.*?)[.-]?dev^$][i]]
+
+            ^if(def $matches){
+                $result[^VersionParser:normalizeBranch[$matches.1]]
             }{
-
-                $matches[^version.match[(.*?)[.-]?dev^$][i]]
-
-                ^if(def $matches){
-                    $result[^VersionParser:normalizeBranch[$matches.1]]
+                $extraMessage[]
+                ^if(^fullVersion.match[ +as +^untaint[regex]{$version}^$][n] > 0){
+                    $extraMessage[ in " $fullVersion ", the alias must be an exact version]
+                }(^fullVersion.match[^^^untaint[regex]{$version} +as +][n] > 0){
+                    $extraMessage[ in " $fullVersion ", the alias source must be an exact version, if it is a branch name you should prefix it with dev-]
                 }
-
+                $errorText[
+                    Invalid version string $version  $extraMessage
+                ]
+                ^throw[UnexpectedValueException;VersionParser.p;$errorText]
             }
 
         }
+
     }
+
 
     ^if(!def $result){
         ^throw[UnexpectedValueException;VersionParser.p;Invalid version string $fullVersion]
@@ -275,12 +301,11 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
       && ^a.mid(0;3) eq '[>=' && ($posA != -1)
       && ^b.mid(0;3) eq '[>=' && ($posB != -1)
       && ^a.mid($posA + 2;-1) == ^b.mid(4;$posB - 5)
-        ){
-            $constraint[^MultiConstraint::create[
-                $.0[^Constraint::create['>=';^a.mid(4;$posA - 5)]]
-                $.1[^Constraint::create['<';^b.mid($posB + 2;-1)]]
-            ]]
-        }
+    ){
+        $constraint[^MultiConstraint::create[
+            $.0[^Constraint::create['>=';^a.mid(4;$posA - 5)]]
+            $.1[^Constraint::create['<';^b.mid($posB + 2;-1)]]
+        ]]
     }{
         $constraint[^MultiConstraint::create[$orGroups](false)]
     }
@@ -288,15 +313,14 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
     $constraint.prettyString[$prettyConstraint]
 
     $result[$constraint]
-
-    ^dstop[$constraint]
-
 ###
 
 
+#------------------------------------------------------------------------------
 #:param constraint type string
 #
 #:result hash
+#------------------------------------------------------------------------------
 @parseConstraint[constraint][result]
 
     $matches[^constraint.match[^^([^^,\s]+?)@($self.implodedStabilities)^$][i]]
@@ -312,7 +336,7 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
         $result[^EmptyConstraint::create[]]
     }
 
-    $versionRegex[v?(\d++)(?:\.(\d++))?(?:\.(\d++))?(?:\.(\d++))?$self.modifierRegex^(?:\+[^^\s]+)?]
+    $versionRegex[v?(\d++)(?:\.(\d++))?(?:\.(\d++))?(?:\.(\d++))?${self.modifierRegex}^(?:\+[^^\s]+)?]
 
 
 
@@ -340,7 +364,7 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
 
         $stabilitySuffix[]
         ^if($matches.5){
-            $stabilitySuffix[-$this.expandStability[$matches.5]^if($matches.6){$matches.6}]
+            $stabilitySuffix[-^self.expandStability[$matches.5]^if($matches.6){$matches.6}]
         }
         ^if($matches.7){
             $stabilitySuffix[${stabilitySuffix}-dev]
@@ -431,26 +455,28 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
         }
     }
 
+
+
 #Hyphen Range
 #
 #Specifies an inclusive set. If a partial version is provided as the first version in the inclusive range,
 #then the missing pieces are replaced with zeroes. If a partial version is provided as the second version in
 #the inclusive range, then all versions that start with the supplied parts of the tuple are accepted, but
 #nothing that would be greater than the provided tuple parts.
-    $matches[^constraint.match[^^(?P<from>$versionRegex) +- +(?P<to>$versionRegex)(^$)][i]]
+    $matches[^constraint.match[^^($versionRegex) +- +($versionRegex)(^$)][i]]
     ^if(!def $result && $matches){
-
+#^dstop[$matches]
 # Calculate the stability suffix
         $lowStabilitySuffix[]
         ^if(!$matches.6 && !$matches.8){
             $lowStabilitySuffix[-dev]
         }
-        $lowVersion[^self.normalize[$matches.from]]
-        $lowerBound[^Constraint::create['>=';${lowVersion}$lowStabilitySuffix]]
+        $lowVersion[^self.normalize[$matches.1]]
+        $lowerBound[^Constraint::create[>=;${lowVersion}$lowStabilitySuffix]]
 
         ^if((!^self.emptyX[$matches.11] && !^self.emptyX[$matches.12]) || !$matches.14 || !$matches.16){
-            $highVersion[^self.normalize[$matches.to]]
-            $upperBound[^Constraint::create['<=';$highVersion]]
+            $highVersion[^self.normalize[$matches.9]]
+            $upperBound[^Constraint::create[<=;$highVersion]]
         }{
             $highMatch[
                 $.0[]
@@ -461,7 +487,7 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
             ]
             $pos[^if(^self.emptyX[$matches.11]){1}{2}]
             $highVersion[^self.manipulateVersionString[$highMatch;$pos;1]-dev]
-            $upperBound[^Constraint::create['<';$highVersion]]
+            $upperBound[^Constraint::create[<;$highVersion]]
         }
 
         $result[
@@ -469,6 +495,7 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
             $.1[$upperBound]
         ]
     }
+
 
 
 #Basic Comparators
@@ -499,8 +526,6 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
     ^if(!$result){
         ^throw[UnexpectedValueException;VersionParser.p;$message]
     }
-
-
 ###
 
 
@@ -512,5 +537,55 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
         $result(false)
     }{
         $result(def $x)
+    }
+###
+
+
+#------------------------------------------------------------------------------
+#:param matches type hash
+#:param position
+#:param increment
+#:param pad
+#
+#:result string
+#------------------------------------------------------------------------------
+@manipulateVersionString[matches;position;increment;pad][result;i;ind]
+
+    ^for[ind](1;4){
+        $i(5-$ind)
+
+        ^if($i > $position){
+            $matches.$i[$pad]
+        }($i == $position && $increment){
+            $matches.$i($matches.$i + $increment)
+
+            ^if($matches.$i < 0){
+                $matches.$i[$pad]
+                $position($position - 1)
+
+                ^if($i == 1){
+                    ^throw[carry overflow;versionparser.p;carry overflow]
+                }
+            }
+        }
+    }
+
+    $result[${matches.1}.${matches.2}.${matches.3}.${matches.4}]
+###
+
+
+#------------------------------------------------------------------------------
+#:param stability type string
+#
+#:result string
+#------------------------------------------------------------------------------
+@expandStability[stability][result]
+    $stability[^stability.lower[]]
+    ^switch($stability){
+        ^case[a]{$result[alpha]}
+        ^case[b]{$result[beta]}
+        ^case[p;pl]{$result[patch]}
+        ^case[rc]{$result[RC]}
+        ^case[DEFAULT]{$result[$stability]}
     }
 ###
