@@ -24,15 +24,18 @@ locals
 #
 #                        |--------------|
 # [major].[minor].[patch] -[pre-release] +[build-metadata]
-$VersionParser:modifierRegex[[._-]?(?:(stable|beta|b|RC|alpha|a|patch|pl|p)((?:[.-]?\d+)*+)?)?([.-]?dev)?^$];
+$self.modifierRegex[[._-]?(?:(stable|beta|b|RC|alpha|a|patch|pl|p)((?:[.-]?\d+)*+)?)?([.-]?dev)?^$]
 
-$VersionParser:stabilities[^table::create{stability
+$self.stabilities[^table::create{stability
 stable
 RC
 beta
 alpha
 dev
-}];
+}]
+
+$self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]]
+
 ###
 
 
@@ -46,36 +49,31 @@ dev
 #------------------------------------------------------------------------------
 #Returns a stability
 #:param version type string String representation on version
+#
+#:result string
 #------------------------------------------------------------------------------
 @static:parseStability[version][result]
-#Stripped out #hash of version
-    $version[^version.match[#.*^$][i]{}]
+    $version[^version.match[#.*^$][i]{}] ^rem[Stripped out #hash of version]
 
-    ^version.match[$VersionParser:modifierRegex][i]{
-        $result[stable]
-
+    ^version.match[$self.modifierRegex][i]{
         ^if($match.3 eq dev){
             $result[dev]
-        }
-
-        ^if($match.1 eq beta || $match.1 eq b){
+        }($match.1 eq beta || $match.1 eq b){
             $result[beta]
-        }
-
-        ^if($match.1 eq alpha || $match.1 eq a){
+        }($match.1 eq alpha || $match.1 eq a){
             $result[alpha]
-        }
-
-        ^if($match.1 eq rc){
+        }($match.1 eq rc){
             $result[rc]
+        }{
+            $result[stable]
         }
-
     }{ ^throw[couldn't parse version]}
 ###
 
 
 #------------------------------------------------------------------------------
 #:param stability type string
+#
 #:result string
 #------------------------------------------------------------------------------
 @static:normalizeStability[stability][result]
@@ -87,6 +85,7 @@ dev
 
 #------------------------------------------------------------------------------
 #:param branchName type string
+#
 #:result string
 #------------------------------------------------------------------------------
 @static:normalizeBranch[branchName][result]
@@ -124,6 +123,7 @@ dev
 
 #------------------------------------------------------------------------------
 #:param branchName type string
+#
 #:result string
 #------------------------------------------------------------------------------
 @static:parseNumericAliasPrefix[branchName][result]
@@ -138,6 +138,8 @@ dev
 #------------------------------------------------------------------------------
 # TODO probably broken method
 #:param version type string
+#
+#:result string
 #------------------------------------------------------------------------------
 @static:normalize[version][result]
 
@@ -167,7 +169,7 @@ dev
         ^if('dev-' eq ^version.mid(0;4)){
             $result[dev-^version.mid(4)]
         }{
-            $matches[^version.match[^^v?(\d{1,5})(\.\d+)?(\.\d+)?(\.\d+)?$VersionParser:modifierRegex^$][i]]
+            $matches[^version.match[^^v?(\d{1,5})(\.\d+)?(\.\d+)?(\.\d+)?$self.modifierRegex^$][i]]
             ^if(def $matches){
                 $version[]
                 ^for[i](1;4){
@@ -175,7 +177,7 @@ dev
                 }
                 $index(5)
             }{
-                $matches[^version.match[^^v?(\d{4}(?:[.:-]?\d{2}){1,6}(?:[.:-]?\d{1,3})?)$VersionParser:modifierRegex^$]]
+                $matches[^version.match[^^v?(\d{4}(?:[.:-]?\d{2}){1,6}(?:[.:-]?\d{1,3})?)$self.modifierRegex^$]]
                 ^if($matches){
                     $tmp[$matches.1]
                     $version[^tmp.match[\D][g]{.}]
@@ -202,4 +204,56 @@ dev
     ^if(!def $result){
         ^throw[Invalid version string $fullVersion]
     }
+###
+
+
+#------------------------------------------------------------------------------
+#:param constraints type string
+#------------------------------------------------------------------------------
+@parseConstraints[constraints]
+    $prettyConstraint[$constraints]
+
+    $matches[^constraints.match[^^([^^,\s]*?)@($self.implodedStabilities)^$][i]]
+    ^if($matches){
+        $constraints[^if(!def $matches.1){*}{$matches.1}]
+    }
+
+    $matches[^constraints.match[^^(dev-[^^,\s@]+?|[^^,\s@]+?\.x-dev)#.+^$][i]]
+    ^if($matches){
+        $constraints[$matches.1]
+    }
+
+
+    $orConstraints[^rsplit[$constraints;(\s*\|\|?\s*)]]
+    $orConstraints[^orConstraints.flip[]]
+    ^orConstraints.offset(3)
+    $orConstraints[$orConstraints.fields]
+
+    $orGroups[^hash::create[]]
+    ^orConstraints.foreach[key;constraint]{
+        $andConstraints[^rsplit[$constraint;(?<!^^|as|[=>< ,]) *(?<!-)[, ](?!-) *(?!,|as|^$)]]
+        $andConstraints[^andConstraints.flip[]]
+        ^andConstraints.offset(3)
+        $andConstraints[$andConstraints.fields]
+
+        ^if(^andConstraints._count[] > 1){
+            $constraintObjects[^hash::create[]]
+            ^andConstraints.foreach[j;andConstraint]{
+                $parsedConstraints[^self.parseConstraints[$andConstraint]]
+                ^parsedConstraints.foreach[k;$parsedConstraint]{
+                    $index[^constraintObjects._count[]]
+                    $constraintObjects.$index[$parsedConstraints]
+                }
+            }
+        }{
+            $constraintObjects[^self.parseConstraints[^andConstraints._at(0)]]
+        }
+
+        $constraint[^if(^constraintObjects._count[] == 1){$constraintObjects[0]}{^MultiConstraint::create[$constraintObjects]}]
+        $index[^orGroups._count[]]
+        $orGroups.$index[$constraint]
+    }
+
+    ^dstop[$orGroups]
+
 ###

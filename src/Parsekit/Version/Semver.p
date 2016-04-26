@@ -14,8 +14,10 @@ locals
 ###
 
 
+#------------------------------------------------------------------------------
 #:param versionParser type VersionParser
 #:param comparator type Comparator
+#------------------------------------------------------------------------------
 @create[versionParser;comparator]
     $self.versionParser[$versionParser]
 
@@ -24,10 +26,12 @@ locals
 ###
 
 
+#------------------------------------------------------------------------------
 #:param version type string
 #:param constraints type string
 #
 #:result boolean
+#------------------------------------------------------------------------------
 @satisfies[version;constraints][result]
 
     $versionConstraint[^Constraint::create['==';^self.versionParser.normalize[$version]]]
@@ -37,9 +41,12 @@ locals
 ###
 
 
+#------------------------------------------------------------------------------
 #:param versions type hash
 #:param constraints type string
+#
 #:result hash
+#------------------------------------------------------------------------------
 @satisfiedBy[versions;constraints][result]
     $result[^hash::create[]]
     ^versions.foreach[key;version]{
@@ -50,8 +57,12 @@ locals
 ###
 
 
+#------------------------------------------------------------------------------
 #:param versions type version
 #:param direction type string
+#
+#:result hash
+#------------------------------------------------------------------------------
 @sort[versions;direction][result]
     $normalized[^hash::create[]]
     ^verions.foreach[key;version]{

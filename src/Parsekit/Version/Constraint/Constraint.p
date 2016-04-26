@@ -44,6 +44,20 @@ ConstraintInterface
         $.[$self.OP_NE]['!=']
     ]
 
+    str < dev < alpha = a < beta = b < RC = rc < # < pl = p
+    $self.tails[
+        $.dev(1)
+        $.a(1)
+        $.alpha(1)
+        $.b(2)
+        $.beta(3)
+        $.RC(3)
+        $.rc(3)
+        $.[#](4)
+        $.pl(5)
+        $.p(5)
+    ]
+
 ###
 
 
@@ -188,12 +202,54 @@ ConstraintInterface
     $indexB[^tableB.count[]]
     $index(^if($indexA > $indexB){$indexA}{$indexB})
 
+    $tmp[$self.OP_EQ]
     ^for[i](0;$index){
-
         ^rem[ TODO check all operators and $tableA.piece and $tableB.piece]
+#str < dev < alpha = a < beta = b < RC = rc < # < pl = p
+        ^if($tableA.piece is string && !($tableB.piece is string)){
+            ^rem[number always bigger that string]
+            $tmp[$self.OP_LT]
+            ^break[]
+        }(!($tableA.piece is string) && $tableB.piece is string){
+            ^rem[number always bigger that string]
+            $tmp[$self.OP_GT]
+            ^break[]
+        }($tableA.piece is string && $tableB.piece is string){
+            ^rem[compare two string by indecies]
+            $indA[^self.stringTailToIndex[$tableA.piece]]
+            $indB[^self.stringTailToIndex[$tableB.piece]]
+            ^if($indA < $indB){
+                $tmp[$self.OP_LT]
+                ^break[]
+            }
+            ^if($indA > $indB){
+                $tmp[$self.OP_GT]
+                ^break[]
+            }
+        }
 
-        $tableA.offset(1)
-        $tableB.offset(1)
+        ^if($tableA.piece < $tableB.piece){
+            $tmp[$self.OP_LT]
+            ^break[]
+        }
+
+        ^if($tableA.piece > $tableB.piece){
+            $tmp[$self.OP_GT]
+            ^break[]
+        }
+
+        ^rem[Values equals in current iteration, move next table row]
+        ^tableA.offset(1)
+        ^tableB.offset(1)
+    }
+
+    ^switch($self.opString.$operator){
+        ^case($self.OP_EQ){$result($tmp == $self.OP_EQ)}
+        ^case($self.OP_NE){$result($tmp == $self.OP_NE || $tmp == $self.OP_LT || $tmp == $self.OP_GT)}
+        ^case($self.OP_GE){$result($tmp == $self.OP_EQ || $tmp == $self.OP_GT)}
+        ^case($self.OP_LE){$result($tmp == $self.OP_EQ || $tmp == $self.OP_LT)}
+        ^case($self.OP_GT){$result($tmp == $self.OP_GT)}
+        ^case($self.OP_LT){$result($tmp == $self.OP_LT)}
     }
 ###
 
@@ -206,7 +262,22 @@ ConstraintInterface
 @pointize[version][result]
     $version[^version.match[([\+\-\_])][g]{.}]
     $version[^version.match[[^^\.\d]+][g]{.$match[1].}]
-    $version[^version.trim[.]]
+    $version[^version.trim[both;.]]
 
     $result[^version.split[.]]
+###
+
+
+#------------------------------------------------------------------------------
+#:param tail type string
+#
+#:result number
+#------------------------------------------------------------------------------
+@stringTailToIndex[tail][result]
+    $result(0)
+
+    $tail[^tail.lower[]]
+    ^if(^self.tails.contain[$tail]){
+        $result($self.tails.$tail)
+    }
 ###

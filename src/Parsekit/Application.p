@@ -32,6 +32,8 @@ locals
 #------------------------------------------------------------------------------
 @configureCommands[][result]
 
+$parser[^VersionParser::create[]]
+^dstop[^parser.parseConstraints[>=1.1.0 as dev <=2.1.0 as asd >=1.2.3  || v1.1.0@dev ||  123 ]]
 
     $jsonFile[^JsonFile::create[/parsekit.json]]
     $data[^jsonFile.read[]]

@@ -12,6 +12,22 @@ $MAIN:CLASS_PATH[^table::create{path
 ../src/Parsekit
 }]
 
+@rsplit[sText;sRegex;sDelimiter][result]
+^if(def $sText && def $sRegex){
+	$result[^sText.match[(.+?)(?:$sRegex|^$)][g]]
+}{
+	$result[^table::create{1}]
+}
+^if(def $sDelimiter){
+	^if($result && (^sDelimiter.pos[r]>=0 || ^sDelimiter.pos[R]>=0)){
+		$result[^table::create[$result;$.reverse(true)]]
+	}
+	^if(^sDelimiter.pos[v]>=0 || ^sDelimiter.pos[V]>=0){
+		$result[^result.flip[]]
+	}
+}
+
+
 # mysql 3.xx & 4.0
 #$SQL.connect-string[mysql://user:pass@host/db?charset=cp1251_koi8]
 # mysql 4.1 and higher
