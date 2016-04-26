@@ -25,23 +25,23 @@ ConstraintInterface
     $self.OP_NE(5)
 
     $self.opString[
-        $.'='($self.OP_EQ)
-        $.'=='($self.OP_EQ)
-        $.'<'($self.OP_LT)
-        $.'<='($self.OP_LE)
-        $.'>'($self.OP_GT)
-        $.'>='($self.OP_GE)
-        $.'<>'($self.OP_NE)
-        $.'!='($self.OP_NE)
+        $.[=]($self.OP_EQ)
+        $.[==]($self.OP_EQ)
+        $.[<]($self.OP_LT)
+        $.[<=]($self.OP_LE)
+        $.[>]($self.OP_GT)
+        $.[>=]($self.OP_GE)
+        $.[<>]($self.OP_NE)
+        $.[!=]($self.OP_NE)
     ]
 
     $self.opInt[
-        $.${self.OP_EQ}['==']
-        $.${self.OP_LT}['<']
-        $.${self.OP_LE}['<=']
-        $.${self.OP_GT}['>']
-        $.${self.OP_GE}['>=']
-        $.${self.OP_NE}['!=']
+        $.[$self.OP_EQ]['==']
+        $.[$self.OP_LT]['<']
+        $.[$self.OP_LE]['<=']
+        $.[$self.OP_GT]['>']
+        $.[$self.OP_GE]['>=']
+        $.[$self.OP_NE]['!=']
     ]
 
 ###
@@ -55,7 +55,7 @@ ConstraintInterface
         ^throw[invalid.argument;Constraint.p;Invalid operator $operator]
     }
 
-    $self.operator[$self.opString[^operator.trim[]]]
+    $self.operator[$self.opString.[^operator.trim[]]]
     $self.version[$version]
 ###
 
@@ -70,7 +70,7 @@ ConstraintInterface
         $result[^self.matchSpecific[$provider]]
     }{
         $result[^provider.matches[$self]]
-    }]
+    }
 ###
 
 
@@ -78,7 +78,7 @@ ConstraintInterface
 #:result string
 #------------------------------------------------------------------------------
 @GET[][result]
-    $result[$self.opInt.${self.operator} $self.version]
+    $result[$self.opInt.[$self.operator] $self.version]
 ###
 
 
@@ -108,8 +108,8 @@ ConstraintInterface
 #:result boolean
 #------------------------------------------------------------------------------
 @matchSpecific[provider;compareBranches]
-    $noEqualOp[^self.opInt.${self.operator}.replace['=';'']]
-    $providerNoEqualOp[^self.opInt.${provider.operator}.replace['=';'']]
+    $noEqualOp[^self.opInt.[$self.operator].replace['=';'']]
+    $providerNoEqualOp[^self.opInt.[$rovider.operator].replace['=';'']]
 
     $isEqualOp($self.OP_EQ == $self.operator)
     $isNonEqualOp($self.OP_NE == $self.operator)
@@ -121,19 +121,19 @@ ConstraintInterface
 
         $result(
             !$isEqualOp && !$isProviderEqualOp
-            || $self.versionCompare[$provider.version;$self.version;'!=';$compareBranches]
+            || ^self.versionCompare[$provider.version;$self.version;'!=';$compareBranches]
         )
     }($self.operator != $self.OP_EQ && $noEqualOp == $providerNoEqualOp){
         ^rem[the condition is <= 2.0 & < 1.0 always have a solution]
 
         $result(true)
-    }($self.versionCompare[$provider.version;$self.version;$self.opInt.${this.operator};$compareBranches]){
+    }(^self.versionCompare[$provider.version;$self.version;$self.opInt.[$this.operator];$compareBranches]){
         $result(true)
 
         ^if(
             $provider.version == $self.version
-            && $self.opInt[$provider.operator] == $providerNoEqualOp
-            && $self.opInt[$self.operator] != $noEqualOp
+            && $self.opInt.[$provider.operator] == $providerNoEqualOp
+            && $self.opInt.[$self.operator] != $noEqualOp
         ){
             ^rem[require >= 1.0 and provide < 1.0]
             ^rem[1.0 >= 1.0 but 1.0 is outside of the provided interval]
@@ -162,9 +162,9 @@ ConstraintInterface
     $aIsBranch('dev-' eq ^a.mid(0;4))
     $bIsBranch('dev-' eq ^b.mid(0;4))
 
-    if ($aIsBranch && $bIsBranch) {
+    ^if($aIsBranch && $bIsBranch){
         $result($operator == '==' && $a == $b)
-    }(!$compareBranches && ($aIsBranch || $bIsBranch)) {
+    }(!$compareBranches && ($aIsBranch || $bIsBranch)){
         ^rem[when branches are not comparable, we make sure dev branches never match anything]
         $result(false)
     }{

@@ -13,7 +13,9 @@ Command/InitCommand.p
 Command/RequireCommand.p
 Command/SelfupdateCommand.p
 Version/VersionParser.p
+Version/Constraint/Constraint.p
 Resolver/Resolver.p
+
 
 @OPTIONS
 locals

@@ -27,7 +27,7 @@ Version/Semver.p
     $self.resolver[^Resolver::create[$self.packageManager]]
     $self.versionParser[^VersionParser::create[]]
     $self.comparator[^Comparator::create[]]
-    $self.semver[^Semver::create[$self.versionParser];$self.comparator]
+    $self.semver[^Semver::create[$self.versionParser;$self.comparator]]
 ###
 
 
