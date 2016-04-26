@@ -239,14 +239,14 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
         ^if(^andConstraints._count[] > 1){
             $constraintObjects[^hash::create[]]
             ^andConstraints.foreach[j;andConstraint]{
-                $parsedConstraints[^self.parseConstraints[$andConstraint]]
-                ^parsedConstraints.foreach[k;$parsedConstraint]{
+                $parsedConstraints[^self.parseConstraint[$andConstraint]]
+                ^parsedConstraints.foreach[k;parsedConstraint]{
                     $index[^constraintObjects._count[]]
                     $constraintObjects.$index[$parsedConstraints]
                 }
             }
         }{
-            $constraintObjects[^self.parseConstraints[^andConstraints._at(0)]]
+            $constraintObjects[^self.parseConstraint[^andConstraints._at(0)]]
         }
 
         $constraint[^if(^constraintObjects._count[] == 1){$constraintObjects[0]}{^MultiConstraint::create[$constraintObjects]}]
@@ -254,6 +254,145 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
         $orGroups.$index[$constraint]
     }
 
-    ^dstop[$orGroups]
+
+    ^if(1 == ^orGroups._count[]){
+            $constraint = $orGroups[0];
+    }(2 == ^orGroups._count[]){
+        $a[^orGroups.0.GET[]]
+        $b[^orGroups.1.GET[]]
+        $posA[^a.pos['<'](4)]
+        $posB[^b.pos['<'](4)]
+        ^if(
+# parse the two OR groups and if they are contiguous we collapse
+# them into one constraint
+          $orGroups.0 is MultiConstraint && $orGroups.1 is MultiConstraint
+          && ^a.mid(0;3) == '[>=' && ($posA != -1)
+          && ^b.mid(0;3) == '[>=' && ($posB != -1)
+          && ^a.mid($posA + 2;-1) == ^b.mid(4;$posB - 5)
+        ){
+            $constraint[^MultiConstraint::create[
+                $.0[^Constraint::create['>=';^a.mid(4;$posA - 5)]]
+                $.1[^Constraint::create['<';^b.mid($posB + 2;-1)]]
+            ]]
+        }
+    }{
+        $constraint[^MultiConstraint::create[$orGroups](false)]
+    }
+
+    $constraint.prettyString[$prettyConstraint]
+
+    $result[$constraint]
+
+    ^dstop[$result]
+
+###
+
+
+#:param constraint type string
+#
+#:result hash
+@parseConstraint[constraint][result]
+    $matches[^constraint.match[^^([^^,\s]+?)@($self.implodedStabilities)^$][i]]
+    ^if($matches){
+        $constraint[$matches.1]
+
+        ^if($matches.2 != 'stable'){
+            $stabilityModifier[$matches.2]
+        }
+    }
+
+    ^if(^constraint.match[^^v?[xX*](\.[xX*])*^$][i]){
+        $result[^EmptyConstraint::create[]]
+    }{
+        $versionRegex[v?(\d++)(?:\.(\d++))?(?:\.(\d++))?(?:\.(\d++))?$self.modifierRegex^(?:\+[^^\s]+)?]
+
+
+
+# Tilde Range
+#
+# Like wildcard constraints, unsuffixed tilde constraints say that they must be greater than the previous
+# version, to ensure that unstable instances of the current version are allowed. However, if a stability
+# suffix is added to the constraint, then a >= match on the current version is used instead.
+        $matches[^constraint.match[^^~>?$versionRegex^$][i]]
+        ^if($matches){
+
+            ^if(^constraint.mid(0;2) == '~>'){
+                ^throw[UnexpectedValue;VersionParser.p;Invalid operator "~>", you probably meant to use the "~" operator]
+            }
+
+            ^if($matches.4 && '' ne $matches.4){
+                $position[4]
+            }($matches.3 && '' ne $matches.3){
+                $position[3]
+            }($matches.2 && '' ne $matches.2){
+                $position[2]
+            }{
+                $position[1]
+            }
+
+            $stabilitySuffix[]
+            ^if($matches.5){
+                $stabilitySuffix[-$this.expandStability[$matches.5]^if($matches.6){$matches.6}]
+            }
+            ^if($matches.7){
+                $stabilitySuffix[${stabilitySuffix}-dev]
+            }
+            ^if(!$stabilitySuffix){
+                $stabilitySuffix[-dev]
+            }
+
+            $lowVersion[^self.manipulateVersionString[$matches;$position;0]$stabilitySuffix]
+            $lowerBound[^Constraint::create['>=';$lowVersion]]
+
+            $highPosition[max(1, $position - 1)]
+            $highVersion[^self.manipulateVersionString[$matches;$highPosition;1]-dev]
+            $upperBound[^Constraint::create['<';$highVersion]]
+
+            $result[
+              $.0[$lowerBound]
+              $.1[$upperBound]
+            ]
+        }
+
+
+
+# Caret Range
+#
+# Allows changes that do not modify the left-most non-zero digit in the [major, minor, patch] tuple.
+# In other words, this allows patch and minor updates for versions 1.0.0 and above, patch updates for
+# versions 0.X >=0.1.0, and no updates for versions 0.0.X
+        $matches[^constraint.match[^^\^^$versionRegex(^$)][i]]
+        ^if($matches){
+
+            ^if('0' ne $matches.1 || '' eq $matches.2){
+                $position[1]
+            }('0' ne $matches.2 || '' eq $matches.3){
+                $position[2]
+            }{
+                $position[3]
+            }
+
+# Calculate the stability suffix
+            $stabilitySuffix[]
+            ^if($matches.5 && !def $matches.7){
+                $stabilitySuffix['-dev']
+            }
+
+            $tmp[${constraint}$stabilitySuffix]
+            $lowVersion[^self.normalize[^tmp.mid(1)]]
+            $lowerBound[^Constraint::create['>=';$lowVersion]]
+# For upper bound, we increment the position of one more significance,
+# but highPosition = 0 would be illegal
+            $highVersion[^self.manipulateVersionString[$matches;$position;1]-dev]
+            $upperBound[^Constraint::create['<';$highVersion]]
+
+            $result[
+                $.0[$lowerBound]
+                $.1[$upperBound]
+            ]
+        }
+
+
+    }
 
 ###
