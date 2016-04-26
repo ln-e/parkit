@@ -210,7 +210,7 @@ $sUID[^reflection:uid[$h]]
 	$j[^reflection:method[$h;foreach]]
 	$result[^if($h){
 ^j[k;v]{$s[^k.match[(.*[^^a-zа-я0-9_\-].*)][i]{^[$match.1^]}]^taint[^#09]$sTabs^switch(true){
-^case($v is "double" || $v is "int" || $v is "bool"){^$.$s(^self.showObject($v))}
+^case($v is "double" || $v is "int" || $v is "bool"){^$.$s^(^self.showObject($v)^)}
 ^case($v is "junction"){^$.$s^{-junction-here-^}}
 ^case($v is "string" || $v is "date"){^$.$s^[^self.showObject[$v]^]
 }

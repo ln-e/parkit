@@ -10,6 +10,9 @@ VersionParser
 @OPTIONS
 locals
 
+@USE
+Constraint/MultiConstraint.p
+
 #------------------------------------------------------------------------------
 #Static constructor
 #------------------------------------------------------------------------------
@@ -52,7 +55,7 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
 #
 #:result string
 #------------------------------------------------------------------------------
-@static:parseStability[version][result]
+@parseStability[version][result]
     $version[^version.match[#.*^$][i]{}] ^rem[Stripped out #hash of version]
 
     ^version.match[$self.modifierRegex][i]{
@@ -76,7 +79,7 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
 #
 #:result string
 #------------------------------------------------------------------------------
-@static:normalizeStability[stability][result]
+@normalizeStability[stability][result]
     $result[^stability.lower[]]
 
     ^if($result eq rc){$result[RC]}
@@ -88,7 +91,7 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
 #
 #:result string
 #------------------------------------------------------------------------------
-@static:normalizeBranch[branchName][result]
+@normalizeBranch[branchName][result]
 
     $name[^branchName.trim[]]
 
@@ -126,7 +129,7 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
 #
 #:result string
 #------------------------------------------------------------------------------
-@static:parseNumericAliasPrefix[branchName][result]
+@parseNumericAliasPrefix[branchName][result]
     ^branchName.match[^^((\d++\.)*\d++)(?:\.x)?-dev^$][i]{
         $result[${match.1}.]
     }{
@@ -141,7 +144,7 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
 #
 #:result string
 #------------------------------------------------------------------------------
-@static:normalize[version][result]
+@normalize[version][result]
 
     $version[^version.trim[]]
 
@@ -202,7 +205,7 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
     }
 
     ^if(!def $result){
-        ^throw[Invalid version string $fullVersion]
+        ^throw[UnexpectedValueException;VersionParser.p;Invalid version string $fullVersion]
     }
 ###
 
@@ -212,6 +215,7 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
 #------------------------------------------------------------------------------
 @parseConstraints[constraints]
     $prettyConstraint[$constraints]
+    $constraints[^constraints.trim[]]
 
     $matches[^constraints.match[^^([^^,\s]*?)@($self.implodedStabilities)^$][i]]
     ^if($matches){
@@ -222,7 +226,6 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
     ^if($matches){
         $constraints[$matches.1]
     }
-
 
     $orConstraints[^rsplit[$constraints;(\s*\|\|?\s*)]]
     $orConstraints[^orConstraints.flip[]]
@@ -242,7 +245,7 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
                 $parsedConstraints[^self.parseConstraint[$andConstraint]]
                 ^parsedConstraints.foreach[k;parsedConstraint]{
                     $index[^constraintObjects._count[]]
-                    $constraintObjects.$index[$parsedConstraints]
+                    $constraintObjects.$index[$parsedConstraint]
                 }
             }
         }{
@@ -254,21 +257,24 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
         $orGroups.$index[$constraint]
     }
 
-
-    ^if(1 == ^orGroups._count[]){
-            $constraint = $orGroups[0];
-    }(2 == ^orGroups._count[]){
+# precalucalation for if else params
+    ^if(2 == ^orGroups._count[]){
         $a[^orGroups.0.GET[]]
         $b[^orGroups.1.GET[]]
         $posA[^a.pos['<'](4)]
         $posB[^b.pos['<'](4)]
-        ^if(
+    }
+
+    ^if(1 == ^orGroups._count[]){
+        $constraint[$orGroups.0]
+    }(2 == ^orGroups._count[]
 # parse the two OR groups and if they are contiguous we collapse
 # them into one constraint
-          $orGroups.0 is MultiConstraint && $orGroups.1 is MultiConstraint
-          && ^a.mid(0;3) == '[>=' && ($posA != -1)
-          && ^b.mid(0;3) == '[>=' && ($posB != -1)
-          && ^a.mid($posA + 2;-1) == ^b.mid(4;$posB - 5)
+      && $orGroups.0 is MultiConstraint
+      && $orGroups.1 is MultiConstraint
+      && ^a.mid(0;3) eq '[>=' && ($posA != -1)
+      && ^b.mid(0;3) eq '[>=' && ($posB != -1)
+      && ^a.mid($posA + 2;-1) == ^b.mid(4;$posB - 5)
         ){
             $constraint[^MultiConstraint::create[
                 $.0[^Constraint::create['>=';^a.mid(4;$posA - 5)]]
@@ -283,7 +289,7 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
 
     $result[$constraint]
 
-    ^dstop[$result]
+    ^dstop[$constraint]
 
 ###
 
@@ -292,19 +298,21 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
 #
 #:result hash
 @parseConstraint[constraint][result]
+
     $matches[^constraint.match[^^([^^,\s]+?)@($self.implodedStabilities)^$][i]]
     ^if($matches){
         $constraint[$matches.1]
 
-        ^if($matches.2 != 'stable'){
+        ^if($matches.2 ne 'stable'){
             $stabilityModifier[$matches.2]
         }
     }
 
     ^if(^constraint.match[^^v?[xX*](\.[xX*])*^$][i]){
         $result[^EmptyConstraint::create[]]
-    }{
-        $versionRegex[v?(\d++)(?:\.(\d++))?(?:\.(\d++))?(?:\.(\d++))?$self.modifierRegex^(?:\+[^^\s]+)?]
+    }
+
+    $versionRegex[v?(\d++)(?:\.(\d++))?(?:\.(\d++))?(?:\.(\d++))?$self.modifierRegex^(?:\+[^^\s]+)?]
 
 
 
@@ -313,46 +321,46 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
 # Like wildcard constraints, unsuffixed tilde constraints say that they must be greater than the previous
 # version, to ensure that unstable instances of the current version are allowed. However, if a stability
 # suffix is added to the constraint, then a >= match on the current version is used instead.
-        $matches[^constraint.match[^^~>?$versionRegex^$][i]]
-        ^if($matches){
+    $matches[^constraint.match[^^~>?$versionRegex^$][i]]
+    ^if(!def $result && $matches){
 
-            ^if(^constraint.mid(0;2) == '~>'){
-                ^throw[UnexpectedValue;VersionParser.p;Invalid operator "~>", you probably meant to use the "~" operator]
-            }
-
-            ^if($matches.4 && '' ne $matches.4){
-                $position[4]
-            }($matches.3 && '' ne $matches.3){
-                $position[3]
-            }($matches.2 && '' ne $matches.2){
-                $position[2]
-            }{
-                $position[1]
-            }
-
-            $stabilitySuffix[]
-            ^if($matches.5){
-                $stabilitySuffix[-$this.expandStability[$matches.5]^if($matches.6){$matches.6}]
-            }
-            ^if($matches.7){
-                $stabilitySuffix[${stabilitySuffix}-dev]
-            }
-            ^if(!$stabilitySuffix){
-                $stabilitySuffix[-dev]
-            }
-
-            $lowVersion[^self.manipulateVersionString[$matches;$position;0]$stabilitySuffix]
-            $lowerBound[^Constraint::create['>=';$lowVersion]]
-
-            $highPosition[max(1, $position - 1)]
-            $highVersion[^self.manipulateVersionString[$matches;$highPosition;1]-dev]
-            $upperBound[^Constraint::create['<';$highVersion]]
-
-            $result[
-              $.0[$lowerBound]
-              $.1[$upperBound]
-            ]
+        ^if(^constraint.mid(0;2) eq '~>'){
+            ^throw[UnexpectedValue;VersionParser.p;Invalid operator "~>", you probably meant to use the "~" operator]
         }
+
+        ^if($matches.4 && '' ne $matches.4){
+            $position[4]
+        }($matches.3 && '' ne $matches.3){
+            $position[3]
+        }($matches.2 && '' ne $matches.2){
+            $position[2]
+        }{
+            $position[1]
+        }
+
+        $stabilitySuffix[]
+        ^if($matches.5){
+            $stabilitySuffix[-$this.expandStability[$matches.5]^if($matches.6){$matches.6}]
+        }
+        ^if($matches.7){
+            $stabilitySuffix[${stabilitySuffix}-dev]
+        }
+        ^if(!$stabilitySuffix){
+            $stabilitySuffix[-dev]
+        }
+
+        $lowVersion[^self.manipulateVersionString[$matches;$position;0]$stabilitySuffix]
+        $lowerBound[^Constraint::create['>=';$lowVersion]]
+
+        $highPosition[max(1, $position - 1)]
+        $highVersion[^self.manipulateVersionString[$matches;$highPosition;1]-dev]
+        $upperBound[^Constraint::create['<';$highVersion]]
+
+        $result[
+          $.0[$lowerBound]
+          $.1[$upperBound]
+        ]
+    }
 
 
 
@@ -361,38 +369,148 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
 # Allows changes that do not modify the left-most non-zero digit in the [major, minor, patch] tuple.
 # In other words, this allows patch and minor updates for versions 1.0.0 and above, patch updates for
 # versions 0.X >=0.1.0, and no updates for versions 0.0.X
-        $matches[^constraint.match[^^\^^$versionRegex(^$)][i]]
-        ^if($matches){
+    $matches[^constraint.match[^^\^^$versionRegex^(^$)][i]]
+    ^if(!def $result && $matches){
 
-            ^if('0' ne $matches.1 || '' eq $matches.2){
-                $position[1]
-            }('0' ne $matches.2 || '' eq $matches.3){
-                $position[2]
-            }{
-                $position[3]
-            }
-
-# Calculate the stability suffix
-            $stabilitySuffix[]
-            ^if($matches.5 && !def $matches.7){
-                $stabilitySuffix['-dev']
-            }
-
-            $tmp[${constraint}$stabilitySuffix]
-            $lowVersion[^self.normalize[^tmp.mid(1)]]
-            $lowerBound[^Constraint::create['>=';$lowVersion]]
-# For upper bound, we increment the position of one more significance,
-# but highPosition = 0 would be illegal
-            $highVersion[^self.manipulateVersionString[$matches;$position;1]-dev]
-            $upperBound[^Constraint::create['<';$highVersion]]
-
-            $result[
-                $.0[$lowerBound]
-                $.1[$upperBound]
-            ]
+        ^if('0' ne $matches.1 || '' eq $matches.2){
+            $position[1]
+        }('0' ne $matches.2 || '' eq $matches.3){
+            $position[2]
+        }{
+            $position[3]
         }
 
+# Calculate the stability suffix
+        $stabilitySuffix[]
+        ^if($matches.5 && !def $matches.7){
+            $stabilitySuffix['-dev']
+        }
 
+        $tmp[${constraint}$stabilitySuffix]
+        $lowVersion[^self.normalize[^tmp.mid(1)]]
+        $lowerBound[^Constraint::create['>=';$lowVersion]]
+# For upper bound, we increment the position of one more significance,
+# but highPosition = 0 would be illegal
+        $highVersion[^self.manipulateVersionString[$matches;$position;1]-dev]
+        $upperBound[^Constraint::create['<';$highVersion]]
+
+        $result[
+            $.0[$lowerBound]
+            $.1[$upperBound]
+        ]
     }
 
+
+
+#X Range
+#
+#Any of X, x, or * may be used to "stand in" for one of the numeric values in the [major, minor, patch] tuple.
+#A partial version range is treated as an X-Range, so the special character is in fact optional.
+    $matches[^constraint.match[^^v?(\d++)(?:\.(\d++))?(?:\.(\d++))?(?:\.[xX*])++^$][i]]
+    ^if(!def $result && $matches){
+
+        ^if($matches.3 && '' ne $matches.3){
+            $position[3]
+        }($matches.2 && '' ne $matches.2){
+            $position[2]
+        }{
+            $position[1]
+        }
+
+        $lowVersion[^self.manipulateVersionString[$matches;$position]-dev']
+        $highVersion[^self.manipulateVersionString[$matches;$position;1]-dev']
+        ^if($lowVersion eq '0.0.0.0-dev'){
+            $result[
+                $.0[^Constraint::create['<';$highVersion]]
+            ]
+        }{
+            $result[
+                $.0[^Constraint::create['>=';$lowVersion]]
+                $.1[^Constraint::create['<';$highVersion]]
+            ]
+        }
+    }
+
+#Hyphen Range
+#
+#Specifies an inclusive set. If a partial version is provided as the first version in the inclusive range,
+#then the missing pieces are replaced with zeroes. If a partial version is provided as the second version in
+#the inclusive range, then all versions that start with the supplied parts of the tuple are accepted, but
+#nothing that would be greater than the provided tuple parts.
+    $matches[^constraint.match[^^(?P<from>$versionRegex) +- +(?P<to>$versionRegex)(^$)][i]]
+    ^if(!def $result && $matches){
+
+# Calculate the stability suffix
+        $lowStabilitySuffix[]
+        ^if(!$matches.6 && !$matches.8){
+            $lowStabilitySuffix[-dev]
+        }
+        $lowVersion[^self.normalize[$matches.from]]
+        $lowerBound[^Constraint::create['>=';${lowVersion}$lowStabilitySuffix]]
+
+        ^if((!^self.emptyX[$matches.11] && !^self.emptyX[$matches.12]) || !$matches.14 || !$matches.16){
+            $highVersion[^self.normalize[$matches.to]]
+            $upperBound[^Constraint::create['<=';$highVersion]]
+        }{
+            $highMatch[
+                $.0[]
+                $.1[$matches.10]
+                $.2[$matches.11]
+                $.3[$matches.12]
+                $.4[$matches.13]
+            ]
+            $pos[^if(^self.emptyX[$matches.11]){1}{2}]
+            $highVersion[^self.manipulateVersionString[$highMatch;$pos;1]-dev]
+            $upperBound[^Constraint::create['<';$highVersion]]
+        }
+
+        $result[
+            $.0[$lowerBound]
+            $.1[$upperBound]
+        ]
+    }
+
+
+#Basic Comparators
+    $matches[^constraint.match[^^(<>|!=|>=?|<=?|==?)?\s*(.*)][]]
+    ^if(!def $result && $matches){
+
+        $version[^self.normalize[$matches.2]]
+
+        ^if(def $stabilityModifier && ^self.parseStability[$version] eq stable){
+            $version[${version}-$stabilityModifier]
+        }('<' eq $matches.1 || '>=' eq $matches.1){
+            $lowerTmp[^matches.2.lower[]]
+
+            ^if(^lowerTmp.match[-$modifierRegex^$][n] > 0){
+                ^if(^matches.2.mid(0;4) ne 'dev-'){
+                    $version[${version}-dev]
+                }
+            }
+        }
+
+        $result[
+            $.0[^Constraint::create[^if(def $matches.1){$matches.1}{=};$version]]
+        ]
+    }
+
+    $message[Could not parse version constraint $constraint]
+
+    ^if(!$result){
+        ^throw[UnexpectedValueException;VersionParser.p;$message]
+    }
+
+
+###
+
+
+#:param x type string
+#
+#:result bool
+@emptyX[x][result]
+    ^if($x == 0 || $x eq '0'){
+        $result(false)
+    }{
+        $result(def $x)
+    }
 ###

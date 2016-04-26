@@ -28,7 +28,7 @@ ConstraintInterface
 #------------------------------------------------------------------------------
 @create[constraints;conjunctive]
     $self.constraints[^hash::create[$constraints]]
-    $self.conjunctive(^if(def $conjunctive){$conjunctive}{true})
+    $self.conjunctive(^if(def $conjunctive){$conjunctive}(true))
     $self.prettyString[]
 ###
 
@@ -39,11 +39,11 @@ ConstraintInterface
 #:result boolean
 #------------------------------------------------------------------------------
 @matches[provider][result]
-    $result(^if(!$self.conjunctive){false}{true})
+    $result($self.conjunctive)
 
     ^self.constraints.foreach[key;constraint]{
         ^if(^constraint.matches[$provider]){
-            $result(^if(!$self.conjunctive){true}{false})
+            $result(!$self.conjunctive)
         }
     }
 ###
@@ -55,7 +55,7 @@ ConstraintInterface
 @GET[][result]
     $separator[^if($self.conjunctive){ }{||}]
 
-    $result[^[^self.constraints.foreach[key;constraint]{$constraint}[$separator]^]]
+    $result[^[^self.constraints.foreach[key;constraint]{^constraint.GET[]}[$separator]^]]
 ###
 
 
@@ -63,7 +63,16 @@ ConstraintInterface
 #:result hash
 #------------------------------------------------------------------------------
 @GET_constraints[][result]
-    $result[$self.constraints]
+    $result[$self._constraints]
+###
+
+#------------------------------------------------------------------------------
+#:param constraints type hash
+#
+#:result hash
+#------------------------------------------------------------------------------
+@SET_constraints[constraints][result]
+    $self._constraints[$constraints]
 ###
 
 
@@ -71,7 +80,7 @@ ConstraintInterface
 #:param prettyString type string
 #------------------------------------------------------------------------------
 @SET_prettyString[prettyString][result]
-    $self.prettyString[$prettyString]
+    $self._prettyString[$prettyString]
 ###
 
 
@@ -79,7 +88,7 @@ ConstraintInterface
 #:result string
 #------------------------------------------------------------------------------
 @GET_prettyString[][result]
-    $result[$self.prettyString]
+    $result[$self._prettyString]
 ###
 
 #------------------------------------------------------------------------------
