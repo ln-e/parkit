@@ -33,8 +33,6 @@ locals
 @configureCommands[][result]
 
 
-$parser[^VersionParser::create[]]
-^dstop[^parser.parseConstraints[>=1.1.0  <=2.1.0 || 1.0.2 - 1.5.1   ]]
     $jsonFile[^JsonFile::create[/parsekit.json]]
     $data[^jsonFile.read[]]
 

@@ -139,7 +139,6 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
 
 
 #------------------------------------------------------------------------------
-# TODO probably broken method
 #:param version type string
 #
 #:result string
@@ -278,7 +277,7 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
             $constraintObjects[^self.parseConstraint[^andConstraints._at(0)]]
         }
 
-        $constraint[^if(^constraintObjects._count[] == 1){$constraintObjects[0]}{^MultiConstraint::create[$constraintObjects]}]
+        $constraint[^if(^constraintObjects._count[] == 1){$constraintObjects.0}{^MultiConstraint::create[$constraintObjects]}]
         $index[^orGroups._count[]]
         $orGroups.$index[$constraint]
     }
@@ -303,8 +302,8 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
       && ^a.mid($posA + 2;-1) == ^b.mid(4;$posB - 5)
     ){
         $constraint[^MultiConstraint::create[
-            $.0[^Constraint::create['>=';^a.mid(4;$posA - 5)]]
-            $.1[^Constraint::create['<';^b.mid($posB + 2;-1)]]
+            $.0[^Constraint::create[>=;^a.mid(4;$posA - 5)]]
+            $.1[^Constraint::create[<;^b.mid($posB + 2;-1)]]
         ]]
     }{
         $constraint[^MultiConstraint::create[$orGroups](false)]
@@ -374,11 +373,11 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
         }
 
         $lowVersion[^self.manipulateVersionString[$matches;$position;0]$stabilitySuffix]
-        $lowerBound[^Constraint::create['>=';$lowVersion]]
+        $lowerBound[^Constraint::create[>=;$lowVersion]]
 
         $highPosition[max(1, $position - 1)]
         $highVersion[^self.manipulateVersionString[$matches;$highPosition;1]-dev]
-        $upperBound[^Constraint::create['<';$highVersion]]
+        $upperBound[^Constraint::create[<;$highVersion]]
 
         $result[
           $.0[$lowerBound]
@@ -412,11 +411,11 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
 
         $tmp[${constraint}$stabilitySuffix]
         $lowVersion[^self.normalize[^tmp.mid(1)]]
-        $lowerBound[^Constraint::create['>=';$lowVersion]]
+        $lowerBound[^Constraint::create[>=;$lowVersion]]
 # For upper bound, we increment the position of one more significance,
 # but highPosition = 0 would be illegal
         $highVersion[^self.manipulateVersionString[$matches;$position;1]-dev]
-        $upperBound[^Constraint::create['<';$highVersion]]
+        $upperBound[^Constraint::create[<;$highVersion]]
 
         $result[
             $.0[$lowerBound]
@@ -445,12 +444,12 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
         $highVersion[^self.manipulateVersionString[$matches;$position;1]-dev']
         ^if($lowVersion eq '0.0.0.0-dev'){
             $result[
-                $.0[^Constraint::create['<';$highVersion]]
+                $.0[^Constraint::create[<;$highVersion]]
             ]
         }{
             $result[
-                $.0[^Constraint::create['>=';$lowVersion]]
-                $.1[^Constraint::create['<';$highVersion]]
+                $.0[^Constraint::create[>=;$lowVersion]]
+                $.1[^Constraint::create[<;$highVersion]]
             ]
         }
     }

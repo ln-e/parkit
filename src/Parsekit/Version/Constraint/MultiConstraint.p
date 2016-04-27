@@ -39,11 +39,21 @@ ConstraintInterface
 #:result boolean
 #------------------------------------------------------------------------------
 @matches[provider][result]
-    $result($self.conjunctive)
+    ^if(!$self.conjunctive){
+        $result(false)
 
-    ^self.constraints.foreach[key;constraint]{
-        ^if(^constraint.matches[$provider]){
-            $result(!$self.conjunctive)
+        ^self.constraints.foreach[key;constraint]{
+            ^if(^constraint.matches[$provider]){
+                $result(true)
+            }
+        }
+    }{
+        $result(true)
+
+        ^self.constraints.foreach[key;constraint]{
+            ^if(!^constraint.matches[$provider]){
+                $result(false)
+            }
         }
     }
 ###

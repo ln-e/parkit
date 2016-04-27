@@ -19,8 +19,9 @@ locals
 
 
 #:param packageManager type PackageManager
-@create[packageManager]
+@create[packageManager;semver]
     $self.packageManager[$packageManager]
+    $self.semver[$semver]
 ###
 
 
@@ -28,7 +29,6 @@ locals
 @resolve[rootPackage]
     $self.rootPackage[$rootPackage]
     $self.baseRequirements[^hash::create[]]
-#    $self.defaultRequire[^hash::create[^root.getPackagesList[]]]
     $newRequirements[^hash::create[^rootPackage.getPackagesList[]]]
 
     $result[^self.step[$newRequirements]]
@@ -62,8 +62,11 @@ locals
 ###
 
 #:TODO expand req constraint by pickedPackagesConstraint
-@extendRequirements[req;pickedPackages][result]
+@extendRequirements[newReq;pickedPackages][result]
 
+    $req[^hash::create[$newReq]]
+#by foreach pickedPackages we should add extra requirements to req,
+#and check, if it is cause conslict, i.e. empty set with new constraint
     ^dstop[$pickedPackages]
 
     $result[
@@ -84,11 +87,24 @@ locals
         ^throw[empty.packages;Resolver.p;Packages list is empty]
     }
     $pickedPackage[$packages._at(0)]
+    $versions[^hash::create[]]
     ^packages.foreach[key;package]{
-        ^if(^reflection:uid[$package] ne ^reflection:uid[$pickedPackage]){
-            ^dstop[^VersionParser:normalize[$package.version]]
+        ^rem[ TODO откуда берется не PackageInterface в packages ?]
+        ^if($package is PackageInterface){
+            $index[^versions._count[]]
+            $versions.$index[$package.version]
         }
     }
-    ^dstop[$packages]
-    ^dstop[$constraint]
+
+    $versions[^self.semver.sort[^self.semver.satisfiedBy[$versions;$constraint]]]
+    ^rem[ After that ^$versions.0 will contain the biggest package version]
+
+    ^packages.foreach[key;package]{
+        ^if($package is PackageInterface){
+            ^if(^self.semver.satisfies[$package.version;$versions.0]){
+                $result[$package]
+                ^break[]
+            }
+        }
+    }
 ###

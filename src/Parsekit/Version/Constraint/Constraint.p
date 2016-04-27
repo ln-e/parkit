@@ -36,12 +36,12 @@ ConstraintInterface
     ]
 
     $self.opInt[
-        $.[$self.OP_EQ]['==']
-        $.[$self.OP_LT]['<']
-        $.[$self.OP_LE]['<=']
-        $.[$self.OP_GT]['>']
-        $.[$self.OP_GE]['>=']
-        $.[$self.OP_NE]['!=']
+        $.[$self.OP_EQ][==]
+        $.[$self.OP_LT][<]
+        $.[$self.OP_LE][<=]
+        $.[$self.OP_GT][>]
+        $.[$self.OP_GE][>=]
+        $.[$self.OP_NE][!=]
     ]
 
     str < dev < alpha = a < beta = b < RC = rc < # < pl = p
@@ -100,7 +100,7 @@ ConstraintInterface
 #:param prettyString type string
 #------------------------------------------------------------------------------
 @SET_prettyString[prettyString]
-    $self.prettyString[$prettyString]
+    $self._prettyString[$prettyString]
 ###
 
 
@@ -108,7 +108,7 @@ ConstraintInterface
 #:result string
 #------------------------------------------------------------------------------
 @GET_prettyString[]
-    $result[$self.prettyString]
+    $result[$self._prettyString]
     ^if(!def $result){
         $result[^self.GET[]]
     }
@@ -122,8 +122,8 @@ ConstraintInterface
 #:result boolean
 #------------------------------------------------------------------------------
 @matchSpecific[provider;compareBranches]
-    $noEqualOp[^self.opInt.[$self.operator].replace['=';'']]
-    $providerNoEqualOp[^self.opInt.[$rovider.operator].replace['=';'']]
+    $noEqualOp[^self.opInt.[$self.operator].replace[=;]]
+    $providerNoEqualOp[^self.opInt.[$rovider.operator].replace[=;]]
 
     $isEqualOp($self.OP_EQ == $self.operator)
     $isNonEqualOp($self.OP_NE == $self.operator)
@@ -135,19 +135,19 @@ ConstraintInterface
 
         $result(
             !$isEqualOp && !$isProviderEqualOp
-            || ^self.versionCompare[$provider.version;$self.version;'!=';$compareBranches]
+            || ^self.versionCompare[$provider.version;$self.version;!=;$compareBranches]
         )
-    }($self.operator != $self.OP_EQ && $noEqualOp == $providerNoEqualOp){
+    }($self.operator != $self.OP_EQ && $noEqualOp eq $providerNoEqualOp){
         ^rem[the condition is <= 2.0 & < 1.0 always have a solution]
 
         $result(true)
-    }(^self.versionCompare[$provider.version;$self.version;$self.opInt.[$this.operator];$compareBranches]){
+    }(^self.versionCompare[$provider.version;$self.version;$self.opInt.[$self.operator];$compareBranches]){
         $result(true)
 
         ^if(
-            $provider.version == $self.version
-            && $self.opInt.[$provider.operator] == $providerNoEqualOp
-            && $self.opInt.[$self.operator] != $noEqualOp
+            $provider.version eq $self.version
+            && $self.opInt.[$provider.operator] eq $providerNoEqualOp
+            && $self.opInt.[$self.operator] ne $noEqualOp
         ){
             ^rem[require >= 1.0 and provide < 1.0]
             ^rem[1.0 >= 1.0 but 1.0 is outside of the provided interval]
@@ -170,14 +170,14 @@ ConstraintInterface
 #------------------------------------------------------------------------------
 @versionCompare[a;b;operator;compareBrances][result]
     ^if(!^self.opString.contains[$operator]){
-        ^throw[invalid.argument;Constraint.p;Invalid operator $operator]
+        ^throw[invalid.argument;Constraint.p;Invalid operator $operator not found in list ]
     }
 
     $aIsBranch('dev-' eq ^a.mid(0;4))
     $bIsBranch('dev-' eq ^b.mid(0;4))
 
     ^if($aIsBranch && $bIsBranch){
-        $result($operator == '==' && $a == $b)
+        $result($operator eq '==' && $a == $b)
     }(!$compareBranches && ($aIsBranch || $bIsBranch)){
         ^rem[when branches are not comparable, we make sure dev branches never match anything]
         $result(false)

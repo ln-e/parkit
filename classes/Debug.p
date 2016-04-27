@@ -130,7 +130,7 @@ $result[^ConsoleTable:formatTable[$t]]
 $self.iCall(1)
 $sConsole[$sConsole
 ^showSystemParam[]
-^apply-taint[html][^if($o is double){^showObject($o)}{^showObject[$o]}]
+^if($o is double){^showObject($o)}{^showObject[$o]}
 ]
 
 @stop[o][result]
@@ -317,7 +317,7 @@ $result[IMAGE (UID: ^reflection:uid[$i]): ^self.show_hash[
 	$result[^if(def $x.childNodes){^x.childNodes.foreach[;v]{^self.show_xnode[$v]}}]
 
 @showNodeValue[x]
-	$result[^taint[^apply-taint[html][^taint[$x.nodeValue]]]]
+	$result[$x.nodeValue]
 
 @show_Array[a][result]
 	$result[Array(^eval($a)): ^taint[^#10] ^show_hash[^hash::create[$a];;1]]

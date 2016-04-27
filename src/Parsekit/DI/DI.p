@@ -24,10 +24,10 @@ Version/Semver.p
 @auto[]
     $self.repositoryManager[^RepositoryManager::create[]]
     $self.packageManager[^PackageManager::create[$self.repositoryManager]]
-    $self.resolver[^Resolver::create[$self.packageManager]]
     $self.versionParser[^VersionParser::create[]]
     $self.comparator[^Comparator::create[]]
     $self.semver[^Semver::create[$self.versionParser;$self.comparator]]
+    $self.resolver[^Resolver::create[$self.packageManager;$self.semver]]
 ###
 
 
