@@ -52,6 +52,10 @@ RootPackage.p
             }
         }
 
+        ^if(!def $self.packages.$name){
+            ^throw[PackageNotFoundException;PackageManager.p; Package with name '$name' not found ]
+        }
+
     }
 
     $result[$self.packages.$name]

@@ -147,6 +147,10 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
 
     $version[^version.trim[]]
 
+    ^if(!def $version || $version eq ''){
+        ^throw[version.empty;VersionParser.p;Version string is empty]
+    }
+
     $fullVersion[$version]
 
 # strip off aliasing
@@ -214,13 +218,11 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
             }{
                 $extraMessage[]
                 ^if(^fullVersion.match[ +as +^untaint[regex]{$version}^$][n] > 0){
-                    $extraMessage[ in " $fullVersion ", the alias must be an exact version]
+                    $extraMessage[ in '$fullVersion', the alias must be an exact version]
                 }(^fullVersion.match[^^^untaint[regex]{$version} +as +][n] > 0){
-                    $extraMessage[ in " $fullVersion ", the alias source must be an exact version, if it is a branch name you should prefix it with dev-]
+                    $extraMessage[ in '$fullVersion', the alias source must be an exact version, if it is a branch name you should prefix it with dev-]
                 }
-                $errorText[
-                    Invalid version string $version  $extraMessage
-                ]
+                $errorText[ Invalid version string $fullVersion $extraMessage ]
                 ^throw[UnexpectedValueException;VersionParser.p;$errorText]
             }
 
@@ -580,7 +582,7 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
 #------------------------------------------------------------------------------
 @expandStability[stability][result]
     $stability[^stability.lower[]]
-    ^switch($stability){
+    ^switch[$stability]{
         ^case[a]{$result[alpha]}
         ^case[b]{$result[beta]}
         ^case[p;pl]{$result[patch]}

@@ -28,10 +28,24 @@ locals
 
 
 #------------------------------------------------------------------------------
+#:param constraintsA type string
+#:param constraintsB type string
+#
+#:result bool
+#------------------------------------------------------------------------------
+@constraintIntersected[constraintsA;constraintsB][result]
+
+    $constraintA[^self.versionParser.parseConstraints[$constraintsA]]
+    $constraintB[^self.versionParser.parseConstraints[$constraintsB]]
+
+    $result(^constraintB.matches[$constraintA])
+###
+
+#------------------------------------------------------------------------------
 #:param version type string
 #:param constraints type string
 #
-#:result boolean
+#:result bool
 #------------------------------------------------------------------------------
 @satisfies[version;constraints][result]
 

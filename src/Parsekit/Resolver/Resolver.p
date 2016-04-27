@@ -26,7 +26,7 @@ locals
 
 
 #:param rootPackage type RootPackage
-@resolve[rootPackage]
+@resolve[rootPackage][result;newRequirements]
     $self.rootPackage[$rootPackage]
     $self.baseRequirements[^hash::create[]]
     $newRequirements[^hash::create[^rootPackage.getPackagesList[]]]
@@ -43,12 +43,17 @@ locals
         $packages[^self.packageManager.getPackages[$packageName]]
 # Pick package nearest to $constraint top boundary
         $package[^self.pickPackageByStrategy[max;$packages;$constraint]]
-        $index[^pickedPackages._count[]]
-        $pickedPackages.$index[$package]
+        ^if(!def $package){
+            ^throw[PackageNotFoundException;Resolver.p; Could not find package '$packageName' satisfied '$constraint' ]
+        }
+
+        $pickedPackages.[$package.name][$package]
     }
 
     $extendResult[^self.extendRequirements[$req;$pickedPackages]]
-    ^if($extendResult.conflicts){
+
+    ^if(^extendResult.conflicts._count[]){
+        ^dstop[$extendResult]
 #We should to handle conflict. Decrease most conflict or probably each packages that participant in conflict
 #and recursivly step into next ^step
 #if conslict is unresolvable throw exception, which ^step in hight level should handle.
@@ -58,54 +63,123 @@ locals
 #listed in $pickedPackages than we should add them and recursively step into next ^step
 #otherwise we finished
     }
-    ^dstop[123]
 ###
 
-#:TODO expand req constraint by pickedPackagesConstraint
-@extendRequirements[newReq;pickedPackages][result]
 
+#:param newReq type hash
+#:param packages type hash
+#
+#:TODO expand req constraint by pickedPackagesConstraint
+#
+#:result hash
+@extendRequirements[newReq;packages][result]
+
+    $extendResult[
+        $.conflicts[^hash::create[]]
+        $.oldReq[^hash::create[$newReq]]
+        $.allReq[^hash::create[$newReq]]
+    ]
+
+    $newRequirements[^hash::create[]]
     $req[^hash::create[$newReq]]
+
 #by foreach pickedPackages we should add extra requirements to req,
 #and check, if it is cause conslict, i.e. empty set with new constraint
 
-    ^pickedPackages.foreach[key;package]{
+    $transitiveNewPackages[^hash::create[]]
+
+
+    ^packages.foreach[key;package]{
         ^package.packagesList.foreach[packageName;extraReq]{
-            $req.$packageName[$req.$packageName $extraReq]
+
+            ^rem[collect overall requirements by picked packages]
+            $extendResult.allReq.[$packageName][$extendResult.allReq.[$packageName] $extraReq]
+
+
+            ^if(def $packages.$packageName){
+                ^rem[ OLD package has new requirements. We do not change old requirement right now, just check ]
+                $packageForUpdate[$packages.$packageName]
+                ^if(!^self.semver.satisfies[$packageForUpdate.version;$req.[$packageForUpdate.name] $extraReq]){
+                    ^rem[ conflict caused by $package ]
+                    ^extendResult.conflicts.[$package.name].inc(1)
+                }{
+                    ^if(!def $newRequirements.$packageName){
+                        $newRequirements.$packageName[^hash::create[]]
+                    }
+                    $newRequirements.$packageName.[$package.name][$extraReq]
+                }
+            }{
+                ^rem[ new package ! ]
+                ^if(!def $transitiveNewPackages.$packageName){
+                    $transitiveNewPackages.$packageName[^hash::create[]]
+                }
+                $transitiveNewPackages.[$packageName].[$package.name][$extraReq]
+            }
+
         }
     }
 
-    $resolvings[^hash::create[]]
-    ^pickedPackages.foreach[key;package]{
-        $resolvings.[$package.name][^self.semver.satisfies[$package.version;$req.[$package.name]]]
+    ^rem[ compare packages new requirement between them ]
+    ^newRequirements.foreach[newPackageName;reqConfig]{
+        ^reqConfig.foreach[i;reqI]{
+            ^reqConfig.foreach[j;reqj]{
+                ^if($i ne $j){
+                    ^if(!^self.semver.satisfies[$reqI;$reqJ]){
+                        ^rem[ conflict between $i and $j ]
+                        $extendResult.conflicts.[$i]($extendResult.conflicts.$i+1)
+                        $extendResult.conflicts.[$j]($extendResult.conflicts.$j+1)
+                    }
+                }
+            }
+        }
     }
 
-    ^dstop[$req]
-    ^dstop[$resolvings]
+    ^rem[ compare packages new requirement between them ]
+    ^transitiveNewPackages.foreach[newPackageName;reqConfig]{
+        ^reqConfig.foreach[i;reqI]{
+            ^reqConfig.foreach[j;reqj]{
+                ^if($i ne $j){
+                    ^if(
+                        !^self.semver.constraintIntersected[$reqI;$reqJ]
+                        ||
+                        !def ^self.pickPackageByStrategy[max;^self.packageManager.getPackages[$newPackageName];$reqI $reqJ]
+                    ){
+                        ^rem[ conflict between $i and $j ]
+                        $extendResult.conflicts.[$i]($extendResult.conflicts.$i+1)
+                        $extendResult.conflicts.[$j]($extendResult.conflicts.$j+1)
+                    }
+                }
+            }
+        }
+    }
 
-#    ^req.foreach[packageName;constraint]{
-#    ^self.semver.satisfies[$pickedPackages]
-#        $constraints.$packageName[^self.semver.versionParser.parseConstraints[$constraint]]
-#
-#    }
-#    ^dstop[$constraints]
 
-    ^dstop[$req]
-
-    $result[
-        $.conflicts(false)
-    ]
+    $result[$extendResult]
 ###
+
+
+
+@updateRequirements[requirements;packageName;newConstraint][result;parser]
+    $parser[$self.semver.versionParser]
+    $constraintA[^parser.parseConstraints[$requirements.$packageName]]
+    $constraintB[^parser.parseConstraints[newConstraint]]
+    ^dstop[^constraintB.matches[$constraintA]]
+    $requirements.$packageName[$requirements.$packageName $newRequirement]
+###
+
+
 
 
 #:param strategy type string
 #:param packages type hash
 #:param constraint type string
+#
 #:result PackageInterface
 @pickPackageByStrategy[strategy;packages;constraint][result]
     ^if($strategy ne max){
         ^throw[unknown.strategy;Resolver.p;Strategy $strategy is not implemented]
     }
-    ^if(^packages._count[] <= 0){
+    ^if(!def $packages || ^packages._count[] <= 0){
         ^throw[empty.packages;Resolver.p;Packages list is empty]
     }
     $pickedPackage[$packages._at(0)]
