@@ -67,7 +67,29 @@ locals
     $req[^hash::create[$newReq]]
 #by foreach pickedPackages we should add extra requirements to req,
 #and check, if it is cause conslict, i.e. empty set with new constraint
-    ^dstop[$pickedPackages]
+
+    ^pickedPackages.foreach[key;package]{
+        ^package.packagesList.foreach[packageName;extraReq]{
+            $req.$packageName[$req.$packageName $extraReq]
+        }
+    }
+
+    $resolvings[^hash::create[]]
+    ^pickedPackages.foreach[key;package]{
+        $resolvings.[$package.name][^self.semver.satisfies[$package.version;$req.[$package.name]]]
+    }
+
+    ^dstop[$req]
+    ^dstop[$resolvings]
+
+#    ^req.foreach[packageName;constraint]{
+#    ^self.semver.satisfies[$pickedPackages]
+#        $constraints.$packageName[^self.semver.versionParser.parseConstraints[$constraint]]
+#
+#    }
+#    ^dstop[$constraints]
+
+    ^dstop[$req]
 
     $result[
         $.conflicts(false)
