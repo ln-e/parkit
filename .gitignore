@@ -1,9 +1,8 @@
-parser/parser3.log
 parser/*
 #auto.p or not?
 !parser/auto.p
 *.iml
-
+*usage.log
 
 # temporary ignore json file
 parsekit.json

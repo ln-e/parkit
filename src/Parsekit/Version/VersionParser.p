@@ -39,6 +39,10 @@ dev
 
 $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]]
 
+$self.normalizedVersions[^hash::create[]]
+$self.parsedConstraint[^hash::create[]]
+$self.parsedConstraints[^hash::create[]]
+
 ###
 
 
@@ -144,7 +148,9 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
 #:result string
 #------------------------------------------------------------------------------
 @normalize[version][result]
-
+^if(^self.normalizedVersions.contains[$version]){
+    $result[$self.normalizedVersions.$version]
+}{
     $version[^version.trim[]]
 
     ^if(!def $version || $version eq ''){
@@ -222,7 +228,7 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
                 }(^fullVersion.match[^^^untaint[regex]{$version} +as +][n] > 0){
                     $extraMessage[ in '$fullVersion', the alias source must be an exact version, if it is a branch name you should prefix it with dev-]
                 }
-                $errorText[ Invalid version string $fullVersion $extraMessage ]
+                $errorText[ Invalid version string '$fullVersion' $extraMessage ]
                 ^throw[UnexpectedValueException;VersionParser.p;$errorText]
             }
 
@@ -233,7 +239,10 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
 
     ^if(!def $result){
         ^throw[UnexpectedValueException;VersionParser.p;Invalid version string $fullVersion]
+    }{
+        $self.normalizedVersions.$fullVersion[$result]
     }
+}
 ###
 
 
@@ -241,6 +250,9 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
 #:param constraints type string
 #------------------------------------------------------------------------------
 @parseConstraints[constraints]
+^if(^self.parsedConstraints.contains[$constraints]){
+    $result[$self.parsedConstraints.$constraints]
+}{
     $prettyConstraint[$constraints]
     $constraints[^constraints.trim[]]
 
@@ -314,6 +326,8 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
     $constraint.prettyString[$prettyConstraint]
 
     $result[$constraint]
+    $self.parsedConstraints.[$prettyConstraint][$result]
+}
 ###
 
 
@@ -323,7 +337,10 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
 #:result hash
 #------------------------------------------------------------------------------
 @parseConstraint[constraint][result]
-
+^if(^self.parsedConstraint.contains[$constraint]){
+    $result[$self.parsedConstraint.$constraint]
+}{
+    $origin[$constraint]
     $matches[^constraint.match[^^([^^,\s]+?)@($self.implodedStabilities)^$][i]]
     ^if($matches){
         $constraint[$matches.1]
@@ -526,7 +543,10 @@ $self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]
 
     ^if(!$result){
         ^throw[UnexpectedValueException;VersionParser.p;$message]
+    }{
+        $self.parsedConstraint.$origin[$result]
     }
+}
 ###
 
 

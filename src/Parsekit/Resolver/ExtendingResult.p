@@ -46,6 +46,8 @@ locals
 #
 #:result bool
 #------------------------------------------------------------------------------
-@containsNewRequirements[][result]
-    $result(def ^self.allRequirements.sub[$self.baseRequirements])
+@containsNewRequirements[][result;tmpHash]
+    $tmpHash[^hash::create[$self.allRequirements]]
+    ^tmpHash.sub[$self.baseRequirements]
+    $result(def $tmpHash)
 ###

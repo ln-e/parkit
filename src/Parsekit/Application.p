@@ -42,17 +42,15 @@ locals
 
     $res[^resolver.resolve[$rootPackage]]
 
-
     ^res.foreach[i;resolving]{
         $console:line[=======]
         $console:line[$i^: iteration = $resolving.iteration packageCount= ^resolving.packages._count[]]
             ^resolving.packages.foreach[k;l]{
-                $console:line[     $k ^: $l.name $l.version ]
+                $console:line[ $l.name^: $l.version ]
             }
         $console:line[=======]
     }
-^dstop[1]
-    ^dstop[$res.0.packages]
+    ^dstop[stopped]
 
 
     $self.commands[
@@ -61,6 +59,7 @@ locals
         $.selfupdate[^SelfupdateCommand::create[]]
     ]
 ###
+
 
 
 #------------------------------------------------------------------------------
