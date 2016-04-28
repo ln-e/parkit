@@ -40,7 +40,19 @@ locals
 
     $resolver[$DI:resolver]
 
-    ^dstop[^resolver.resolve[$rootPackage]]
+    $res[^resolver.resolve[$rootPackage]]
+
+
+    ^res.foreach[i;resolving]{
+        $console:line[=======]
+        $console:line[$i^: iteration = $resolving.iteration packageCount= ^resolving.packages._count[]]
+            ^resolving.packages.foreach[k;l]{
+                $console:line[     $k ^: $l.name $l.version ]
+            }
+        $console:line[=======]
+    }
+^dstop[1]
+    ^dstop[$res.0.packages]
 
 
     $self.commands[

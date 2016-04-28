@@ -10,6 +10,8 @@ Resolver
 @USE
 Package/PackageManager.p
 Version/VersionParser.p
+ExtendingResult.p
+ResolvingResult.p
 
 @OPTIONS
 locals
@@ -18,67 +20,117 @@ locals
 ###
 
 
+#------------------------------------------------------------------------------
 #:param packageManager type PackageManager
+#------------------------------------------------------------------------------
 @create[packageManager;semver]
     $self.packageManager[$packageManager]
     $self.semver[$semver]
 ###
 
 
+#------------------------------------------------------------------------------
 #:param rootPackage type RootPackage
+#------------------------------------------------------------------------------
 @resolve[rootPackage][result;newRequirements]
     $self.rootPackage[$rootPackage]
     $self.baseRequirements[^hash::create[]]
-    $newRequirements[^hash::create[^rootPackage.getPackagesList[]]]
+    $requirements[^hash::create[^rootPackage.getPackagesList[]]]
 
-    $result[^self.step[$newRequirements]]
+    $result[^self.step[$requirements;$requirements](1)]
 ###
 
 
-@step[newRequirements]
-    $req[^hash::create[$newRequirements]]
+#------------------------------------------------------------------------------
+#:param requirements type hash
+#:param iteration type number
+#------------------------------------------------------------------------------
+@step[origin;requirements;iteration][result;packageName;packages;pickedPackages;extendResult;base;req;packageName;baseConstraint;compareConstraint;package]
+    $result[^hash::create[]]
     $pickedPackages[^hash::create[]]
+    $req[^hash::create[$requirements]]
 
-    ^newRequirements.foreach[packageName;constraint]{
+
+    ^requirements.foreach[packageName;baseConstraint]{
+        $console:line[package name = '$packageName']
         $packages[^self.packageManager.getPackages[$packageName]]
 # Pick package nearest to $constraint top boundary
-        $package[^self.pickPackageByStrategy[max;$packages;$constraint]]
-        ^if(!def $package){
-            ^throw[PackageNotFoundException;Resolver.p; Could not find package '$packageName' satisfied '$constraint' ]
+
+
+        $package[^self.pickPackageByStrategy[max;$packages;^taint[as-is][$baseConstraint]]]
+
+        ^if(!($package is PackageInterface)){
+            $console:line[Could not find package '$packageName' from set with length ^packages._count[] ($packages.1.name $packages.1.version ) satisfied '$compareConstraint' ]
+            ^throw[RecursionPackageNotFoundException;Resolver.p; Could not find package '$packageName' satisfied '$compareConstraint' ]
         }
 
         $pickedPackages.[$package.name][$package]
     }
 
+    ^if(^pickedPackages._count[] < ^requirements._count[]){
+        ^throw[piectofshit]
+    }
+
     $extendResult[^self.extendRequirements[$req;$pickedPackages]]
 
     ^if(^extendResult.conflicts._count[]){
-        ^dstop[$extendResult]
 #We should to handle conflict. Decrease most conflict or probably each packages that participant in conflict
 #and recursivly step into next ^step
 #if conslict is unresolvable throw exception, which ^step in hight level should handle.
 #when first step throw exception we cannot install packages at all due to unresolvable conflict
+
+        ^extendResult.conflicts.foreach[packageName;numberOfConflicts]{
+            $console:line[??? $iteration  $packageName $pickedPackages.$packageName.version  ^extendResult.conflicts.foreach[z;x]{ ** $z $pickedPackages.$z.version ** } $numberOfConflicts]
+            $updatedRequirements[^hash::create[$requirements]]
+
+            $updatedRequirements.$packageName[$updatedRequirements.$packageName <$pickedPackages.$packageName.version]
+            ^try{
+                $recurrResult[^self.step[$origin;$updatedRequirements]($iteration+1)]
+                ^recurrResult.foreach[k;rRes]{
+                    $index[^result._count[]]
+                    $result.$index[$rRes]
+                }
+            }{
+                $console:line[failed]
+                ^if($exception.type eq RecursionPackageNotFoundException){
+                    $exception.handled(true)
+                }
+            }
+        }
+        $console:line[$iteration 234234234234234234 $extendResult.conflicts[test/c]]
     }{
 #If no conflicts we should check, if packages has dependencies which is not
 #listed in $pickedPackages than we should add them and recursively step into next ^step
 #otherwise we finished
+^if($iteration>20){^dstop[$extendResult]}
+        ^if(^extendResult.containsNewRequirements[]){
+
+            $result[^self.step[$origin;$extendResult.allRequirements]($iteration+1)]
+
+^extendResult.allRequirements.foreach[o;h]{
+                ^dstop[$o $h]
+            }
+
+        }{
+            $result[
+                $.0[^ResolvingResult::create[$pickedPackages;$iteration]]
+            ]
+        }
     }
 ###
 
 
+#------------------------------------------------------------------------------
 #:param newReq type hash
 #:param packages type hash
 #
 #:TODO expand req constraint by pickedPackagesConstraint
 #
-#:result hash
+#:result ExtendingResult
+#------------------------------------------------------------------------------
 @extendRequirements[newReq;packages][result]
 
-    $extendResult[
-        $.conflicts[^hash::create[]]
-        $.oldReq[^hash::create[$newReq]]
-        $.allReq[^hash::create[$newReq]]
-    ]
+    $extendResult[^ExtendingResult::create[$newReq]]
 
     $newRequirements[^hash::create[]]
     $req[^hash::create[$newReq]]
@@ -93,7 +145,7 @@ locals
         ^package.packagesList.foreach[packageName;extraReq]{
 
             ^rem[collect overall requirements by picked packages]
-            $extendResult.allReq.[$packageName][$extendResult.allReq.[$packageName] $extraReq]
+            ^extendResult.appendConstraint[$packageName;$extraReq]
 
 
             ^if(def $packages.$packageName){
@@ -101,7 +153,7 @@ locals
                 $packageForUpdate[$packages.$packageName]
                 ^if(!^self.semver.satisfies[$packageForUpdate.version;$req.[$packageForUpdate.name] $extraReq]){
                     ^rem[ conflict caused by $package ]
-                    ^extendResult.conflicts.[$package.name].inc(1)
+                    ^extendResult.addConflict[$package.name]
                 }{
                     ^if(!def $newRequirements.$packageName){
                         $newRequirements.$packageName[^hash::create[]]
@@ -126,8 +178,8 @@ locals
                 ^if($i ne $j){
                     ^if(!^self.semver.satisfies[$reqI;$reqJ]){
                         ^rem[ conflict between $i and $j ]
-                        $extendResult.conflicts.[$i]($extendResult.conflicts.$i+1)
-                        $extendResult.conflicts.[$j]($extendResult.conflicts.$j+1)
+                        ^extendResult.addConflict[$i]
+                        ^extendResult.addConflict[$j]
                     }
                 }
             }
@@ -145,8 +197,8 @@ locals
                         !def ^self.pickPackageByStrategy[max;^self.packageManager.getPackages[$newPackageName];$reqI $reqJ]
                     ){
                         ^rem[ conflict between $i and $j ]
-                        $extendResult.conflicts.[$i]($extendResult.conflicts.$i+1)
-                        $extendResult.conflicts.[$j]($extendResult.conflicts.$j+1)
+                        ^extendResult.addConflict[$i]
+                        ^extendResult.addConflict[$j]
                     }
                 }
             }
@@ -155,40 +207,34 @@ locals
 
 
     $result[$extendResult]
+    $console:line[Conflicts: ^extendResult.conflicts.foreach[l;p]{$l^: $p^; }]
 ###
 
 
-
-@updateRequirements[requirements;packageName;newConstraint][result;parser]
-    $parser[$self.semver.versionParser]
-    $constraintA[^parser.parseConstraints[$requirements.$packageName]]
-    $constraintB[^parser.parseConstraints[newConstraint]]
-    ^dstop[^constraintB.matches[$constraintA]]
-    $requirements.$packageName[$requirements.$packageName $newRequirement]
-###
-
-
-
-
+#------------------------------------------------------------------------------
+# Selects one package from set of packages satisties givin constraint by strategy
+#
 #:param strategy type string
 #:param packages type hash
 #:param constraint type string
 #
 #:result PackageInterface
-@pickPackageByStrategy[strategy;packages;constraint][result]
+#------------------------------------------------------------------------------
+@pickPackageByStrategy[strategy;packages;constraint;debug][result;key;package;index;versions;constraint]
+    $result[]
     ^if($strategy ne max){
         ^throw[unknown.strategy;Resolver.p;Strategy $strategy is not implemented]
     }
     ^if(!def $packages || ^packages._count[] <= 0){
         ^throw[empty.packages;Resolver.p;Packages list is empty]
     }
-    $pickedPackage[$packages._at(0)]
+
     $versions[^hash::create[]]
-    ^packages.foreach[key;package]{
+    ^packages.foreach[key;pack]{
         ^rem[ TODO откуда берется не PackageInterface в packages ?]
-        ^if($package is PackageInterface){
+        ^if($pack is PackageInterface){
             $index[^versions._count[]]
-            $versions.$index[$package.version]
+            $versions.$index[$pack.version]
         }
     }
 

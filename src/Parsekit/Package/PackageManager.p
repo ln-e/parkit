@@ -33,7 +33,7 @@ RootPackage.p
     $parsekitRepository[$self.repositoryManager.parsekitRepository]
 
     ^if(!def $parsekitRepository.lazyPackages.$name){
-        ^throw[lazypackagenotfound]
+        ^throw[lazypackagenotfound;PackageManager.p; Package with name '$name' not found ]
     }
 
 # Если еще не был загружен этот пакет
