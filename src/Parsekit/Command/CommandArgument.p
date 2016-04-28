@@ -13,12 +13,15 @@ locals
 
 #------------------------------------------------------------------------------
 #:constructor
+#
 #:param name type string
 #:param required type boolean
+#:param defaultValue
 #------------------------------------------------------------------------------
-@create[name;required]
+@create[name;required;defaultValue]
     $self.name[$name]
     $self.required[$required]
+    $self.defaultValue[$defaultValue]
 ###
 
 

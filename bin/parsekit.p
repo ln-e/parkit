@@ -22,5 +22,5 @@ Application.p
 #Main::info - Prints information for each call
 #------------------------------------------------------------------------------
 @info[][result]
-    $result[Parsekit 0.1.0 by Igor Bodnar. Tool for managing project dependency in parser3.]
+    $result[Parsekit 0.1.0 by Igor Bodnar. Tool for managing project dependencies in parser3.]
 #---

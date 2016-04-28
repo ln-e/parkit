@@ -20,14 +20,20 @@ RootPackage.p
 
 #------------------------------------------------------------------------------
 #:constructor
+#
 #:param repositoryManager type RepositoryManager
+#:param versionParser type VersionParser
 #------------------------------------------------------------------------------
-@create[repositoryManager]
+@create[repositoryManager;versionParser]
+    $self.versionParser[$versionParser]
     $self.repositoryManager[$repositoryManager]
     $self.packages[^hash::create[]]
 ###
 
 
+#------------------------------------------------------------------------------
+#:param name type string
+#------------------------------------------------------------------------------
 @getPackages[name][result]
 # TODO get list of repositories instead of direct access to parsekitRepository
     $parsekitRepository[$self.repositoryManager.parsekitRepository]
@@ -64,9 +70,12 @@ RootPackage.p
 
 #------------------------------------------------------------------------------
 #:param config type hash
+#
 #:result PackageInterface
 #------------------------------------------------------------------------------
-@createRootPackage[config][result]
+@createRootPackage[filePath][result]
+    $jsonFile[^JsonFile::create[$filePath]]
+    $config[^jsonFile.read[]]
     $root[^RootPackage::create[$config.name]]
     $package[^self.configurePackage[$root;$config]]
     $result[$package]
@@ -76,6 +85,7 @@ RootPackage.p
 #------------------------------------------------------------------------------
 #:param repository type RepositoryInterface
 #:param config type hash
+#
 #:result PackageInterface
 #------------------------------------------------------------------------------
 @createPackage[repository;config][result]
@@ -88,22 +98,25 @@ RootPackage.p
 #------------------------------------------------------------------------------
 #:param package type PackageInterface
 #:param config type hash
+#
 #:result PackageInterface
 #------------------------------------------------------------------------------
 @configurePackage[package;config][result]
 
     ^package.setType[$config.type]
     ^package.setTargetDir[$config.targetDir]
-    ^package.setSourceType[$config.sourceType]
-    ^package.setSourceUrl[$config.sourceUrl]
-    ^package.setSourceReference[$config.sourceReference]
+    ^package.setSourceType[$config.source.type]
+    ^package.setSourceUrl[$config.source.url]
+    ^package.setSourceReference[$config.source.reference]
+    ^package.setDistType[$config.dist.type]
+    ^package.setDistUrl[$config.dist.url]
+    ^package.setDistReference[$config.dist.reference]
     ^package.setReleaseDate[$config.releaseDate]
 
-    ^package.setUniqueName[$config.uniqueName]
-
+    ^package.setUniqueName[${config.name}$config.version]
     ^package.setVersion[$config.version]
-    ^package.setPrettyVersion[$config.prettyVersion]
-    ^package.setFullPrettyVersion[$config.fullPrettyVersion]
+#    ^if(def $config.version){ ^package.setVersion[^self.versionParser.normalize[$config.version]] }
+    ^package.setPrettyVersion[$config.version]
     ^package.setStability[$config.stability]
 
     ^if($config.require is hash){
@@ -111,7 +124,7 @@ RootPackage.p
             ^if(^packageName.lower[] eq parser){
                 ^continue[]
             }
-            ^package.addToPackageList[$packageName;$constraint]
+            ^package.addRequire[$packageName;$constraint]
         }
     }
 

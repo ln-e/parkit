@@ -79,8 +79,10 @@ locals
 #Saves new hash to file
 #
 #:param data type hash
+#
+#:result bool
 #------------------------------------------------------------------------------
-@write[data]
+@write[data][result]
     $result(false)
     ^if(!$self.isLocal){
         ^throw[remote-json-update]
@@ -111,6 +113,7 @@ locals
 #
 #:param data type string
 #:param options type hash
+#
 #:result string
 #------------------------------------------------------------------------------
 @static:encode[data;options]

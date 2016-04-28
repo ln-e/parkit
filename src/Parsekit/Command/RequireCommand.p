@@ -31,7 +31,7 @@ CommandInterface
 #:result hash
 #------------------------------------------------------------------------------
 @GET_description[]
-    $result[add dependency to project]
+    $result[add dependency to project. NOT IMPELEMENTED YET.]
 ###
 
 
@@ -57,20 +57,41 @@ CommandInterface
 #
 #:param arguments type hash
 #------------------------------------------------------------------------------
-@execute[arguments]
-
+@execute[arguments][result]
+    ^throw[NotImpelementedException;RequireCommand.p; Command is not impelemented yet. Change parserkit.json manually and run update command instead]
+    $result[]
 
     $jsonFile[^JsonFile::create[/parsekit.json]]
     $data[^jsonFile.read[]]
-    $data.require.[$arguments.packageName][v0.0.1-beta]
 
-    ^jsonFile.write[$data]
+    $rootPackage[^DI:packageManager.createRootPackage[$data]]
+    ^dstop[$rootPackage 123]
 
-    $reposityManager[^RepositoryFactory:getManager[]]
+    ^if(^data.require.contains[$arguments.packageName]){
+        $result[Package already exist in parsekit.json. Versions requirements was changed.]
+    }
+    $data.require.[$arguments.packageName][$arguments.packageVersion]
 
-    $rootPackage[^PackageManager:createRootPackage[$data]]
+#    ^jsonFile.write[$data]
 
-    ^dstop[$rootPackage]
+    $rootPackage[]
+
+
+    $resolver[$DI:resolver]
+
+    $res[^resolver.resolve[$rootPackage]]
+
+    ^res.foreach[i;resolving]{
+        $console:line[=======]
+        $console:line[$i^: iteration = $resolving.iteration packageCount= ^resolving.packages._count[]]
+            ^resolving.packages.foreach[k;l]{
+                $console:line[ $l.name^: $l.version ]
+            }
+        $console:line[=======]
+    }
+    ^dstop[stopped]
+
+
 
     $result[founded: ]
 ###

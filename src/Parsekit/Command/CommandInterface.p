@@ -43,7 +43,10 @@ locals
         ^if(^argument.isRequired[]){
             $requiredNumber($requiredNumber + 1)
         }
-        $argumentsValue.$argumentName[^arguments._at($i)]
+        $argumentsValue.$argumentName[$argument.defaultValue]
+        ^if(^arguments._count[]<$i){
+            $argumentsValue.$argumentName[^arguments._at($i)]
+        }
         $i($i+1)
     }
     ^if(^arguments._count[] < $requiredNumber){

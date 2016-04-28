@@ -30,12 +30,14 @@ PackageInterface
     $self.sourceType[]
     $self.sourceUrl[]
     $self.sourceReference[]
+    $self.distType[]
+    $self.distUrl[]
+    $self.distReference[]
     $self.version[]
     $self.prettyVersion[]
-    $self.fullPrettyVersion[]
     $self.releaseDate[]
     $self.stability[]
-    $self.packagesList[^hash::create[]]
+    $self.requiredPackages[^hash::create[]]
     $self.requires[^hash::create[]]
     $self.conflicts[^hash::create[]]
     $self.devRequires[^hash::create[]]
@@ -128,22 +130,61 @@ PackageInterface
 
 
 #------------------------------------------------------------------------------
-#Stores the repository url of this package
+#Stores the repository type of this package, e.g. git, svn
 #
-#:param sourceUrl type string
+#:param distType type string
 #------------------------------------------------------------------------------
-@getSourceUrl[sourceUrl][result]
-    $self.sourceUrl[$sourceUrl]
+@setDistType[distType][result]
+    $self.distType[$distType]
 ###
 
 
 #------------------------------------------------------------------------------
-#Returns the repository url of this package
+#Returns the repository type of this package, e.g. git, svn
 #
 #:result string
 #------------------------------------------------------------------------------
-@getSourceUrl[][result]
-    $result[$self.sourceUrl]
+@getDistType[][result]
+    $result[$self.distType]
+###
+
+
+#------------------------------------------------------------------------------
+#Stores the repository url of this package zip archive
+#
+#:param distUrl type string
+#------------------------------------------------------------------------------
+@setDistUrl[distUrl][result]
+    $self.distUrl[$distUrl]
+###
+
+
+#------------------------------------------------------------------------------
+#Returns the repository url of this package zip archive
+#
+#:result string
+#------------------------------------------------------------------------------
+@getDistUrl[][result]
+    $result[$self.distUrl]
+###
+
+
+#------------------------------------------------------------------------------
+#Stores the repository reference of this package, e.g. master, 1.0.0 or a commit hash for git
+#
+#:param distReference type string
+#------------------------------------------------------------------------------
+@setDistReference[distReference][result]
+    $self.distReference[$distReference]
+###
+
+#------------------------------------------------------------------------------
+#Returns the repository reference of this package, e.g. master, 1.0.0 or a commit hash for git
+#
+#:result string
+#------------------------------------------------------------------------------
+@getDistReference[][result]
+    $result[$self.distReference]
 ###
 
 
@@ -203,26 +244,6 @@ PackageInterface
 #------------------------------------------------------------------------------
 @getPrettyVersion[]
     $result[$self.prettyVersion]
-###
-
-
-#------------------------------------------------------------------------------
-#Stores the pretty version string plus a git or hg commit hash of this package
-#
-#:param fullPrettyVersion type string
-#------------------------------------------------------------------------------
-@setFullPrettyVersion[fullPrettyVersion][result]
-    $self.fullPrettyVersion[$fullPrettyVersion]
-###
-
-#------------------------------------------------------------------------------
-#Returns the pretty version string plus a git or hg commit hash of this package
-#
-#:param truncate type boolean If the source reference is a sha1 hash, truncate it
-#:result string
-#------------------------------------------------------------------------------
-@getFullPrettyVersion[truncate]
-    $result[$self.fullPrettyVersion]
 ###
 
 
@@ -389,18 +410,18 @@ PackageInterface
 
 
 #------------------------------------------------------------------------------
-#:param list type hash
+#:param packages type hash
 #------------------------------------------------------------------------------
-@setPackagesList[list][result]
-    $self.packagesList[$list]
+@setRequiredPackages[packages][result]
+    $self.requiredPackages[$packages]
 ###
 
 
 #------------------------------------------------------------------------------
 #:result hash
 #------------------------------------------------------------------------------
-@getPackagesList[][result]
-    $result[$self.packagesList]
+@getRequiredPackages[][result]
+    $result[$self.requiredPackages]
 ###
 
 
@@ -408,12 +429,12 @@ PackageInterface
 #:param packageName type string
 #:param constraint type string
 #------------------------------------------------------------------------------
-@addToPackageList[packageName;constraint][result]
+@addRequire[packageName;constraint][result]
     $result[]
-    ^if(!$self.packagesList.$packageName is hash){
-        $self.packgesList.$packageName[^hash::create[]]
+    ^if(!$self.requires.$packageName is hash){
+        $self.requires.$packageName[^hash::create[]]
     }
 # Join constraint with space, which means AND
-    $newConstraint[$self.packagesList.$packageName $constraint]
-    $self.packagesList.$packageName[^newConstraint.trim[]]
+    $newConstraint[$self.requires.$packageName $constraint]
+    $self.requires.$packageName[^newConstraint.trim[]]
 ###

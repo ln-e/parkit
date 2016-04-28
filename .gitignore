@@ -6,3 +6,4 @@ parser/*
 
 # temporary ignore json file
 parsekit.json
+parsekit.lock

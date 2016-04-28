@@ -11,6 +11,7 @@ Application
 DI/DI.p
 Command/InitCommand.p
 Command/RequireCommand.p
+Command/UpdateCommand.p
 Command/SelfupdateCommand.p
 Version/VersionParser.p
 Version/Constraint/Constraint.p
@@ -31,31 +32,10 @@ locals
 #Configures list of available commands
 #------------------------------------------------------------------------------
 @configureCommands[][result]
-
-
-    $jsonFile[^JsonFile::create[/parsekit.json]]
-    $data[^jsonFile.read[]]
-
-    $rootPackage[^DI:packageManager.createRootPackage[$data]]
-
-    $resolver[$DI:resolver]
-
-    $res[^resolver.resolve[$rootPackage]]
-
-    ^res.foreach[i;resolving]{
-        $console:line[=======]
-        $console:line[$i^: iteration = $resolving.iteration packageCount= ^resolving.packages._count[]]
-            ^resolving.packages.foreach[k;l]{
-                $console:line[ $l.name^: $l.version ]
-            }
-        $console:line[=======]
-    }
-    ^dstop[stopped]
-
-
     $self.commands[
         $.init[^InitCommand::create[]]
         $.require[^RequireCommand::create[]]
+        $.update[^UpdateCommand::create[]]
         $.selfupdate[^SelfupdateCommand::create[]]
     ]
 ###

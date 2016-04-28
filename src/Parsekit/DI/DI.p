@@ -11,6 +11,7 @@ DI
 locals
 
 @USE
+Installer/Installer.p
 Package/PackageManager.p
 Repository/RepositoryManager.p
 Resolver/Resolver.p
@@ -23,18 +24,25 @@ Version/Semver.p
 #Sorry for name it DI, but someday we replace it by real IoC-container, I promise.
 @auto[]
     $self.repositoryManager[^RepositoryManager::create[]]
-    $self.packageManager[^PackageManager::create[$self.repositoryManager]]
     $self.versionParser[^VersionParser::create[]]
     $self.comparator[^Comparator::create[]]
+    $self.installer[^Installer::create[]]
+    $self.packageManager[^PackageManager::create[$self.repositoryManager;$self.versionParser]]
     $self.semver[^Semver::create[$self.versionParser;$self.comparator]]
     $self.resolver[^Resolver::create[$self.packageManager;$self.semver]]
 ###
 
 
+#------------------------------------------------------------------------------
+#:constructor
+#------------------------------------------------------------------------------
 @create[]
 ###
 
 
+#------------------------------------------------------------------------------
+#:param key type string
+#------------------------------------------------------------------------------
 @static:GET_DEFAULT[key][result]
     ^if(!def $self.$key){
         ^throw[service.unknown;container.p;Service $key not found]

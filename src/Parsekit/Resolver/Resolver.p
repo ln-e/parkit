@@ -30,18 +30,14 @@ locals
 
 
 #------------------------------------------------------------------------------
-#:param rootPackage type RootPackage
+#:param requirements type hash
 #:param returnSingle type bool
 #
 #:result hash
 #------------------------------------------------------------------------------
-@resolve[rootPackage;returnSingle][result]
-    $self.rootPackage[$rootPackage]
-    $self.baseRequirements[^hash::create[]]
-    $requirements[^hash::create[^rootPackage.getPackagesList[]]]
-
+@resolve[requirements;returnSingle][result]
+    $requirements[^hash::create[$requirements]]
     $resolvedPackages[^self.step[$requirements](1)]
-
     $result[$resolvedPackages]
 
     ^if($returnSingle){
@@ -50,8 +46,8 @@ locals
         $minKey[]
         ^resolvedPackages.foreach[k;resolvingResult]{
             ^if($resolvingResult.iterations < $minIterations){
-              $minIterations($resolvingResult.iterations)
-              $minKey[$k]
+                $minIterations($resolvingResult.iterations)
+                $minKey[$k]
             }
         }
 
@@ -73,15 +69,15 @@ locals
     $extendResult[^self.extendRequirements[$requirements;$pickedPackages]]
 
     ^if(^extendResult.conflicts._count[]){
-#          $console:line[Conflicts: ^extendResult.conflicts.foreach[l;p]{$l^: $p^; }]
+          $console:line[Conflicts: ^extendResult.conflicts.foreach[l;p]{$l^: $p^; }]
 #We should to handle conflict. Decrease most conflict or probably each packages that participant in conflict
 #and recursivly step into next ^step
 #if conslict is unresolvable throw exception, which ^step in hight level should handle.
 #when first step throw exception we cannot install packages at all due to unresolvable conflict
 
         ^extendResult.conflicts.foreach[packageName;numberOfConflicts]{
-#            $console:line[    Handle conflict on $iteration iteration $packageName $pickedPackages.$packageName.version
-#            PICKED:  ^pickedPackages.foreach[z;x]{ ** $z $pickedPackages.$z.version ** }]
+            $console:line[    Handle conflict on $iteration iteration $packageName $pickedPackages.$packageName.version
+            PICKED:  ^pickedPackages.foreach[z;x]{ ** $z $pickedPackages.$z.version ** }]
             $updatedRequirements[^hash::create[$extendResult.baseRequirements]]
 
             $updatedRequirements.$packageName[$updatedRequirements.$packageName <$pickedPackages.$packageName.version]
@@ -135,7 +131,7 @@ locals
 
 
     ^packages.foreach[key;package]{
-        ^package.packagesList.foreach[packageName;extraReq]{
+        ^package.requires.foreach[packageName;extraReq]{
 
             ^rem[collect overall requirements by picked packages]
             ^extendResult.appendConstraint[$packageName;$extraReq]
@@ -147,6 +143,7 @@ locals
                 ^if(!^self.semver.satisfies[$packageForUpdate.version;$newReq.[$packageForUpdate.name] $extraReq]){
                     ^rem[ conflict caused by $package ]
                     ^extendResult.addConflict[$package.name]
+                    ^rem[ TODO IMPORTANT! if package is not lister in origin we should add transivite patrent packages to conflicts as well ]
                 }{
                     ^if(!def $newRequirements.$packageName){
                         $newRequirements.$packageName[^hash::create[]]
@@ -189,7 +186,7 @@ locals
                         ||
                         !def ^self.pickPackageByStrategy[max;^self.packageManager.getPackages[$newPackageName];$reqI $reqJ]
                     ){
-#                    $console:line[TRNASITIVNIY $newPackageName between $i $packages.$i.version [$reqI] and $j $packages.$j.version [$reqJ] ]
+                    $console:line[TRNASITIVNIY $newPackageName between $i $packages.$i.version [$reqI] and $j $packages.$j.version [$reqJ] ]
                         ^rem[ conflict between $i and $j ]
                         ^extendResult.addConflict[$i]
                         ^extendResult.addConflict[$j]
@@ -259,7 +256,7 @@ locals
         $package[^self.pickPackageByStrategy[max;$packages;^taint[as-is][$baseConstraint]]]
 
         ^if(!($package is PackageInterface)){
-#            $console:line[Could not find package '$packageName' from set with length ^packages._count[] ($packages.1.name $packages.1.version ) satisfied '^taint[as-is][$baseConstraint]' ]
+            $console:line[Could not find package '$packageName' from set with length ^packages._count[] ($packages.1.name $packages.1.version ) satisfied '^taint[as-is][$baseConstraint]' ]
             ^throw[RecursionPackageNotFoundException;Resolver.p; Could not find package '$packageName' satisfied '^taint[as-is][$baseConstraint]' ]
         }
 
