@@ -22,6 +22,7 @@ locals
     $self.baseRequirements[^hash::create[$requirements]]
     $self.allRequirements[^hash::create[$requirements]]
     $self.transitiveMap[^hash::create[]]
+    $self.pickedPackages[^hash::create[]]
 ###
 
 
@@ -31,27 +32,36 @@ locals
     }
     $index[^self.transitiveMap.$transitiveName._count[]]
     $self.transitiveMap.[$transitiveName].[$index][$baseName]
+    ^if(^self.transitiveMap.contains[$baseName]){
+        ^self.transitiveMap.[$transitiveName].add[$self.transitiveMap.contains[$baseName]]
+    }
 ###
 
 
 #------------------------------------------------------------------------------
 #:param packageName type string
 #------------------------------------------------------------------------------
-@addConflict[packageName][result]
-    $self.conflicts.[$packageName]($self.conflicts.$packageName+1)
+@addConflict[packageName;count][result]
+    ^if(!def $count){$count(1)}
+    $self.conflicts.[$packageName]($self.conflicts.$packageName+$count)
 ###
 
 
 #------------------------------------------------------------------------------
 #:param packageName type string
 #------------------------------------------------------------------------------
-@addConflictByTransitiveMap[packageName;transitiveMap][result]
-    ^self.addConflict[$packageName]
-    ^if(def $transitiveMap && ^transitiveMap.contains[$packageName]){
-        ^transitiveMap.$packageName.foreach[k;conflictName]{
-            ^self.addConflict[$conflictName]
-            ^self.addConflictByTransitiveMap[$conflictName;$transitiveMap]
+@extendConflictsByTransitiveMap[][result]
+    $newConflicts[^hash::create[]]
+    ^self.conflicts.foreach[conflictPackageName;conflictsCount]{
+        ^if(^self.transitiveMap.contains[$conflictPackageName]){
+            ^self.transitiveMap.[$conflictPackageName].foreach[i;packageName]{
+                $newConflicts.[$packageName]($newConflicts.$packageName + 1)
+            }
         }
+    }
+
+    ^newConflicts.foreach[name;count]{
+        ^self.addConflict[$name;$count]
     }
 ###
 

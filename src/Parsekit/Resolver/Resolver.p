@@ -22,10 +22,13 @@ locals
 
 #------------------------------------------------------------------------------
 #:param packageManager type PackageManager
+#:param semver type Semver
+#:param debug type bool
 #------------------------------------------------------------------------------
-@create[packageManager;semver]
+@create[packageManager;semver;debug]
     $self.packageManager[$packageManager]
     $self.semver[$semver]
+    $self.debug($debug)
 ###
 
 
@@ -65,19 +68,19 @@ locals
 @step[requirements;transitiveMap;iteration][result]
     $result[^hash::create[]]
 
-    $pickedPackages[^self.pickPackages[$requirements]]
-    $extendResult[^self.extendRequirements[$requirements;$pickedPackages;$transitiveMap]]
+    $extendResult[^self.extendRequirements[$requirements;$transitiveMap]]
+    $pickedPackages[$extendResult.pickedPackages]
 
     ^if(^extendResult.conflicts._count[]){
-          $console:line[Conflicts: ^extendResult.conflicts.foreach[l;p]{$l^: $p^; }]
+        ^if($self.debug){$console:line[ $iteration Conflicts: ^extendResult.conflicts.foreach[l;p]{$l^: $p^; }]}
 #We should to handle conflict. Decrease most conflict or probably each packages that participant in conflict
 #and recursivly step into next ^step
 #if conslict is unresolvable throw exception, which ^step in hight level should handle.
 #when first step throw exception we cannot install packages at all due to unresolvable conflict
 
         ^extendResult.conflicts.foreach[packageName;numberOfConflicts]{
-            $console:line[    Handle conflict on $iteration iteration $packageName $pickedPackages.$packageName.version
-            PICKED:  ^pickedPackages.foreach[z;x]{ ** $z $pickedPackages.$z.version ** }]
+            ^if($self.debug){$console:line[    Handle conflict on $iteration iteration $packageName $pickedPackages.$packageName.version
+            PICKED:  ^pickedPackages.foreach[z;x]{ ** $z $pickedPackages.$z.version ** }]}
             $updatedRequirements[^hash::create[$extendResult.baseRequirements]]
 
             $updatedRequirements.$packageName[$updatedRequirements.$packageName <$pickedPackages.$packageName.version]
@@ -86,6 +89,7 @@ locals
                 ^recurrResult.foreach[k;rRes]{
                     $index[^result._count[]]
                     $result.$index[$rRes]
+                    ^if($self.debug){$console:line[RECURR RESULT SUCCESS!! ^result._count[] ]}
                 }
             }{
                 ^if($exception.type eq RecursionPackageNotFoundException){
@@ -115,69 +119,71 @@ locals
 #
 #:param newReq type hash
 #:param transitiveMap type hash
-#:param packages type hash
 #
 #:result ExtendingResult
 #------------------------------------------------------------------------------
-@extendRequirements[newReq;packages;transitiveMap][result]
+@extendRequirements[newReq;transitiveMap][result]
+
+^if($self.debug){$console:line[>>>>>>>]}
 
     $extendResult[^ExtendingResult::create[$newReq]]
 
-    $newRequirements[^hash::create[]]
+#    $newRequirements[^hash::create[]]
 
 #by foreach pickedPackages we should add extra requirements to req,
 #and check, if it is cause conslict, i.e. empty set with new constraint
 
     $transitiveNewPackages[^hash::create[]]
 
+    $hasNew(true)
+    $iterationRequirement[^hash::create[$newReq]]
+    ^while($hasNew){
+        $hasNew(false)
 
-    ^packages.foreach[key;package]{
-        ^package.requires.foreach[packageName;extraReq]{
+        ^try{
 
-            ^rem[collect overall requirements by picked packages]
-            ^extendResult.appendConstraint[$packageName;$extraReq]
+            $packages[^self.pickPackages[$iterationRequirement]]
 
+            ^packages.foreach[key;package]{
+                ^package.requires.foreach[packageName;extraReq]{
 
-            ^if(def $packages.$packageName){
-                ^rem[ OLD package has new requirements. We do not change old requirement right now, just check ]
-                $packageForUpdate[$packages.$packageName]
-                ^if(!^self.semver.satisfies[$packageForUpdate.version;$newReq.[$packageForUpdate.name] $extraReq]){
-                    ^rem[ conflict caused by $package ]
-                    ^extendResult.addConflictByTransitiveMap[$package.name;$transitiveMap]
-                    ^rem[ TODO IMPORTANT! if package is not listened in origin we should add transivite parent packages to conflicts as well ]
-                }{
-                    ^if(!def $newRequirements.$packageName){
-                        $newRequirements.$packageName[^hash::create[]]
+                    ^rem[collect overall requirements by picked packages]
+                    ^extendResult.appendConstraint[$packageName;$extraReq]
+
+                    ^if(def $packages.$packageName){
+                        ^rem[ OLD package has new requirements. We do not change old requirement right now, just check ]
+                        $packageForUpdate[$packages.$packageName]
+                        ^if(!^self.semver.satisfies[$packageForUpdate.version;$newReq.[$packageForUpdate.name] $extraReq]){
+                            ^rem[ conflict caused by $package ]
+                            ^extendResult.addConflict[$package.name]
+                            ^rem[ TODO IMPORTANT! if package is not listened in origin we should add transivite parent packages to conflicts as well ]
+                        }{
+                            ^if(!def $iterationRequirement.$packageName){
+                                $hasNew(true)
+                            }
+                            $iterationRequirement.[$packageName][$iterationRequirement.[$packageName] $extraReq]
+                        }
+                    }{
+                        $hasNew(true)
+                        $iterationRequirement.[$packageName][$iterationRequirement.[$packageName] $extraReq]
+                        ^extendResult.addToTransitiveMap[$packageName;$package.name]
+
+                        ^rem[ new package ! ]
+                        ^if(!def $transitiveNewPackages.$packageName){
+                            $transitiveNewPackages.$packageName[^hash::create[]]
+                        }
+                        $transitiveNewPackages.[$packageName].[$package.name][$extraReq]
                     }
-                    $newRequirements.$packageName.[$package.name][$extraReq]
-                }
-            }{
-                ^extendResult.addToTransitiveMap[$packageName;$package.name]
 
-                ^rem[ new package ! ]
-                ^if(!def $transitiveNewPackages.$packageName){
-                    $transitiveNewPackages.$packageName[^hash::create[]]
                 }
-                $transitiveNewPackages.[$packageName].[$package.name][$extraReq]
             }
-
+        }{
+            ^if($exception.type eq RecursionPackageNotFoundException){
+                $exception.handled(true)
+            }
         }
     }
 
-    ^rem[ compare packages new requirement between them ]
-    ^newRequirements.foreach[newPackageName;reqConfig]{
-        ^reqConfig.foreach[i;reqI]{
-            ^reqConfig.foreach[j;reqJ]{
-                ^if($i ne $j){
-                    ^if(!^self.semver.constraintIntersected[$reqI;$reqJ]){
-                        ^rem[ conflict between $i and $j ]
-                        ^extendResult.addConflict[$i]
-                        ^extendResult.addConflict[$j]
-                    }
-                }
-            }
-        }
-    }
 
     ^rem[ compare packages new requirement between them ]
     ^transitiveNewPackages.foreach[newPackageName;reqConfig]{
@@ -189,7 +195,7 @@ locals
                         ||
                         !def ^self.pickPackageByStrategy[max;^self.packageManager.getPackages[$newPackageName];$reqI $reqJ]
                     ){
-                    $console:line[TRNASITIVNIY $newPackageName between $i $packages.$i.version [$reqI] and $j $packages.$j.version [$reqJ] ]
+                        ^if($self.debug){$console:line[TRNASITIVNIY $newPackageName between $i $packages.$i.version [$reqI] and $j $packages.$j.version [$reqJ] ]}
                         ^rem[ conflict between $i and $j ]
                         ^extendResult.addConflict[$i]
                         ^extendResult.addConflict[$j]
@@ -199,8 +205,10 @@ locals
         }
     }
 
-
+    ^extendResult.extendConflictsByTransitiveMap[]
+    $extendResult.pickedPackages[$packages]
     $result[$extendResult]
+    ^if($self.debug){$console:line[<<<<<<<<]}
 ###
 
 
@@ -265,4 +273,5 @@ locals
 
         $result.[$package.name][$package]
     }
+    ^if($self.debug){$console:line[PICKED ^result.foreach[i;k]{$i $k.version}[ ]]}
 ###

@@ -69,7 +69,7 @@ locals
 
     ^if(
         (
-            $self.data.packages.[$package.name] is PackageInterface &&
+            def $self.data.packages.[$package.name] &&
             $self.data.packages.[$package.name].version ne $package.version
         )
         ||
@@ -80,8 +80,14 @@ locals
         $result(true)
     }
 
+
+
     $self.data.packages.[$package.name][$package]
     ^self.detectUpdated[]
+    ^if($result){
+     $console:line[da da da]
+    }
+
 ###
 
 
