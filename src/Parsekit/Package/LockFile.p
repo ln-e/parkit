@@ -84,10 +84,6 @@ locals
 
     $self.data.packages.[$package.name][$package]
     ^self.detectUpdated[]
-    ^if($result){
-     $console:line[da da da]
-    }
-
 ###
 
 

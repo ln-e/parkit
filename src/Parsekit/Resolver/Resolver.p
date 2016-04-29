@@ -267,7 +267,7 @@ locals
         $package[^self.pickPackageByStrategy[max;$packages;^taint[as-is][$baseConstraint]]]
 
         ^if(!($package is PackageInterface)){
-            $console:line[Could not find package '$packageName' from set with length ^packages._count[] satisfied '^taint[as-is][$baseConstraint]' ]
+            ^if($self.debug){$console:line[Could not find package '$packageName' from set with length ^packages._count[] satisfied '^taint[as-is][$baseConstraint]' ]}
             ^throw[RecursionPackageNotFoundException;Resolver.p; Could not find package '$packageName' satisfied '^taint[as-is][$baseConstraint]' ]
         }
 

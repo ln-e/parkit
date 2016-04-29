@@ -16,8 +16,11 @@ locals
 
 #------------------------------------------------------------------------------
 #:constructor
+#
+#:param driverManager type DriverManager
 #------------------------------------------------------------------------------
-@create[]
+@create[driverManager]
+    $self.driverManager[$driverManager]
 ###
 
 
@@ -28,6 +31,10 @@ locals
 #:result hash updated packages
 #------------------------------------------------------------------------------
 @update[lockFile;packages][result]
+    ^if(!-d '/vault'){
+        ^self.createVault[]
+    }
+
     $packageToUpdate[^hash::create[]]
     $packageToRemove[^hash::create[]]
     ^packages.foreach[packageName;package]{
@@ -58,6 +65,8 @@ locals
 #------------------------------------------------------------------------------
 @install[packages][result]
     ^packages.foreach[key;package]{
+        ^self.createDir[/vault/$package.name]
+        ^self.driverManager.install[/vault/$package.name;^package.getSourceUrl[]]
         $console:line[Do updates for package $package.name $package.version]
     }
 ###
@@ -72,4 +81,22 @@ locals
     ^packages.foreach[key;package]{
         $console:line[Do remove for package $package.name]
     }
+###
+
+
+#------------------------------------------------------------------------------
+# Attempts to create vault directory
+#------------------------------------------------------------------------------
+@createVault[]
+    ^self.createDir[/vault]
+###
+
+
+#------------------------------------------------------------------------------
+# Attempts to create vault directory
+#------------------------------------------------------------------------------
+@createDir[dir]
+    $test[]
+    ^test.save[$dir/.vaultkeep]
+    ^file:delete[$dir/.vaultkeep;$.keep-empty-dirs(true) $.exception(false)]
 ###

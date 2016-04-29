@@ -12,6 +12,7 @@ locals
 
 @USE
 Installer/Installer.p
+Installer/Driver/DriverManager.p
 Package/PackageManager.p
 Repository/RepositoryManager.p
 Resolver/Resolver.p
@@ -26,7 +27,8 @@ Version/Semver.p
     $self.repositoryManager[^RepositoryManager::create[]]
     $self.versionParser[^VersionParser::create[]]
     $self.comparator[^Comparator::create[]]
-    $self.installer[^Installer::create[]]
+    $self.driverManager[^DriverManager::create[]]
+    $self.installer[^Installer::create[$self.driverManager]]
     $self.packageManager[^PackageManager::create[$self.repositoryManager;$self.versionParser]]
     $self.semver[^Semver::create[$self.versionParser;$self.comparator]]
     $self.resolver[^Resolver::create[$self.packageManager;$self.semver]]
