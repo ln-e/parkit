@@ -37,7 +37,7 @@ locals
 #------------------------------------------------------------------------------
 @resolve[requirements;returnSingle][result]
     $requirements[^hash::create[$requirements]]
-    $resolvedPackages[^self.step[$requirements](1)]
+    $resolvedPackages[^self.step[$requirements][](1)]
     $result[$resolvedPackages]
 
     ^if($returnSingle){
@@ -62,11 +62,11 @@ locals
 #
 #:result hash
 #------------------------------------------------------------------------------
-@step[requirements;iteration][result]
+@step[requirements;transitiveMap;iteration][result]
     $result[^hash::create[]]
 
     $pickedPackages[^self.pickPackages[$requirements]]
-    $extendResult[^self.extendRequirements[$requirements;$pickedPackages]]
+    $extendResult[^self.extendRequirements[$requirements;$pickedPackages;$transitiveMap]]
 
     ^if(^extendResult.conflicts._count[]){
           $console:line[Conflicts: ^extendResult.conflicts.foreach[l;p]{$l^: $p^; }]
@@ -82,7 +82,7 @@ locals
 
             $updatedRequirements.$packageName[$updatedRequirements.$packageName <$pickedPackages.$packageName.version]
             ^try{
-                $recurrResult[^self.step[$updatedRequirements]($iteration+1)]
+                $recurrResult[^self.step[$updatedRequirements;$extendResult.transitiveMap]($iteration+1)]
                 ^recurrResult.foreach[k;rRes]{
                     $index[^result._count[]]
                     $result.$index[$rRes]
@@ -99,7 +99,7 @@ locals
 #otherwise we finished
 
         ^if(^extendResult.containsNewRequirements[]){
-            $result[^self.step[$extendResult.allRequirements]($iteration+1)]
+            $result[^self.step[$extendResult.allRequirements;$extendResult.transitiveMap]($iteration+1)]
         }{
             $result[
                 $.0[^ResolvingResult::create[^self.pickPackages[$extendResult.allRequirements];$iteration]]
@@ -114,11 +114,12 @@ locals
 #Expands requirements constraint by  specifiс packages сonstraint
 #
 #:param newReq type hash
+#:param transitiveMap type hash
 #:param packages type hash
 #
 #:result ExtendingResult
 #------------------------------------------------------------------------------
-@extendRequirements[newReq;packages][result]
+@extendRequirements[newReq;packages;transitiveMap][result]
 
     $extendResult[^ExtendingResult::create[$newReq]]
 
@@ -142,8 +143,8 @@ locals
                 $packageForUpdate[$packages.$packageName]
                 ^if(!^self.semver.satisfies[$packageForUpdate.version;$newReq.[$packageForUpdate.name] $extraReq]){
                     ^rem[ conflict caused by $package ]
-                    ^extendResult.addConflict[$package.name]
-                    ^rem[ TODO IMPORTANT! if package is not lister in origin we should add transivite patrent packages to conflicts as well ]
+                    ^extendResult.addConflictByTransitiveMap[$package.name;$transitiveMap]
+                    ^rem[ TODO IMPORTANT! if package is not listened in origin we should add transivite parent packages to conflicts as well ]
                 }{
                     ^if(!def $newRequirements.$packageName){
                         $newRequirements.$packageName[^hash::create[]]
@@ -151,6 +152,8 @@ locals
                     $newRequirements.$packageName.[$package.name][$extraReq]
                 }
             }{
+                ^extendResult.addToTransitiveMap[$packageName;$package.name]
+
                 ^rem[ new package ! ]
                 ^if(!def $transitiveNewPackages.$packageName){
                     $transitiveNewPackages.$packageName[^hash::create[]]
@@ -256,7 +259,7 @@ locals
         $package[^self.pickPackageByStrategy[max;$packages;^taint[as-is][$baseConstraint]]]
 
         ^if(!($package is PackageInterface)){
-            $console:line[Could not find package '$packageName' from set with length ^packages._count[] ($packages.1.name $packages.1.version ) satisfied '^taint[as-is][$baseConstraint]' ]
+            $console:line[Could not find package '$packageName' from set with length ^packages._count[] satisfied '^taint[as-is][$baseConstraint]' ]
             ^throw[RecursionPackageNotFoundException;Resolver.p; Could not find package '$packageName' satisfied '^taint[as-is][$baseConstraint]' ]
         }
 

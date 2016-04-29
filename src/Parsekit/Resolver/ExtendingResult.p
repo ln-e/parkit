@@ -21,6 +21,16 @@ locals
     $self.conflicts[^hash::create[]]
     $self.baseRequirements[^hash::create[$requirements]]
     $self.allRequirements[^hash::create[$requirements]]
+    $self.transitiveMap[^hash::create[]]
+###
+
+
+@addToTransitiveMap[transitiveName;baseName]
+    ^if(!^self.transitiveMap.contains[$transitiveName]){
+        $self.transitiveMap.$transitiveName[^hash::create[]]
+    }
+    $index[^self.transitiveMap.$transitiveName._count[]]
+    $self.transitiveMap.[$transitiveName].[$index][$baseName]
 ###
 
 
@@ -29,6 +39,20 @@ locals
 #------------------------------------------------------------------------------
 @addConflict[packageName][result]
     $self.conflicts.[$packageName]($self.conflicts.$packageName+1)
+###
+
+
+#------------------------------------------------------------------------------
+#:param packageName type string
+#------------------------------------------------------------------------------
+@addConflictByTransitiveMap[packageName;transitiveMap][result]
+    ^self.addConflict[$packageName]
+    ^if(def $transitiveMap && ^transitiveMap.contains[$packageName]){
+        ^transitiveMap.$packageName.foreach[k;conflictName]{
+            ^self.addConflict[$conflictName]
+            ^self.addConflictByTransitiveMap[$conflictName;$transitiveMap]
+        }
+    }
 ###
 
 
