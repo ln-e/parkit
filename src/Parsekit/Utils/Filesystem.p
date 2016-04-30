@@ -1,49 +1,55 @@
 # Created by IntelliJ IDEA.
 # User: ibodnar
-# Date: 13.02.16
-# Time: 14:12
+# Date: 30.04.16
+# Time: 9:03
 # To change this template use File | Settings | File Templates.
 
 @CLASS
-SelfupdateCommand
-
-@USE
-CommandInterface.p
-Utils/JsonFile.p
+Filesystem
 
 @OPTIONS
 locals
 
-@BASE
-CommandInterface
+@auto[]
+###
 
-
-#------------------------------------------------------------------------------
-#:constructor
-#------------------------------------------------------------------------------
 @create[]
 ###
 
 
 #------------------------------------------------------------------------------
-#:result string
+#Attempt to create directory
+#
+#:param dir type string
+#
+#:result bool
 #------------------------------------------------------------------------------
-@GET_description[]
-    $result[updates parsekit to the latest version]
+@createDir[dir][result]
+    $test[]
+    ^test.save[$dir/.parsekitkeep]
+    ^file:delete[$dir/.parsekitkeep; $.keep-empty-dirs(true) $.exception(false)]
+    $result(^self.exists[$dir])
 ###
 
 
 #------------------------------------------------------------------------------
-#:result hash
+#Attempt to delete directory
+#
+#:param dir type string
+#
+#:result bool
 #------------------------------------------------------------------------------
-@GET_argumentsConfig[]
-    $result[^hash::create[]]
+@removeDir[dir][result]
+    ^file:delete[$dir; $.keep-empty-dirs(true) $.exception(false)]
+    $result(!^self.exists[$dir])
 ###
 
 
 #------------------------------------------------------------------------------
-#:param arguments type hash
+#:param dir type string
+#
+#:result bool
 #------------------------------------------------------------------------------
-@execute[arguments][result]
-    $result[self update not yet implemented]
+@exists[dir][result]
+    $result(-d '$dir')
 ###

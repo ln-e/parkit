@@ -10,7 +10,7 @@ ParsekitRepository
 @USE
 BaseRepository.p
 RepositoryUtils.p
-Json/JsonFile.p
+Utils/JsonFile.p
 
 @OPTIONS
 locals

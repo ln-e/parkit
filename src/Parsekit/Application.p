@@ -8,14 +8,15 @@
 Application
 
 @USE
-DI/DI.p
 Command/InitCommand.p
 Command/RequireCommand.p
-Command/UpdateCommand.p
 Command/SelfupdateCommand.p
-Version/VersionParser.p
-Version/Constraint/Constraint.p
+Command/UpdateCommand.p
+DI/DI.p
+Exec/Exec.p
 Resolver/Resolver.p
+Version/Constraint/Constraint.p
+Version/VersionParser.p
 
 
 @OPTIONS

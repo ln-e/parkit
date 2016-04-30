@@ -8,8 +8,8 @@
 InitCommand
 
 @USE
-Json/JsonFile.p
 CommandInterface.p
+Utils/JsonFile.p
 
 @OPTIONS
 locals

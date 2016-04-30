@@ -34,11 +34,42 @@ locals
 
 #------------------------------------------------------------------------------
 #:param dir type string
-#:param url type string
-#:param params type hash
+#:param package type PackageInterface
 #
 #:result bool
 #------------------------------------------------------------------------------
-@install[dir;url;*params]
+@update[dir;package]
+    ^throw[Abstract method not implemented]
+###
+
+
+#------------------------------------------------------------------------------
+#:param dir type string
+#:param package type PackageInterface
+#
+#:result bool
+#------------------------------------------------------------------------------
+@doInstall[dir;package]
+    ^throw[Abstract method not implemented]
+###
+
+
+#------------------------------------------------------------------------------
+#:param dir type string
+#:param package type PackageInterface
+#
+#:result bool
+#------------------------------------------------------------------------------
+@doUpdate[dir;package]
+    ^throw[Abstract method not implemented]
+###
+
+
+#------------------------------------------------------------------------------
+#:param dir type string
+#
+#:result bool
+#------------------------------------------------------------------------------
+@doRemove[dir]
     ^throw[Abstract method not implemented]
 ###

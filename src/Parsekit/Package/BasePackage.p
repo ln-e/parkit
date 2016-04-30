@@ -30,6 +30,7 @@ PackageInterface
     $self.sourceType[]
     $self.sourceUrl[]
     $self.sourceReference[]
+    $self.preferDist(false)
     $self.distType[]
     $self.distUrl[]
     $self.distReference[]

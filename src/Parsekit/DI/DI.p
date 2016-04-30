@@ -11,24 +11,28 @@ DI
 locals
 
 @USE
-Installer/Installer.p
 Installer/Driver/DriverManager.p
+Installer/Installer.p
 Package/PackageManager.p
 Repository/RepositoryManager.p
 Resolver/Resolver.p
+Utils/Filesystem.p
 Version/Comparator.p
-Version/VersionParser.p
 Version/Semver.p
+Version/VersionParser.p
 
 
+#------------------------------------------------------------------------------
 #Dummiest mock for future di container implementation
 #Sorry for name it DI, but someday we replace it by real IoC-container, I promise.
+#------------------------------------------------------------------------------
 @auto[]
+    $self.filesystem[^Filesystem::create[]]
     $self.repositoryManager[^RepositoryManager::create[]]
     $self.versionParser[^VersionParser::create[]]
     $self.comparator[^Comparator::create[]]
-    $self.driverManager[^DriverManager::create[]]
-    $self.installer[^Installer::create[$self.driverManager]]
+    $self.driverManager[^DriverManager::create[$self.filesystem]]
+    $self.installer[^Installer::create[$self.driverManager;$self.filesystem]]
     $self.packageManager[^PackageManager::create[$self.repositoryManager;$self.versionParser]]
     $self.semver[^Semver::create[$self.versionParser;$self.comparator]]
     $self.resolver[^Resolver::create[$self.packageManager;$self.semver]]

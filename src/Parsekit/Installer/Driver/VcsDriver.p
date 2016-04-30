@@ -1,18 +1,20 @@
 # Created by IntelliJ IDEA.
 # User: ibodnar
 # Date: 30.04.16
-# Time: 2:28
+# Time: 8:58
 # To change this template use File | Settings | File Templates.
 
 @CLASS
-DriverManager
+VcsDriver
 
 @OPTIONS
 locals
 
 @USE
-GitDriver.p
+DriverInterface.p
 
+@BASE
+DriverInterface
 
 @auto[]
 ###
@@ -25,27 +27,25 @@ GitDriver.p
 #------------------------------------------------------------------------------
 @create[filesystem]
     $self.filesystem[$filesystem]
-    $self.drivers[
-        $.git[^GitDriver::create[$filesystem]]
-    ]
 ###
 
 
 #------------------------------------------------------------------------------
-# Attempts to install package in directory
-#
 #:param dir type string
-#:param url type string
+#:param package type PackageInterface
 #
 #:result bool
 #------------------------------------------------------------------------------
-@install[dir;package][result]
-    $result(false)
-    $url[^if($package.preferDist){$package.distUrl}{$package.sourceUrl}]
-    ^self.drivers.foreach[key;driver]{
-        ^if(^driver.supports[$url]){
-            $result(^driver.update[$dir;$package])
-            ^break[]
-        }
+@update[dir;package]
+    ^if(!def $package.sourceReference){
+        ^throw[InvalidArgumentException;VcsDriver.p; Git package hasn't source reference. ]
+    }
+    $url[$package.sourceUrl]
+
+    ^if(^self.filesystem.exists[$dir]){
+        ^self.doUpdate[$dir;$package]
+    }{
+        $self.filesystem.createDir[$dir]
+        ^self.doInstall[$dir;$package]
     }
 ###

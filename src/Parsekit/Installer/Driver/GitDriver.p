@@ -11,10 +11,10 @@ GitDriver
 locals
 
 @USE
-DriverInterface.p
+VcsDriver.p
 
 @BASE
-DriverInterface
+VcsDriver
 
 
 @auto[]
@@ -23,8 +23,11 @@ DriverInterface
 
 #------------------------------------------------------------------------------
 #:constructor
+#
+#:param filesystem type Filesystem
 #------------------------------------------------------------------------------
-@create[]
+@create[filesystem]
+    ^BASE:create[$filesystem]
 ###
 
 
@@ -47,10 +50,105 @@ DriverInterface
 
 #------------------------------------------------------------------------------
 #:param dir type string
-#:param url type string
+#:param package type PackageInterface
 #
 #:result bool
 #------------------------------------------------------------------------------
-@install[dir;url]
-    $console:line[ do smth to install $url in $dir ]
+@doInstall[dir;package][result]
+    $console:line[ do smth to install $package.sourceUrl in $dir ]
+    $repoUrl[$package.sourceUrl]
+    $ref[$package.sourceReference]
+
+    $command[git clone --no-checkout $repoUrl . && git remote add parsekit $repoUrl && git fetch parsekit]
+    $exec[^Exec::create[$command;$dir]]
+
+    ^self.checkoutToCommit[$dir;$package.sourceReference;$package.prettyVersion]
+###
+
+
+#------------------------------------------------------------------------------
+#:param dir type string
+#:param package type PackageInterface
+#
+#:result bool
+#------------------------------------------------------------------------------
+@doUpdate[dir;package]
+    ^if(!def $package.sourceReference){
+        ^throw[InvalidArgumentException;VcsDriver.p; Git package hasn't source reference. ]
+    }
+    ^if(!^self.filesystem.exists[$dir/.git/]){
+        ^self.filesystem.removeDir[$dir]
+        ^self.filesystem.createDir[$dir]
+        $console:line[Directory '$dir' exists but do not contain .git. Removed and reinitialize.]
+        ^self.doInstall[$dir;$package]
+    }{
+        ^self.checkoutToCommit[$dir;$package.sourceReference;$package.prettyVersion]
+    }
+###
+
+
+
+#------------------------------------------------------------------------------
+#:param dir type string
+#:param reference type string
+#:param branch type string
+#
+#:result bool
+#------------------------------------------------------------------------------
+@checkoutToCommit[dir;reference;branch][result]
+    ^rem[ TODO add posibility not to force all commands ? ]
+    $complete(false)
+    $result[]
+
+    $branch[^branch.match[((?:^^dev-)|(?:\.x?-dev^$))][i]{}] ^rem[ strip out 'dev-' at the start or '.x-dev' at the end]
+$console:line[BRANCH $branch]
+$console:line[$dir]
+    $branchCommand[^Exec::create[git branch -r;$dir]]
+    $branches[$branchCommand.text]
+
+$console:line[BRANCHES $branches]
+# check whether non-commitish are branches or tags, and fetch branches with the remote name
+    ^if(
+        ^reference.match[^^[a-f0-9]{40}^$][n] == 0
+        && def $branches
+        && ^branches.match[parsekit/$reference][nm] > 0
+    ){
+        $command[git checkout -f -B $branch parsekit/$reference -- && git reset --hard parsekit/$reference --]
+        $checkoutCommand[^Exec::create[$command;$dir]]
+        ^if(^checkoutCommand.execute[]){
+            $complete(true)
+        }
+    }
+
+
+#   try to checkout branch by name and then reset it so it's on the proper branch name
+    ^if(!$complete && ^reference.match[^^[a-f0-9]{40}^$][n] > 0){
+#       add 'v' in front of the branch if it was stripped
+        ^if(^branches.match[^^\s*parsekit/$branch^$][mn] == 0 && ^branches.match[^^\s*parsekit/v$branch^$][mn] > 0){
+            $branch[v$branch]
+        }
+
+        $command[^Exec::create[git checkout $branch --;$dir]]
+        $fallbackCommand[^Exec::create[git checkout -f -B $branch parsekit/$branch --;$dir]]
+
+        ^if( ^command.execute[] || ^fallbackCommand.execute[]){
+            $resetCommand[^Exec::create[git reset --hard $reference --]]
+            ^if(^resetCommand.execute[]){
+                $complete(true)
+            }
+        }
+    }
+
+    ^if(!$complete){
+        $command[^Exec::create[git checkout -f $reference -- && git reset --hard $reference --;$dir]]
+        ^if(^command.execute[]){
+            $complete(true)
+        }
+    }
+
+    ^if(!$complete){
+        ^throw[UnexpectedArgumentException;GitDriver.p; Reference '$reference' was not found.]
+    }
+
+    $result($complete)
 ###

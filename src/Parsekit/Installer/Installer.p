@@ -19,8 +19,9 @@ locals
 #
 #:param driverManager type DriverManager
 #------------------------------------------------------------------------------
-@create[driverManager]
+@create[driverManager;filesystem]
     $self.driverManager[$driverManager]
+    $self.filesystem[$filesystem]
 ###
 
 
@@ -65,8 +66,7 @@ locals
 #------------------------------------------------------------------------------
 @install[packages][result]
     ^packages.foreach[key;package]{
-        ^self.createDir[/vault/$package.name]
-        ^self.driverManager.install[/vault/$package.name;^package.getSourceUrl[]]
+        ^self.driverManager.install[/vault/$package.name;$package]
         $console:line[Do updates for package $package.name $package.version]
     }
 ###
@@ -88,15 +88,5 @@ locals
 # Attempts to create vault directory
 #------------------------------------------------------------------------------
 @createVault[]
-    ^self.createDir[/vault]
-###
-
-
-#------------------------------------------------------------------------------
-# Attempts to create vault directory
-#------------------------------------------------------------------------------
-@createDir[dir]
-    $test[]
-    ^test.save[$dir/.vaultkeep]
-    ^file:delete[$dir/.vaultkeep;$.keep-empty-dirs(true) $.exception(false)]
+    ^self.filesystem.createDir[/vault]
 ###
