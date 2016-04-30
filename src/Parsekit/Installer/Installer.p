@@ -66,7 +66,7 @@ locals
 #------------------------------------------------------------------------------
 @install[packages][result]
     ^packages.foreach[key;package]{
-        ^self.driverManager.install[/vault/$package.name;$package]
+        $result[^self.driverManager.install[/vault/$package.name;$package]]
         $console:line[Do updates for package $package.name $package.version]
     }
 ###

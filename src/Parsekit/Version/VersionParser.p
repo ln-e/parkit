@@ -11,6 +11,8 @@ VersionParser
 locals
 
 @USE
+Constraint/Constraint.p
+Constraint/EmptyConstraint.p
 Constraint/MultiConstraint.p
 
 #------------------------------------------------------------------------------
@@ -248,6 +250,8 @@ $self.parsedConstraints[^hash::create[]]
 
 #------------------------------------------------------------------------------
 #:param constraints type string
+#
+#:result ConstraintInterface
 #------------------------------------------------------------------------------
 @parseConstraints[constraints]
 ^if(^self.parsedConstraints.contains[$constraints]){
@@ -351,7 +355,9 @@ $self.parsedConstraints[^hash::create[]]
     }
 
     ^if(^constraint.match[^^v?[xX*](\.[xX*])*^$][i]){
-        $result[^EmptyConstraint::create[]]
+        $result[
+            $.0[^EmptyConstraint::create[]]
+        ]
     }
 
     $versionRegex[v?(\d++)(?:\.(\d++))?(?:\.(\d++))?(?:\.(\d++))?${self.modifierRegex}^(?:\+[^^\s]+)?]
@@ -391,11 +397,11 @@ $self.parsedConstraints[^hash::create[]]
             $stabilitySuffix[-dev]
         }
 
-        $lowVersion[^self.manipulateVersionString[$matches;$position;0]$stabilitySuffix]
+        $lowVersion[^self.manipulateVersionString[$matches.fields;$position;0]$stabilitySuffix]
         $lowerBound[^Constraint::create[>=;$lowVersion]]
 
-        $highPosition[max(1, $position - 1)]
-        $highVersion[^self.manipulateVersionString[$matches;$highPosition;1]-dev]
+        $highPosition[^if(1 > $position - 1){1}($position-1)]
+        $highVersion[^self.manipulateVersionString[$matches.fields;$highPosition;1]-dev]
         $upperBound[^Constraint::create[<;$highVersion]]
 
         $result[
@@ -433,7 +439,7 @@ $self.parsedConstraints[^hash::create[]]
         $lowerBound[^Constraint::create[>=;$lowVersion]]
 # For upper bound, we increment the position of one more significance,
 # but highPosition = 0 would be illegal
-        $highVersion[^self.manipulateVersionString[$matches;$position;1]-dev]
+        $highVersion[^self.manipulateVersionString[$matches.fields;$position;1]-dev]
         $upperBound[^Constraint::create[<;$highVersion]]
 
         $result[
@@ -459,8 +465,8 @@ $self.parsedConstraints[^hash::create[]]
             $position[1]
         }
 
-        $lowVersion[^self.manipulateVersionString[$matches;$position]-dev']
-        $highVersion[^self.manipulateVersionString[$matches;$position;1]-dev']
+        $lowVersion[^self.manipulateVersionString[$matches.fields;$position]-dev]
+        $highVersion[^self.manipulateVersionString[$matches.fields;$position;1]-dev]
         ^if($lowVersion eq '0.0.0.0-dev'){
             $result[
                 $.0[^Constraint::create[<;$highVersion]]
@@ -541,7 +547,7 @@ $self.parsedConstraints[^hash::create[]]
 
     $message[Could not parse version constraint $constraint]
 
-    ^if(!$result){
+    ^if(!def $result){
         ^throw[UnexpectedValueException;VersionParser.p;$message]
     }{
         $self.parsedConstraint.$origin[$result]
@@ -573,7 +579,7 @@ $self.parsedConstraints[^hash::create[]]
 @manipulateVersionString[matches;position;increment;pad][result;i;ind]
 
     ^for[ind](1;4){
-        $i(5-$ind)
+        $i(5 - $ind)
 
         ^if($i > $position){
             $matches.$i[$pad]

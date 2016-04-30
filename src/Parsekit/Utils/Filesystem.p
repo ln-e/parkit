@@ -13,6 +13,10 @@ locals
 @auto[]
 ###
 
+
+#------------------------------------------------------------------------------
+#:constructor
+#------------------------------------------------------------------------------
 @create[]
 ###
 
@@ -25,9 +29,10 @@ locals
 #:result bool
 #------------------------------------------------------------------------------
 @createDir[dir][result]
+    $file[^self.normalize[$dir/.parsekitkeep]]
     $test[]
-    ^test.save[$dir/.parsekitkeep]
-    ^file:delete[$dir/.parsekitkeep; $.keep-empty-dirs(true) $.exception(false)]
+    ^test.save[$file]
+    ^file:delete[$file; $.keep-empty-dirs(true) $.exception(false)]
     $result(^self.exists[$dir])
 ###
 
@@ -40,7 +45,7 @@ locals
 #:result bool
 #------------------------------------------------------------------------------
 @removeDir[dir][result]
-    ^file:delete[$dir; $.keep-empty-dirs(true) $.exception(false)]
+    ^file:delete[^self.normalize[$dir]; $.keep-empty-dirs(true)]
     $result(!^self.exists[$dir])
 ###
 
@@ -51,5 +56,15 @@ locals
 #:result bool
 #------------------------------------------------------------------------------
 @exists[dir][result]
-    $result(-d '$dir')
+    $result(-d $dir)
+###
+
+
+#------------------------------------------------------------------------------
+#:param path type string
+#
+#:result string
+#------------------------------------------------------------------------------
+@normalize[path][result]
+    $result[^path.replace[//;/]]
 ###

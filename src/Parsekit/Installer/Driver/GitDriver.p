@@ -56,13 +56,17 @@ VcsDriver
 #------------------------------------------------------------------------------
 @doInstall[dir;package][result]
     $console:line[ do smth to install $package.sourceUrl in $dir ]
+    ^if(!^self.filesystem.exists[$dir] && !^self.filesystem.createDir[$dir]){
+        ^throw[ExecutionException;GitDriver.p; Could not create directory '$dir' for package $package.name $package.version ]
+    }
     $repoUrl[$package.sourceUrl]
     $ref[$package.sourceReference]
 
     $command[git clone --no-checkout $repoUrl . && git remote add parsekit $repoUrl && git fetch parsekit]
     $exec[^Exec::create[$command;$dir]]
+    ^exec.execute[]
 
-    ^self.checkoutToCommit[$dir;$package.sourceReference;$package.prettyVersion]
+    $result(!^self.checkoutToCommit[$dir;$package.sourceReference;$package.prettyVersion])
 ###
 
 
@@ -72,17 +76,18 @@ VcsDriver
 #
 #:result bool
 #------------------------------------------------------------------------------
-@doUpdate[dir;package]
+@doUpdate[dir;package][result]
     ^if(!def $package.sourceReference){
         ^throw[InvalidArgumentException;VcsDriver.p; Git package hasn't source reference. ]
     }
     ^if(!^self.filesystem.exists[$dir/.git/]){
-        ^self.filesystem.removeDir[$dir]
-        ^self.filesystem.createDir[$dir]
         $console:line[Directory '$dir' exists but do not contain .git. Removed and reinitialize.]
         ^self.doInstall[$dir;$package]
     }{
-        ^self.checkoutToCommit[$dir;$package.sourceReference;$package.prettyVersion]
+
+        $fetchCommand[^Exec::create[git remote set-url parsekit $package.sourceUrl && git fetch parsekit && git fetch --tags parsekit;$dir]]
+        ^fetchCommand.execute[]
+        $result[^self.checkoutToCommit[$dir;$package.sourceReference;$package.prettyVersion]]
     }
 ###
 

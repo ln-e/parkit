@@ -24,17 +24,19 @@ ConstraintInterface
 #:constructor
 #------------------------------------------------------------------------------
 @create[]
-    $self.prettyString[]
+    $self._prettyString[]
 ###
 
 
 #------------------------------------------------------------------------------
+#Empty constraint matches everything
+#
 #:param provider type ConstraintInterface
 #
 #:result boolean
 #------------------------------------------------------------------------------
 @matches[provider]
-    ^throw[Abstract method not implemented]
+    $result(true)
 ###
 
 
@@ -42,7 +44,7 @@ ConstraintInterface
 #:param prettyString type string
 #------------------------------------------------------------------------------
 @SET_prettyString[prettyString]
-    $self.prettyString[$prettyString]
+    $self._prettyString[$prettyString]
 ###
 
 
@@ -50,7 +52,7 @@ ConstraintInterface
 #:result string
 #------------------------------------------------------------------------------
 @GET_prettyString[]
-    $result[$self.prettyString]
+    $result[$self._prettyString]
     ^if(!def $result){
         $result[^self.GET[]]
     }

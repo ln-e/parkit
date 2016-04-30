@@ -36,7 +36,7 @@ DriverInterface
 #
 #:result bool
 #------------------------------------------------------------------------------
-@update[dir;package]
+@update[dir;package][result]
     ^if(!def $package.sourceReference){
         ^throw[InvalidArgumentException;VcsDriver.p; Git package hasn't source reference. ]
     }
@@ -45,7 +45,7 @@ DriverInterface
     ^if(^self.filesystem.exists[$dir]){
         ^self.doUpdate[$dir;$package]
     }{
-        $self.filesystem.createDir[$dir]
-        ^self.doInstall[$dir;$package]
+        ^self.filesystem.createDir[$dir]
+        $result[^self.doInstall[$dir;$package]]
     }
 ###
