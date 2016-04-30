@@ -79,14 +79,22 @@ CommandInterface
         ^if(^installResult.updated._count[] == 0 && ^installResult.uninstalled._count[] == 0 ){
             $result[${result}Nothing to install or update. All package is up to date.^taint[^#0A]]
         }{
-            $result[$result Dependencies updated. Updated packages:^taint[^#0A]]
-            ^installResult.updated.foreach[name;package]{
-                $result[${result}$name^: $package.version^taint[^#0A]]
+            $result[${result}Dependencies was updated. ^taint[^#0A]]
+
+            ^if(^installResult.updated._count[] > 0){
+                $result[$result  Updated/installed packages: ^taint[^#0A]]
+                ^installResult.updated.foreach[name;package]{
+                    $result[${result}    - $name^: $package.version^taint[^#0A]]
+                }
             }
 
-            $result[${result}Removed packages:^taint[^#0A]]
-            ^installResult.uninstalled.foreach[name;package]{
-                $result[${result}$name^: $package.version^taint[^#0A]]
+            ^if(^installResult.uninstalled._count[] > 0){
+                $result[${result}  Removed packages:^taint[^#0A]]
+                ^installResult.uninstalled.foreach[name;package]{
+                    ^if(^lockFile.remove[$package]){
+                        $result[${result}    - $name^: $package.version^taint[^#0A]]
+                    }
+                }
             }
         }
 

@@ -67,7 +67,6 @@ locals
 @install[packages][result]
     ^packages.foreach[key;package]{
         $result[^self.driverManager.install[/vault/$package.name;$package]]
-        $console:line[Do updates for package $package.name $package.version]
     }
 ###
 
@@ -79,7 +78,7 @@ locals
 #------------------------------------------------------------------------------
 @uninstall[packages][result]
     ^packages.foreach[key;package]{
-        $console:line[Do remove for package $package.name]
+        $result[^self.filesystem.removeDir[/vault/$package.name/]]
     }
 ###
 

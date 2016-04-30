@@ -80,18 +80,31 @@ locals
         $result(true)
     }
 
-
-
     $self.data.packages.[$package.name][$package]
     ^self.detectUpdated[]
 ###
 
 
+#------------------------------------------------------------------------------
+#:param package type PackageInterface
+#
+#:result bool indicates if package is deleted
+#------------------------------------------------------------------------------
+@remove[package][result]
+    $result(false)
+
+    ^if(^self.data.packages.contains[$package.name]){
+        ^self.data.packages.delete[$package.name]
+        ^self.detectUpdated[]
+        $result(true)
+    }
+###
+
 
 #------------------------------------------------------------------------------
 #:param package type rootPackage
 #------------------------------------------------------------------------------
-@updateFromPackage[package]
+@updateFromPackage[package][result]
     $self.empty(false)
     $self.data.name[$package.name]
     $self.data.version[$package.version]
@@ -109,7 +122,7 @@ locals
 #------------------------------------------------------------------------------
 # Updates lock file on disk
 #------------------------------------------------------------------------------
-@save[]
+@save[][result]
     ^self.json.write[
         $.name[$self.data.name]
         $.version[$self.data.version]
@@ -126,7 +139,7 @@ locals
 #------------------------------------------------------------------------------
 # Set new update date
 #------------------------------------------------------------------------------
-@detectUpdated[]
+@detectUpdated[][result]
     $now[^date::now[]]
     $self.data.updated[^now.unix-timestamp[]]
 ###
