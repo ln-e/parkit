@@ -52,9 +52,35 @@ locals
 
     ^self.install[$packageToUpdate]
     ^self.uninstall[$packageToRemove]
+
+#   Generates text representation. TODO replace by direct write to some outputinterface!
+    $info[]
+    ^if(^packageToUpdate._count[] == 0 && ^packageToRemove._count[] == 0 ){
+        $info[${info}  Nothing to install or update. All package is up to date.^taint[^#0A]]
+    }{
+        $info[${info}  Dependencies was updated. ^taint[^#0A]]
+
+        ^if(^packageToUpdate._count[] > 0){
+            $info[$info ^taint[^#0A]  Updated/installed packages: ^taint[^#0A]]
+            ^packageToUpdate.foreach[name;package]{
+                $info[$info    - $name^: $package.version^taint[^#0A]]
+            }
+        }
+
+        ^if(^packageToRemove._count[] > 0){
+            $info[${info}  Removed packages:^taint[^#0A]]
+            ^packageToRemove.foreach[name;package]{
+                ^if(^lockFile.remove[$package]){
+                    $info[$info    - $name^: $package.version^taint[^#0A]]
+                }
+            }
+        }
+    }
+
     $result[
         $.updated[$packageToUpdate]
         $.uninstalled[$packageToRemove]
+        $.info[$info]
     ]
 ###
 

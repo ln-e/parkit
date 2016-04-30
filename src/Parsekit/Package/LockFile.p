@@ -121,8 +121,9 @@ locals
 
 #------------------------------------------------------------------------------
 # Updates lock file on disk
+#:param path type string optional
 #------------------------------------------------------------------------------
-@save[][result]
+@save[path][result]
     ^self.json.write[
         $.name[$self.data.name]
         $.version[$self.data.version]
@@ -132,7 +133,7 @@ locals
         $.packages[$self.data.packages]
         $.created[$self.data.created]
         $.updated[$self.data.updated]
-    ]
+    ;$path]
 ###
 
 

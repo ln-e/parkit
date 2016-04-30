@@ -9,6 +9,7 @@ Application
 
 @USE
 Command/InitCommand.p
+Command/InstallCommand.p
 Command/RequireCommand.p
 Command/SelfupdateCommand.p
 Command/UpdateCommand.p
@@ -36,6 +37,7 @@ locals
     $self.commands[
         $.init[^InitCommand::create[]]
         $.require[^RequireCommand::create[]]
+        $.install[^InstallCommand::create[]]
         $.update[^UpdateCommand::create[]]
         $.selfupdate[^SelfupdateCommand::create[]]
     ]

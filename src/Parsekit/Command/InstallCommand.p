@@ -5,7 +5,7 @@
 # To change this template use File | Settings | File Templates.
 
 @CLASS
-UpdateCommand
+InstallCommand
 
 @USE
 CommandInterface.p
@@ -32,7 +32,7 @@ CommandInterface
 #:result hash
 #------------------------------------------------------------------------------
 @GET_description[]
-    $result[updates installed dependencies according to require constraints in parsekit.json]
+    $result[install version locked in parsekit.lock file]
 ###
 
 
@@ -53,28 +53,13 @@ CommandInterface
     $result[]
 
     $lockFile[^LockFile::create[/parsekit.lock]]
+    $installedLockFile[^LockFile::create[/vault/parsekit.lock]]
 
-    $rootPackage[^DI:packageManager.createRootPackage[/parsekit.json]]
-    $requires[^hash::create[^rootPackage.getRequires[]]]
-
-    $resolvingResult[^DI:resolver.resolve[$requires](true)]
-
-
-    ^if(!($resolvingResult is ResolvingResult)){
-        $result[$result^taint[^#0A]Could not update requirements, as it has conflicts. Soon you will see which package cause problem, but now try your luck. ^taint[^#0A]]
+    ^if($lockFile.empty){
+        $result[parsekit.lock file not found! Could not install dependency. May be you mean `parsekit update` command ?]
     }{
-        ^if($lockFile.empty){
-            ^lockFile.updateFromPackage[$rootPackage]
-        }
-
-        $installResult[^DI:installer.update[$lockFile;$resolvingResult.packages]]
+        $packages[^DI:packageManager.packagesFromLock[$installedLockFile]]
+        $installResult[^DI:installer.update[$lockFile;$packages]]
         $result[$installResult.info]
-
-#       Temporary decision. write second lock to vault dir, to compare with them while install.
-#       In future this should be replaced. Current installed version should detected by exact dir.
-#       Git or some kind of lock file in case of zip distribution.
-        ^if(^lockFile.save[] && ^lockFile.save[/vault/parsekit.lock]){
-            $result[$result^taint[^#0A]  Lockfile saved.^taint[^#0A]]
-        }
     }
 ###

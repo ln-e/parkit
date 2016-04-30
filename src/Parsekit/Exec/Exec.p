@@ -41,7 +41,7 @@ locals
     ^if($dir){
         ^self.updateDir[$dir]
     }
-    $console:line[Execute '$cd $self.command']
+#    $console:line[Execute '$cd $self.command']
     $self.file[^file::exec[eval.sh;;$cd $self.command]]
     $result($self.status == $self.successCode)
 ###

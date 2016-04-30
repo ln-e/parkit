@@ -42,7 +42,7 @@ RootPackage.p
         ^throw[lazypackagenotfound;PackageManager.p; Package with name '$name' not found ]
     }
 
-# Если еще не был загружен этот пакет
+#   if package is not listed yet
     ^if(!def $self.packages.$name){
         $config[^parsekitRepository.loadPackages[$name]]
 
@@ -50,7 +50,7 @@ RootPackage.p
             ^if(!def $self.packages.$packageName){
                 $self.packages.$packageName[^hash::create[]]
             }
-# Перебираем все пакеты и создаем из них классы
+#           iterate it and create packages
             ^packagesConfig.foreach[tag;config]{
                 $package[^self.createPackage[$parsekitRepository;$config]]
                 $index[^self.packages.$packageName._count[]]
@@ -66,6 +66,17 @@ RootPackage.p
 
     $result[$self.packages.$name]
 ##
+
+
+#:param lockFile type LockFile
+@packagesFromLock[lockFile]
+    $packages[^hash::create[]]
+    ^lockFile.packages.foreach[key;config]{
+        $packages.$key[^self.createPackage[;$config]]
+    }
+
+    $result[$packages]
+###
 
 
 #------------------------------------------------------------------------------
@@ -90,7 +101,7 @@ RootPackage.p
 #------------------------------------------------------------------------------
 @createPackage[repository;config][result]
     $package[^self.configurePackage[^BasePackage::create[$config.name];$config]]
-    $package.setRepository[$repository]
+    ^package.setRepository[$repository]
     $result[$package]
 ###
 

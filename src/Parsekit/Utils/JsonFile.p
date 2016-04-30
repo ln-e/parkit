@@ -79,18 +79,20 @@ locals
 #Saves new hash to file
 #
 #:param data type hash
+#:param path type string
 #
 #:result bool
 #------------------------------------------------------------------------------
-@write[data][result]
+@write[data;path][result]
     $result(false)
     ^if(!$self.isLocal){
-        ^throw[remote-json-update]
+        ^throw[RemoteJsonUpdateException;JsonFile.p;This is not possible to update json on remote file system. ]
     }
+    $saveTo[^if(def $path){$path}{$self.path}]
     ^try{
         $self.rawData[^JsonFile:encode[$data]]
-        ^self.rawData.save[$self.path]
-        $result(-f $self.path)
+        ^self.rawData.save[$saveTo]
+        $result(-f $saveTo)
     }{
         $self.isError(true)
     }

@@ -55,7 +55,7 @@ VcsDriver
 #:result bool
 #------------------------------------------------------------------------------
 @doInstall[dir;package][result]
-    $console:line[ do smth to install $package.sourceUrl in $dir ]
+#    $console:line[ do smth to install $package.sourceUrl in $dir ]
     ^if(!^self.filesystem.exists[$dir] && !^self.filesystem.createDir[$dir]){
         ^throw[ExecutionException;GitDriver.p; Could not create directory '$dir' for package $package.name $package.version ]
     }
@@ -81,7 +81,7 @@ VcsDriver
         ^throw[InvalidArgumentException;VcsDriver.p; Git package hasn't source reference. ]
     }
     ^if(!^self.filesystem.exists[$dir/.git/]){
-        $console:line[Directory '$dir' exists but do not contain .git. Removed and reinitialize.]
+#        $console:line[Directory '$dir' exists but do not contain .git. Removed and reinitialize.]
         ^self.doInstall[$dir;$package]
     }{
 
@@ -106,12 +106,12 @@ VcsDriver
     $result[]
 
     $branch[^branch.match[((?:^^dev-)|(?:\.x?-dev^$))][i]{}] ^rem[ strip out 'dev-' at the start or '.x-dev' at the end]
-$console:line[BRANCH $branch]
-$console:line[$dir]
+#$console:line[BRANCH $branch]
+#$console:line[$dir]
     $branchCommand[^Exec::create[git branch -r;$dir]]
     $branches[$branchCommand.text]
 
-$console:line[BRANCHES $branches]
+#$console:line[BRANCHES $branches]
 # check whether non-commitish are branches or tags, and fetch branches with the remote name
     ^if(
         ^reference.match[^^[a-f0-9]{40}^$][n] == 0
