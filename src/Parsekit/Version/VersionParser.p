@@ -174,15 +174,14 @@ $self.parsedConstraints[^hash::create[]]
     }
 
 # match master-like branches
-    $matches[^version.match[^^(?:dev-)?(?:master|trunk|default)^$][i]]
-    ^if(def $matches){
+    ^if(^version.match[^^(?:dev-)?(?:master|trunk|default)^$][in] > 0){
         $result[9999999-dev]
     }
 
 # add somehow lower to if's version mid
     ^if(!def $result && 'dev-' eq ^version.mid(0;4)){
         $result[dev-^version.mid(4)]
-    }{
+    }(!def $result){
         $matches[^version.match[^^v?(\d{1,5})(\.\d+)?(\.\d+)?(\.\d+)?$self.modifierRegex^$][i]]
         ^if(def $matches){
             $version[]
