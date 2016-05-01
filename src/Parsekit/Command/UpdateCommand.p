@@ -55,7 +55,7 @@ CommandInterface
     $lockFile[^LockFile::create[/parsekit.lock]]
 
     $rootPackage[^DI:packageManager.createRootPackage[/parsekit.json]]
-    $requires[^hash::create[^rootPackage.getRequires[]]]
+    $requires[^hash::create[$rootPackage.requires]]
 
     $resolvingResult[^DI:resolver.resolve[$requires](true)]
 

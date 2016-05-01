@@ -14,80 +14,42 @@ locals
 #:constructor
 #------------------------------------------------------------------------------
 @create[]
+    $self.name[$name]
+    $self.type[]
+    $self.targetDir[]
+    $self.sourceType[]
+    $self.sourceUrl[]
+    $self.sourceReference[]
+    $self.preferDist(false)
+    $self.distType[]
+    $self.distUrl[]
+    $self.distReference[]
+    $self.version[]
+    $self.prettyVersion[]
+    $self.releaseDate[]
+    $self.stability[]
+    $self.requiredPackages[^hash::create[]]
+    $self.requires[^hash::create[]]
+    $self.conflicts[^hash::create[]]
+    $self.devRequires[^hash::create[]]
+    $self.repository[]
+    $self.uniqueName[]
 ###
 
 
 #------------------------------------------------------------------------------
-#:result string
+#Forbid acess
 #------------------------------------------------------------------------------
-@getName[]
-    ^throw[Abstract method not implemented]
+@GET_DEFAULT[name]
+    ^throw[InterfaceException;PackageInterface.p; Access to field not defined in interface]
 ###
 
 
 #------------------------------------------------------------------------------
-#:result string
+#Forbid acess
 #------------------------------------------------------------------------------
-@getType[]
-    ^throw[Abstract method not implemented]
-###
-
-
-#------------------------------------------------------------------------------
-#:result string
-#------------------------------------------------------------------------------
-@getTargetDir[]
-    ^throw[Abstract method not implemented]
-###
-
-
-#------------------------------------------------------------------------------
-#Returns the repository type of this package, e.g. git, svn
-#
-#:result string
-#------------------------------------------------------------------------------
-@getSourceType[]
-    ^throw[Abstract method not implemented]
-###
-
-
-#------------------------------------------------------------------------------
-#Returns the repository url of this package
-#
-#:result string
-#------------------------------------------------------------------------------
-@getSourceUrl[]
-    ^throw[Abstract method not implemented]
-###
-
-
-#------------------------------------------------------------------------------
-#Returns the repository reference of this package, e.g. master, 1.0.0 or a commit hash for git
-#
-#:result string
-#------------------------------------------------------------------------------
-@getSourceReference[]
-    ^throw[Abstract method not implemented]
-###
-
-
-#------------------------------------------------------------------------------
-#Returns the version of this package
-#
-#:result string
-#------------------------------------------------------------------------------
-@getVersion[]
-    ^throw[Abstract method not implemented]
-###
-
-
-#------------------------------------------------------------------------------
-#Returns the pretty (i.e. non-normalized) version string of this package
-#
-#:result string
-#------------------------------------------------------------------------------
-@getPrettyVersion[]
-    ^throw[Abstract method not implemented]
+@SET_DEFAULT[name;value]
+    ^throw[InterfaceException;PackageInterface.p; Access to field not defined in interface]
 ###
 
 
@@ -98,83 +60,5 @@ locals
 #:result string
 #------------------------------------------------------------------------------
 @getFullPrettyVersion[truncate]
-    ^throw[Abstract method not implemented]
-###
-
-
-#------------------------------------------------------------------------------
-#:result date
-#------------------------------------------------------------------------------
-@getReleaseDate[]
-    ^throw[Abstract method not implemented]
-###
-
-
-#------------------------------------------------------------------------------
-#Returns the stability of this package: one of (dev, alpha, beta, RC, stable)
-#
-#:result string
-#------------------------------------------------------------------------------
-@getStability[]
-    ^throw[Abstract method not implemented]
-###
-
-
-#------------------------------------------------------------------------------
-#Returns a hash of links to packages which need to be installed before this package can be installed
-#
-#:result string
-#------------------------------------------------------------------------------
-@getRequires[]
-    ^throw[Abstract method not implemented]
-###
-
-
-#------------------------------------------------------------------------------
-#Returns a set of links to packages which must not be installed at the same time as this package
-#
-#:result string
-#------------------------------------------------------------------------------
-@getConflicts[]
-    ^throw[Abstract method not implemented]
-###
-
-
-#------------------------------------------------------------------------------
-#Returns a set of links to packages which are required to develop this package. These are installed if in dev mode.
-#
-#:result string
-#------------------------------------------------------------------------------
-@getDevRequires[]
-    ^throw[Abstract method not implemented]
-###
-
-
-#------------------------------------------------------------------------------
-#Stores a reference to the repository that owns the package
-#
-#:result string
-#------------------------------------------------------------------------------
-@setRepository[repository]
-    ^throw[Abstract method not implemented]
-###
-
-
-#------------------------------------------------------------------------------
-#Returns a reference to the repository that owns the package
-#
-#:result string
-#------------------------------------------------------------------------------
-@getRepository[]
-    ^throw[Abstract method not implemented]
-###
-
-
-#------------------------------------------------------------------------------
-#Returns package unique name, constructed from name and version.
-#
-#:result string
-#------------------------------------------------------------------------------
-@getUniqueName[]
     ^throw[Abstract method not implemented]
 ###

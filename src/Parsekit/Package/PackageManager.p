@@ -101,7 +101,7 @@ RootPackage.p
 #------------------------------------------------------------------------------
 @createPackage[repository;config][result]
     $package[^self.configurePackage[^BasePackage::create[$config.name];$config]]
-    ^package.setRepository[$repository]
+    $package.repository[$repository]
     $result[$package]
 ###
 
@@ -114,25 +114,25 @@ RootPackage.p
 #------------------------------------------------------------------------------
 @configurePackage[package;config][result]
 
-    ^package.setType[$config.type]
-    ^package.setTargetDir[$config.targetDir]
-    ^package.setSourceType[$config.source.type]
-    ^package.setSourceUrl[$config.source.url]
-    ^package.setSourceReference[$config.source.reference]
-    ^package.setDistType[$config.dist.type]
-    ^package.setDistUrl[$config.dist.url]
-    ^package.setDistReference[$config.dist.reference]
-    ^package.setReleaseDate[$config.releaseDate]
+    $package.type[$config.type]
+    $package.targetDir[$config.targetDir]
+    $package.sourceType[$config.source.type]
+    $package.sourceUrl[$config.source.url]
+    $package.sourceReference[$config.source.reference]
+    $package.distType[$config.dist.type]
+    $package.distUrl[$config.dist.url]
+    $package.distReference[$config.dist.reference]
+    $package.releaseDate[$config.releaseDate]
 
-    ^package.setUniqueName[${config.name}$config.version]
-    ^package.setVersion[$config.version]
-#    ^if(def $config.version){ ^package.setVersion[^self.versionParser.normalize[$config.version]] }
-    ^package.setPrettyVersion[$config.version]
-    ^package.setStability[$config.stability]
+    $package.uniqueName[${config.name}$config.version]
+    $package.version[$config.version]
+    $package.prettyVersion[$config.version]
+    $package.stability[$config.stability]
 
     ^if($config.require is hash){
         ^config.require.foreach[packageName;constraint]{
-            ^if(^packageName.lower[] eq parser){
+            ^if(^packageName.pos[/] == -1){
+#               custom requirements which is not package, like parser version on commandline tools
                 ^continue[]
             }
             ^package.addRequire[$packageName;$constraint]
@@ -142,15 +142,15 @@ RootPackage.p
     ^rem{^if($config.devRequire is hash){
         ^config.devRequire.foreach[packageName;constraint]{
 # ho ho ho but we should have here PackageInterface ?
-            ^package.addRequire[
+            ^package.addDevRequire[
                 $.name[$packageName]
                 $.constraint[$constraint]
             ]
         }
     }}
 
-#    $package.setRequires[^hash::create[]$config.requires]
-#    $package.setDevRequires[^hash::create[]$config.devRequires]
+#    $package.requires[$config.requires]
+#    $package.devRequires[$config.devRequires]
 
 
     $result[$package]

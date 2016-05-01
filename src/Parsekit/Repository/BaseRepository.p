@@ -61,7 +61,7 @@ RepositoryInterface
         ^throw[Argument package should be type PackageInterface $package.CLASS_NAME found]
     }
 
-    $result[^self.packages.contains[^package.getUniqueName[]]]
+    $result[^self.packages.contains[$package.uniqueName]]
 ###
 
 
