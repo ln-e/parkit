@@ -16,6 +16,7 @@ Installer/Installer.p
 Package/PackageManager.p
 Repository/RepositoryManager.p
 Resolver/Resolver.p
+Service.p
 Utils/Filesystem.p
 Version/Comparator.p
 Version/Semver.p
@@ -27,15 +28,32 @@ Version/VersionParser.p
 #Sorry for name it DI, but someday we replace it by real IoC-container, I promise.
 #------------------------------------------------------------------------------
 @auto[]
-    $self.filesystem[^Filesystem::create[]]
-    $self.repositoryManager[^RepositoryManager::create[]]
-    $self.versionParser[^VersionParser::create[]]
-    $self.comparator[^Comparator::create[]]
-    $self.driverManager[^DriverManager::create[$self.filesystem]]
-    $self.installer[^Installer::create[$self.driverManager;$self.filesystem]]
-    $self.packageManager[^PackageManager::create[$self.repositoryManager;$self.versionParser]]
-    $self.semver[^Semver::create[$self.versionParser;$self.comparator]]
-    $self.resolver[^Resolver::create[$self.packageManager;$self.semver]]
+    $self.registry[
+        $.filesystem[^Service::create[Filesystem]]
+        $.repositoryManager[^Service::create[RepositoryManager]]
+        $.versionParser[^Service::create[VersionParser]]
+        $.comparator[^Service::create[Comparator]]
+        $.driverManager[^Service::create[DriverManager;
+            $.0[filesystem]
+        ]]
+        $.installer[^Service::create[Installer;
+            $.0[driverManager]
+            $.1[filesystem]
+        ]]
+        $.packageManager[^Service::create[PackageManager;
+            $.0[repositoryManager]
+            $.1[versionParser]
+        ]]
+        $.semver[^Service::create[Semver;
+            $.0[versionParser]
+            $.1[comparator]
+        ]]
+        $.resolver[^Service::create[Resolver;
+            $.0[packageManager]
+            $.1[semver]
+        ]]
+    ]
+    $self.instances[^hash::create[]]
 ###
 
 
@@ -50,8 +68,28 @@ Version/VersionParser.p
 #:param key type string
 #------------------------------------------------------------------------------
 @static:GET_DEFAULT[key][result]
-    ^if(!def $self.$key){
+    $result[^DI:getService[$key]]
+###
+
+
+#------------------------------------------------------------------------------
+#Interlayer for GET_DEFAULT to avoid GET_DEFAULT impossibility recursion calls.
+#
+#:param key type string
+#------------------------------------------------------------------------------
+@static:getService[key]
+    ^if(!^self.registry.contains[$key]){
         ^throw[service.unknown;container.p;Service $key not found]
     }
-    $result[$self.$key]
+    ^if(!^self.instances.contains[$key]){
+        $servise[$self.registry.$key]
+        $params[^servise.services.foreach[i;name]{^^DI:getService[$name]}[^;]]
+        ^if(^Application:hasOption[debug]){$console:line[Instantiated service '$key']}
+#       because reflection class cannot acept hash of params
+#       ^reflection:create[$servise.class;create;-hash-here-]
+        ^process{^$object[^^$servise.class^::create[$params]]}
+        $self.instances.$key[$object]
+    }
+
+    $result[$self.instances.$key]
 ###

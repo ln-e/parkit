@@ -84,7 +84,7 @@ locals
     }
     $result[
 Usage:
-  command [arguments]
+  command [arguments] [--option[=value]]
 
 Available commands:
 ^ConsoleTable:formatTable[$t;  ]]

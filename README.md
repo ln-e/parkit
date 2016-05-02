@@ -55,7 +55,6 @@ TODO
 ----
 
 * Check resolving algorithm for bugs
-* Implement lazy DI "service" instantiating
 * Implement better constraint collapsing (`>=1 <=2 <2` should collapsed to `>=1 <2`)
 * Implement require command with interactive search/choose packages
 * Improve console output

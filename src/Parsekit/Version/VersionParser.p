@@ -57,6 +57,7 @@ $self.parsedConstraints[^hash::create[]]
 
 #------------------------------------------------------------------------------
 #Returns a stability
+#
 #:param version type string String representation on version
 #
 #:result string
@@ -555,9 +556,11 @@ $self.parsedConstraints[^hash::create[]]
 ###
 
 
+#------------------------------------------------------------------------------
 #:param x type string
 #
 #:result bool
+#------------------------------------------------------------------------------
 @emptyX[x][result]
     ^if($x == 0 || $x eq '0'){
         $result(false)
