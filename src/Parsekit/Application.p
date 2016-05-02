@@ -23,6 +23,9 @@ Version/VersionParser.p
 @OPTIONS
 locals
 
+@auto[]
+    $Application:options[^hash::create[]]
+
 #------------------------------------------------------------------------------
 #Dynamic constructor
 #------------------------------------------------------------------------------
@@ -62,10 +65,10 @@ locals
     $result[^taint[^#0A]]
     $commandName[$request:argv.1]
     ^if(!def $commandName || !^self.hasCommand[$commandName]){
-        $result[^showHelp[]]
+        $result[$result^showHelp[]]
     }{
-        $arguments[^self.prepareArguments[]]
-        $result[$result^self.commands.$commandName.run[$arguments]]
+        $params[^self.prepareParams[]]
+        $result[$result^self.commands.$commandName.run[$params.arguments;$params.options]]
     }
 ###
 
@@ -91,11 +94,53 @@ Available commands:
 #------------------------------------------------------------------------------
 #Parses and converts arguments from command line
 #------------------------------------------------------------------------------
-@prepareArguments[][result]
-    $result[^hash::create[]]
-    ^for[i](2;^request:argv._count[]){
-        ^if(def $request:argv.$i){
-            $result.$i[$request:argv.$i]
+@prepareParams[][result]
+    $result[^hash::create[
+        $.arguments[^hash::create[]]
+        $.options[^hash::create[]]
+    ]]
+    $i(2)
+    ^while($i < ^request:argv._count[]){
+        $param[$request:argv.$i]
+        ^if(def $param && ^param.pos[--] != 0){
+            $ind[^result.arguments._count[]]
+            $result.arguments.$ind[$param]
+        }(^param.pos[--] == 0){
+            $split[^param.match[--([^^\s=]+)=?(\S+)?][i]]
+            $result.options.[$split.1][$split.2]
         }
+        ^i.inc[]
+    }
+    $Application:options[$result.options]
+###
+
+
+#------------------------------------------------------------------------------
+#Checkes system option
+#
+#:param name type string
+#:param value optional
+#------------------------------------------------------------------------------
+@static:option[name][result]
+    ^if(!def $name){
+        ^throw[UnexpectedArgumentException;Application.p; option name shoudl be defined ]
+    }{
+        $result[$Application:options.$name]
+    }
+###
+
+
+#------------------------------------------------------------------------------
+#Checkes system option
+#
+#:param name type string
+#------------------------------------------------------------------------------
+@static:hasOption[name;value][result]
+    ^if(!def $name){
+        ^throw[UnexpectedArgumentException;Application.p; option name shoudl be defined ]
+    }(def $value){
+        $result($Application:options.$name eq $value)
+    }{
+        $result[^Application:options.contains[$name]]
     }
 ###

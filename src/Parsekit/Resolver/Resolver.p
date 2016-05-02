@@ -8,6 +8,7 @@
 Resolver
 
 @USE
+Application.p
 Package/PackageManager.p
 Version/VersionParser.p
 ExtendingResult.p
@@ -17,18 +18,18 @@ ResolvingResult.p
 locals
 
 @auto[]
+
+
 ###
 
 
 #------------------------------------------------------------------------------
 #:param packageManager type PackageManager
 #:param semver type Semver
-#:param debug type bool
 #------------------------------------------------------------------------------
-@create[packageManager;semver;debug]
+@create[packageManager;semver]
     $self.packageManager[$packageManager]
     $self.semver[$semver]
-    $self.debug($debug)
 ###
 
 
@@ -39,6 +40,7 @@ locals
 #:result hash
 #------------------------------------------------------------------------------
 @resolve[requirements;returnSingle][result]
+    $self.debug(^Application:hasOption[debug])
     $requirements[^hash::create[$requirements]]
     $resolvedPackages[^self.step[$requirements][](1)]
     $result[$resolvedPackages]

@@ -31,8 +31,9 @@ locals
 #Common command execution start checks. Validate count of arguments.
 #
 #:param arguments type hash
+#:param options type hash
 #------------------------------------------------------------------------------
-@run[arguments]
+@run[arguments;options]
     $result[]
 
     $requiredNumber(0)

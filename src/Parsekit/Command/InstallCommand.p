@@ -60,6 +60,7 @@ CommandInterface
     }{
         $packages[^DI:packageManager.packagesFromLock[$lockFile]]
         $installResult[^DI:installer.update[$installedLockFile;$packages]]
+        ^installedLockFile.save[]
         $result[$installResult.info]
     }
 ###
