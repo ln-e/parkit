@@ -50,8 +50,8 @@ locals
         }
     }
 
-    ^self.install[$packageToUpdate]
-    ^self.uninstall[$packageToRemove]
+    $successInstall[^self.install[$packageToUpdate]]
+    $successUninstall[^self.uninstall[$packageToRemove]]
 
 #   Generates text representation. TODO replace by direct write to some outputinterface!
     $info[]

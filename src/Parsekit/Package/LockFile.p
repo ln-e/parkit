@@ -35,7 +35,7 @@ locals
         $self.data.uniqueName[${data.name}$data.version]
         $self.data.packages[^hash::create[]]
         $now[^date::now[]]
-        $self.data.created[^now.unix-timestamp[]]
+        $self.data.releaseDate[^now.unix-timestamp[]]
         ^self.detectUpdated[]
     }
 ###
@@ -112,8 +112,8 @@ locals
     $self.data.stability[$package.stability]
     $self.data.uniqueName[${package.name}$package.version]
 #    ^self.data.packages.add[$package.requiredPackages]
-    ^if(def $package.created){
-        $self.data.created[$package.created]
+    ^if(def $package.releaseDate){
+        $self.data.releaseDate[$package.releaseDate]
     }
     ^self.detectUpdated[]
 ###
@@ -131,7 +131,7 @@ locals
         $.stability[$self.data.stability]
         $.uniqueName[$self.data.uniqueName]
         $.packages[$self.data.packages]
-        $.created[$self.data.created]
+        $.releaseDate[$self.data.releaseDate]
         $.updated[$self.data.updated]
     ;$path]
 ###

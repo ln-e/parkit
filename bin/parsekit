@@ -2,17 +2,12 @@
 
 dir=$(d=$(dirname "$0"); cd "$d" && pwd)
 
-# see if we are running in cygwin by checking for cygpath program
-if command -v 'cygpath' >/dev/null 2>&1; then
-
-	# cygwin paths start with /cygdrive/ which will break windows PHP,
-	# so we need to translate the dir path to windows format. However
-	# we could be using cygwin PHP which does not require this, so we
-	# test if the path to PHP starts with /cygdrive/ rather than /usr/bin.
-	if [[ $(which php) == /cygdrive/* ]]; then
-  		dir=$(cygpath -m $dir);
-  	fi
+if hash parser3 2>/dev/null; then
+    path="parser3"
+elif hash parser3.cgi 2>/dev/null; then
+    path="parser3.cgi"
+else
+    path="${dir}/../parser/parser3.cgi"
 fi
 
-dir=$(echo $dir | sed 's/ /\ /g')
-${dir}/../parser/parser3.cgi "${dir}/parsekit.p" $*
+CGI_PARSER_CONFIG="${dir}/../parser/auto.p" bash -c "${path} \"${dir}/parsekit.p\" $*"
