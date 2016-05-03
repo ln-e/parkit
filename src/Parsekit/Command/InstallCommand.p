@@ -53,7 +53,7 @@ CommandInterface
     $result[]
 
     $lockFile[^LockFile::create[/parsekit.lock]]
-    $installedLockFile[^LockFile::create[/vault/parsekit.lock]]
+    $installedLockFile[^LockFile::create[/$DI:vaultDirName/parsekit.lock]]
 
     ^if($lockFile.empty){
         $result[parsekit.lock file not found! Could not install dependency. May be you mean `parsekit update` command ?]

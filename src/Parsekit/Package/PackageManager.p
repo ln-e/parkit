@@ -123,6 +123,7 @@ RootPackage.p
     $package.distUrl[$config.dist.url]
     $package.distReference[$config.dist.reference]
     $package.releaseDate[$config.releaseDate]
+    $package.classPath[^if($config.classPath is hash){$config.classPath}{^hash::create[]}]
 
     $package.uniqueName[${config.name}$config.version]
     $package.version[$config.version]

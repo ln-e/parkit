@@ -28,6 +28,7 @@ Version/VersionParser.p
 #Sorry for name it DI, but someday we replace it by real IoC-container, I promise.
 #------------------------------------------------------------------------------
 @auto[]
+    $DI:vaultDirName[vault]
     $self.registry[
         $.filesystem[^Service::create[Filesystem]]
         $.repositoryManager[^Service::create[RepositoryManager]]

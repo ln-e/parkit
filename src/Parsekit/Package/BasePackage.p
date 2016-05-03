@@ -24,26 +24,7 @@ PackageInterface
 #:constructor
 #------------------------------------------------------------------------------
 @create[name]
-    $self.name[$name]
-    $self.type[]
-    $self.targetDir[]
-    $self.sourceType[]
-    $self.sourceUrl[]
-    $self.sourceReference[]
-    $self.preferDist(false)
-    $self.distType[]
-    $self.distUrl[]
-    $self.distReference[]
-    $self.version[]
-    $self.prettyVersion[]
-    $self.releaseDate[]
-    $self.stability[]
-    $self.requiredPackages[^hash::create[]]
-    $self.requires[^hash::create[]]
-    $self.conflicts[^hash::create[]]
-    $self.devRequires[^hash::create[]]
-    $self.repository[]
-    $self.uniqueName[]
+    ^BASE:create[$name]
 ###
 
 
@@ -76,4 +57,15 @@ PackageInterface
 #------------------------------------------------------------------------------
 @addRequire[packageName;constraint][result]
     $self.requires.$packageName[^constraint.trim[]]
+###
+
+
+#------------------------------------------------------------------------------
+#Adds to a hash of classPathes settings
+#
+#:param path type string
+#:param pathType type string
+#------------------------------------------------------------------------------
+@addClassPath[path;pathType][result]
+    $self.classPath.$path[$pathType]
 ###

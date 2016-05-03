@@ -27,12 +27,12 @@ locals
 
 #------------------------------------------------------------------------------
 #:param lockFile type LockFile
-#:param packages type hash
+#:param packages type hash Actual packages
 #
 #:result hash updated packages
 #------------------------------------------------------------------------------
 @update[lockFile;packages][result]
-    ^if(!-d '/vault'){
+    ^if(!-d '/$DI:vaultDirName'){
         ^self.createVault[]
     }
 
@@ -52,6 +52,7 @@ locals
 
     $successInstall[^self.install[$packageToUpdate]]
     $successUninstall[^self.uninstall[$packageToRemove]]
+    ^self.dumpClassPath[$packages]
 
 #   Generates text representation. TODO replace by direct write to some outputinterface!
     $info[]
@@ -92,7 +93,7 @@ locals
 #------------------------------------------------------------------------------
 @install[packages][result]
     ^packages.foreach[key;package]{
-        $result[^self.driverManager.install[/vault/$package.name;$package]]
+        $result[^self.driverManager.install[/$DI:vaultDirName/$package.name;$package]]
     }
 ###
 
@@ -104,8 +105,37 @@ locals
 #------------------------------------------------------------------------------
 @uninstall[packages][result]
     ^packages.foreach[key;package]{
-        $result[^self.filesystem.removeDir[/vault/$package.name/]]
+        $result[^self.filesystem.removeDir[/$DI:vaultDirName/$package.name/]]
     }
+###
+
+
+#------------------------------------------------------------------------------
+#Dumps class path accroding to packages settings
+#
+#:param packages type hash
+#------------------------------------------------------------------------------
+@dumpClassPath[packages][result]
+    $dirs[$.0[/$DI:vaultDirName/]]
+    ^packages.foreach[name;package]{
+        ^if($package.classPath is hash && ^package.classPath._count[] > 0){
+            ^package.classPath.foreach[path;type]{
+                $dirs.[^dirs._count[]][/$DI:vaultDirName/${name}$path]
+                ^if($type eq rdir){
+                    $hash[^self.filesystem.subDirs[/$DI:vaultDirName/${name}/$path]]
+                    ^hash.foreach[i;dir]{$dirs.[^dirs._count[]][$dir]}
+                }
+            }
+        }{
+            $dirs.[^dirs._count[]][/$DI:vaultDirName/${name}$path/]
+        }
+    }
+
+    $string[^$parsekitClassPath[^^table::create{path
+^dirs.foreach[i;val]{$val}[^#0a]}]
+^$MAIN:CLASS_PATH.join{^$parsekitClassPath}
+    ]
+    ^string.save[/$DI:vaultDirName/autoload.p]
 ###
 
 
@@ -113,5 +143,5 @@ locals
 # Attempts to create vault directory
 #------------------------------------------------------------------------------
 @createVault[]
-    ^self.filesystem.createDir[/vault]
+    ^self.filesystem.createDir[/$DI:vaultDirName]
 ###

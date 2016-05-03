@@ -82,5 +82,27 @@ locals
 #:result string
 #------------------------------------------------------------------------------
 @normalize[path][result]
-    $result[^path.replace[//;/]]
+    $result[^path.match[\/{1,}][g]{/}]
+###
+
+
+#------------------------------------------------------------------------------
+#:param dir type string
+#
+#:result hash
+#------------------------------------------------------------------------------
+@subDirs[dir][result]
+    $dir[^self.normalize[$dir]]
+    $result[^hash::create[]]
+    $list[^file:list[^self.normalize[$dir/];^^[^^\.]]]
+    ^list.menu{
+        ^if($list.dir == 1){
+            $result.[^result._count[]][^self.normalize[${dir}/$list.name]]
+            $dirs[^self.subDirs[${dir}/$list.name/]]
+            ^dirs.foreach[key;value]{
+                $result.[^result._count[]][^self.normalize[$value/]]
+            }
+        }
+    }
+
 ###

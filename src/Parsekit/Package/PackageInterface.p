@@ -13,7 +13,7 @@ locals
 #------------------------------------------------------------------------------
 #:constructor
 #------------------------------------------------------------------------------
-@create[]
+@create[name]
     $self.name[$name]
     $self.type[]
     $self.targetDir[]
@@ -32,6 +32,7 @@ locals
     $self.requires[^hash::create[]]
     $self.conflicts[^hash::create[]]
     $self.devRequires[^hash::create[]]
+    $self.classPath[^hash::create[]]
     $self.repository[]
     $self.uniqueName[]
 ###
@@ -41,7 +42,7 @@ locals
 #Forbid acess
 #------------------------------------------------------------------------------
 @GET_DEFAULT[name]
-    ^throw[InterfaceException;PackageInterface.p; Access to field not defined in interface]
+    ^throw[InterfaceException;PackageInterface.p; Attempt to read field '$name' not defined in interface]
 ###
 
 
@@ -49,7 +50,7 @@ locals
 #Forbid acess
 #------------------------------------------------------------------------------
 @SET_DEFAULT[name;value]
-    ^throw[InterfaceException;PackageInterface.p; Access to field not defined in interface]
+    ^throw[InterfaceException;PackageInterface.p; Attempt to set field '$name' not defined in interface]
 ###
 
 
