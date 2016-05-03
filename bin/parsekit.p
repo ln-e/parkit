@@ -12,9 +12,8 @@ Application.p
     $app[^Application::create[]]
 
     $result[$result^info[]]
-    $result[$result^taint[^#0A]]
     $result[$result^app.run[]]
-    $result[$result^taint[^#0A]]
+    $result[$result^#0A]
 #--- end of main
 
 
