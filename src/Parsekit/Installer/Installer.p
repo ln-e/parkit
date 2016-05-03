@@ -135,7 +135,7 @@ locals
 ^dirs.foreach[i;val]{$val}[^#0a]}]
 ^$MAIN:CLASS_PATH.join{^$parsekitClassPath}
     ]
-    ^string.save[/$DI:vaultDirName/autoload.p]
+    ^string.save[/$DI:vaultDirName/classpath.p]
 ###
 
 

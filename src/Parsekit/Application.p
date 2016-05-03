@@ -8,6 +8,7 @@
 Application
 
 @USE
+Command/DumpClasspathCommand.p
 Command/InitCommand.p
 Command/InstallCommand.p
 Command/RequireCommand.p
@@ -38,11 +39,12 @@ locals
 #------------------------------------------------------------------------------
 @configureCommands[][result]
     $self.commands[
+        $.dumpclasspath[^DumpClasspathCommand::create[]]
         $.init[^InitCommand::create[]]
-        $.require[^RequireCommand::create[]]
         $.install[^InstallCommand::create[]]
-        $.update[^UpdateCommand::create[]]
+        $.require[^RequireCommand::create[]]
         $.selfupdate[^SelfupdateCommand::create[]]
+        $.update[^UpdateCommand::create[]]
     ]
 ###
 
