@@ -28,10 +28,12 @@ locals
 #------------------------------------------------------------------------------
 #:param lockFile type LockFile
 #:param packages type hash Actual packages
+#:param rootPackage type RootPackage
+#:param options type hash
 #
 #:result hash updated packages
 #------------------------------------------------------------------------------
-@update[lockFile;packages][result]
+@update[lockFile;packages;rootPackage;options][result]
     ^if(!-d '/$DI:vaultDirName'){
         ^self.createVault[]
     }
@@ -50,7 +52,8 @@ locals
         }
     }
 
-    $successInstall[^self.install[$packageToUpdate]]
+    $preferDist($options is hash && ^options.contains[prefer-dist])
+    $successInstall[^self.install[$packageToUpdate;$.preferDist($preferDist)]]
     $successUninstall[^self.uninstall[$packageToRemove]]
     ^self.dumpClassPath[$packages]
 
@@ -88,24 +91,26 @@ locals
 
 #------------------------------------------------------------------------------
 #:param packages type hash
+#:param options type hash
 #
 #:result bool
 #------------------------------------------------------------------------------
-@install[packages][result]
+@install[packages;options][result]
     ^packages.foreach[key;package]{
-        $result[^self.driverManager.install[/$DI:vaultDirName/$package.name;$package]]
+        $result[^self.driverManager.install[/$DI:vaultDirName/$package.name;$package;$options]]
     }
 ###
 
 
 #------------------------------------------------------------------------------
 #:param packages type hash
+#:param options type hash
 #
 #:result bool
 #------------------------------------------------------------------------------
-@uninstall[packages][result]
+@uninstall[packages;options][result]
     ^packages.foreach[key;package]{
-        $result[^self.filesystem.removeDir[/$DI:vaultDirName/$package.name/]]
+        $result[^self.driverManager.uninstall[/$DI:vaultDirName/$package.name;$package;$options]]
     }
 ###
 

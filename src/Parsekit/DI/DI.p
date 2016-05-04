@@ -29,6 +29,7 @@ Version/VersionParser.p
 #------------------------------------------------------------------------------
 @auto[]
     $DI:vaultDirName[vault]
+
     $self.registry[
         $.filesystem[^Service::create[Filesystem]]
         $.repositoryManager[^Service::create[RepositoryManager]]

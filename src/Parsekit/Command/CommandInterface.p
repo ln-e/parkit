@@ -54,7 +54,7 @@ locals
         $result[Wrong count of arguments. Expected $requiredNumber]
 #       TODO add description of missing arguments
     }{
-        $result[^self.execute[$argumentsValue]]
+        $result[^self.execute[$argumentsValueж;$options]]
     }
 ###
 
@@ -63,7 +63,8 @@ locals
 #Abstract method for command execution
 #
 #:param arguments type hash
+#:param options type hash
 #------------------------------------------------------------------------------
-@execute[arguments]
+@execute[arguments;options]
     ^throw[Abstract method not defined]
 ###

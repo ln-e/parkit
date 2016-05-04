@@ -147,9 +147,27 @@ $response:content-type[
 
 $MAIN:CLASS_PATH[^table::create{path
 ../classes
+../src
+../src/Parsekit
 }]
 
 #$SQL.connect-string[mysql://user:pass@host/db?charset=utf8]
 #$SQL.connect-string[sqlite://db]
 #$SQL.connect-string[pgsql://user:pass@host/db]
 #$SQL.connect-string[odbc://DSN=datasource^;UID=user^;PWD=password]
+
+
+@rsplit[sText;sRegex;sDelimiter][result]
+^if(def $sText && def $sRegex){
+	$result[^sText.match[(.+?)(?:$sRegex|^$)][g]]
+}{
+	$result[^table::create{1}]
+}
+^if(def $sDelimiter){
+	^if($result && (^sDelimiter.pos[r]>=0 || ^sDelimiter.pos[R]>=0)){
+		$result[^table::create[$result;$.reverse(true)]]
+	}
+	^if(^sDelimiter.pos[v]>=0 || ^sDelimiter.pos[V]>=0){
+		$result[^result.flip[]]
+	}
+}

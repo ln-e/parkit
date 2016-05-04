@@ -24,7 +24,7 @@
           "type": "zip",
           "url": "https:\/\/api.github.com\/repos\/ln-e\/debug\/zipball\/b7d00f53c040cf3c568be1a71ee853c0516f13a2",
           "reference": "b7d00f53c040cf3c568be1a71ee853c0516f13a2",
-          "shasum": ""
+          "crc32": "175848703"
         },
         "type": "library",
         "time": "2016-03-17T:01:40:00+00:00",
@@ -56,7 +56,7 @@
           "type": "zip",
           "url": "https:\/\/api.github.com\/repos\/ln-e\/debug\/zipball\/2e69163c219629dd13ea5331784bd8900692ff07",
           "reference": "2e69163c219629dd13ea5331784bd8900692ff07",
-          "shasum": ""
+          "crc32": "175848703"
         },
         "type": "library",
         "time": "2016-03-17T:01:40:00+00:00",
@@ -88,7 +88,7 @@
           "type": "zip",
           "url": "https:\/\/api.github.com\/repos\/ln-e\/debug\/zipball\/5c67ecdd8268660cf9446feb9b9c1478962ec05d",
           "reference": "5c67ecdd8268660cf9446feb9b9c1478962ec05d",
-          "shasum": ""
+          "crc32": "175848703"
         },
         "type": "library",
         "time": "2016-03-17T:01:40:00+00:00",
@@ -120,7 +120,7 @@
           "type": "zip",
           "url": "https:\/\/api.github.com\/repos\/ln-e\/debug\/zipball\/b7d00f53c040cf3c568be1a71ee853c0516f13a2",
           "reference": "b7d00f53c040cf3c568be1a71ee853c0516f13a2",
-          "shasum": ""
+          "crc32": "175848703"
         },
         "type": "library",
         "time": "2016-03-17T:01:40:00+00:00",

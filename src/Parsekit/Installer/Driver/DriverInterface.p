@@ -63,13 +63,3 @@ locals
 @doUpdate[dir;package]
     ^throw[Abstract method not implemented]
 ###
-
-
-#------------------------------------------------------------------------------
-#:param dir type string
-#
-#:result bool
-#------------------------------------------------------------------------------
-@doRemove[dir]
-    ^throw[Abstract method not implemented]
-###

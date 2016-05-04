@@ -12,7 +12,7 @@ locals
 
 @USE
 GitDriver.p
-
+ZipDriver.p
 
 @auto[]
 ###
@@ -27,6 +27,7 @@ GitDriver.p
     $self.filesystem[$filesystem]
     $self.drivers[
         $.git[^GitDriver::create[$filesystem]]
+        $.zip[^ZipDriver::create[$filesystem]]
     ]
 ###
 
@@ -35,17 +36,31 @@ GitDriver.p
 # Attempts to install package in directory
 #
 #:param dir type string
-#:param url type string
+#:param package type PackageInterface
+#:param options type hash
 #
 #:result bool
 #------------------------------------------------------------------------------
-@install[dir;package][result]
+@install[dir;package;options][result]
     $result(false)
-    $url[^if($package.preferDist){$package.distUrl}{$package.sourceUrl}]
+    $url[^if($options.preferDist){$package.distUrl}{$package.sourceUrl}]
     ^self.drivers.foreach[key;driver]{
         ^if(^driver.supports[$url]){
             $result(^driver.update[$dir;$package])
             ^break[]
         }
     }
+###
+
+
+#------------------------------------------------------------------------------
+# Attempts to remove package from directory
+#
+#:param dir type string
+#:param package type string optional
+#
+#:result bool
+#------------------------------------------------------------------------------
+@uninstall[dir;package;options]
+    $result[^self.filesystem.removeDir[$dir]]
 ###

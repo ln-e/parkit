@@ -26,6 +26,8 @@ locals
 
 @auto[]
     $Application:options[^hash::create[]]
+###
+
 
 #------------------------------------------------------------------------------
 #Dynamic constructor
@@ -33,6 +35,7 @@ locals
 @create[]
     ^configureCommands[]
 ###
+
 
 #------------------------------------------------------------------------------
 #Configures list of available commands

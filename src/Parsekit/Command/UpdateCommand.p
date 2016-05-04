@@ -48,8 +48,11 @@ CommandInterface
 #Command execution
 #
 #:param arguments type hash
+#:param options type hash
+#
+#:result string
 #------------------------------------------------------------------------------
-@execute[arguments][result]
+@execute[arguments;options][result]
     $result[]
 
     $lockFile[^LockFile::create[/parsekit.lock]]
@@ -67,7 +70,7 @@ CommandInterface
             ^lockFile.updateFromPackage[$rootPackage]
         }
 
-        $installResult[^DI:installer.update[$lockFile;$resolvingResult.packages]]
+        $installResult[^DI:installer.update[$lockFile;$resolvingResult.packages;$rootPackage;$options]]
         $result[$installResult.info]
 
 #       Temporary decision. write second lock to vault dir, to compare with them while install.

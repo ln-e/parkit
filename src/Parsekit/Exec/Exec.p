@@ -38,11 +38,12 @@ locals
 #:result bool
 #------------------------------------------------------------------------------
 @execute[dir][result]
-    ^if($dir){
+    ^if(def $dir){
         ^self.updateDir[$dir]
     }
 #    $console:line[Execute '$cd $self.command']
-    $self.file[^file::exec[eval.sh;;$cd $self.command]]
+    $self.file[^file::exec[eval.sh;;^self.toString[]]]
+    ^if(^Application:hasOption[debug]){$console:line[^self.toString[]]}
     $result($self.status == $self.successCode)
 ###
 
@@ -77,6 +78,13 @@ locals
     $result[$self.file.status]
 ###
 
+
+#------------------------------------------------------------------------------
+#:result string
+#------------------------------------------------------------------------------
+@toString[][result]
+    $result[^taint[as-is][$self.cd $self.command]]
+###
 
 #------------------------------------------------------------------------------
 #:result bool

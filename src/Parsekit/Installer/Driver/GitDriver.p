@@ -82,6 +82,7 @@ VcsDriver
     }
     ^if(!^self.filesystem.exists[$dir/.git/]){
 #        $console:line[Directory '$dir' exists but do not contain .git. Removed and reinitialize.]
+        ^self.filesystem.removeDir[$dir/]
         ^self.doInstall[$dir;$package]
     }{
 

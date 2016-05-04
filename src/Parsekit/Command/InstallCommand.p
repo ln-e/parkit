@@ -48,18 +48,22 @@ CommandInterface
 #Command execution
 #
 #:param arguments type hash
+#:param options type hash
+#
+#:result string
 #------------------------------------------------------------------------------
-@execute[arguments][result]
+@execute[arguments;options][result]
     $result[]
 
     $lockFile[^LockFile::create[/parsekit.lock]]
     $installedLockFile[^LockFile::create[/$DI:vaultDirName/parsekit.lock]]
+    $rootPackage[^DI:packageManager.createRootPackage[/parsekit.json]]
 
     ^if($lockFile.empty){
         $result[parsekit.lock file not found! Could not install dependency. May be you mean `parsekit update` command ?]
     }{
         $packages[^DI:packageManager.packagesFromLock[$lockFile]]
-        $installResult[^DI:installer.update[$installedLockFile;$packages]]
+        $installResult[^DI:installer.update[$installedLockFile;$packages;$rootPackage;$options]]
         ^installedLockFile.save[]
         $result[$installResult.info]
     }
