@@ -16,7 +16,7 @@ locals
 @create[name]
     $self.name[$name]
     $self.type[]
-    $self.targetDir[]
+    $self.targetDir[$name]
     $self.sourceType[]
     $self.sourceUrl[]
     $self.sourceReference[]

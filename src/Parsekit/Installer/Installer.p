@@ -97,7 +97,7 @@ locals
 #------------------------------------------------------------------------------
 @install[packages;options][result]
     ^packages.foreach[key;package]{
-        $result[^self.driverManager.install[/$DI:vaultDirName/$package.name;$package;$options]]
+        $result[^self.driverManager.install[/$DI:vaultDirName/$package.targetDir;$package;$options]]
     }
 ###
 
@@ -110,7 +110,7 @@ locals
 #------------------------------------------------------------------------------
 @uninstall[packages;options][result]
     ^packages.foreach[key;package]{
-        $result[^self.driverManager.uninstall[/$DI:vaultDirName/$package.name;$package;$options]]
+        $result[^self.driverManager.uninstall[/$DI:vaultDirName/$package.targetDir;$package;$options]]
     }
 ###
 

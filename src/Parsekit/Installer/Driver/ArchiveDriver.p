@@ -55,7 +55,7 @@ DriverInterface
 #:result bool
 #------------------------------------------------------------------------------
 @doInstall[dir;package][result]
-    $bakDir[^self.tempdirForPackage[$package]/${package.name}_bak]
+    $bakDir[^self.tempdirForPackage[$package]/${package.targetDir}_bak]
     ^if(^self.filesystem.exists[$bakDir]){
         ^self.filesystem.removeDir[$bakDir]
     }
@@ -97,7 +97,7 @@ DriverInterface
             $recreate(^self.filesystem.removeDir[$tmpDir])
             $recreate(^self.filesystem.createDir[$tmpDir])
 
-            ^if(!$recreate){ ^throw[filesystemException;;Could not recreate temp firectory for package $package.name ]}
+            ^if(!$recreate){ ^throw[filesystemException;;Could not recreate temp directory for package $package.name ]}
 
             $filePath[${tmpDir}^self.contentDispositionName[$file]]
             ^file.save[binary;$filePath]
@@ -118,7 +118,7 @@ DriverInterface
 #:result string
 #------------------------------------------------------------------------------
 @tempdirForPackage[package]
-    $result[/$DI:vaultDirName/.tmp/${package.name}/]
+    $result[/$DI:vaultDirName/.tmp/${package.targetDir}/]
 ###
 
 
