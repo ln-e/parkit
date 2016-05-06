@@ -44,8 +44,11 @@ CommandInterface
 #Command execution
 #
 #:param arguments type hash
+#:param options type hash
+#
+#:result string
 #------------------------------------------------------------------------------
-@execute[arguments]
+@execute[arguments;options]
     $jsonFile[^JsonFile::create[/parsekit.json]]
 
     ^if(^jsonFile.exists[]){

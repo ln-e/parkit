@@ -1,8 +1,11 @@
 #!/bin/bash
 
 dir=$(d=$(dirname "$0"); cd "$d" && pwd)
-
-if hash parser3 2>/dev/null; then
+if [ -f "./cgi-bin/parser3" ]; then
+    path="./cgi-bin/parser3"
+elif [ -f "./cgi-bin/parser3.cgi" ]; then
+    path="./cgi-bin/parser3.cgi"
+elif hash parser3 2>/dev/null; then
     path="parser3"
 elif hash parser3.cgi 2>/dev/null; then
     path="parser3.cgi"
