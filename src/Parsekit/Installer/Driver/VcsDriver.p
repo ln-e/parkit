@@ -36,7 +36,7 @@ DriverInterface
 #
 #:result bool
 #------------------------------------------------------------------------------
-@update[dir;package][result]
+@mount[dir;package][result]
     ^if(!def $package.sourceReference){
         ^throw[InvalidArgumentException;VcsDriver.p; Git package hasn't source reference. ]
     }

@@ -115,7 +115,7 @@ RootPackage.p
 @configurePackage[package;config][result]
 
     $package.type[$config.type]
-    $package.targetDir[$config.targetDir]
+    $package.targetDir[^if(def $config.targetDir){$config.targetDir}{$config.name}]
     $package.sourceType[$config.source.type]
     $package.sourceUrl[$config.source.url]
     $package.sourceReference[$config.source.reference]

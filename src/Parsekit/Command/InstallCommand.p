@@ -63,7 +63,7 @@ CommandInterface
         $result[parsekit.lock file not found! Could not install dependency. May be you mean `parsekit update` command ?]
     }{
         $packages[^DI:packageManager.packagesFromLock[$lockFile]]
-        $installResult[^DI:installer.update[$installedLockFile;$packages;$rootPackage;$options]]
+        $installResult[^DI:installer.mount[$installedLockFile;$packages;$rootPackage;$options]]
         ^installedLockFile.save[]
         $result[$installResult.info]
     }

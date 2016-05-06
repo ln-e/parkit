@@ -16,6 +16,8 @@ locals
 
 #------------------------------------------------------------------------------
 #:constructor
+#
+#:param filesystem type Filesystem
 #------------------------------------------------------------------------------
 @create[]
 ###
@@ -23,22 +25,23 @@ locals
 
 #------------------------------------------------------------------------------
 #:param url type string
-#:param params type hash
 #
 #:result bool
 #------------------------------------------------------------------------------
-@supports[url;*params]
+@supports[url]
     ^throw[Abstract method not implemented]
 ###
 
 
 #------------------------------------------------------------------------------
+#Do all nessessary actions to mount $package to $dir
+#
 #:param dir type string
 #:param package type PackageInterface
 #
 #:result bool
 #------------------------------------------------------------------------------
-@update[dir;package]
+@mount[dir;package]
     ^throw[Abstract method not implemented]
 ###
 

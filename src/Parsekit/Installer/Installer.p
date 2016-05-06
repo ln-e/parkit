@@ -97,7 +97,7 @@ locals
 #------------------------------------------------------------------------------
 @install[packages;options][result]
     ^packages.foreach[key;package]{
-        $result[^self.driverManager.install[/$DI:vaultDirName/$package.targetDir;$package;$options]]
+        $result[^self.driverManager.mount[/$DI:vaultDirName/$package.targetDir;$package;$options]]
     }
 ###
 
@@ -110,7 +110,7 @@ locals
 #------------------------------------------------------------------------------
 @uninstall[packages;options][result]
     ^packages.foreach[key;package]{
-        $result[^self.driverManager.uninstall[/$DI:vaultDirName/$package.targetDir;$package;$options]]
+        $result[^self.driverManager.unmount[/$DI:vaultDirName/$package.targetDir;$package;$options]]
     }
 ###
 
@@ -137,7 +137,7 @@ locals
     }
 
     $string[^$parsekitClassPath[^^table::create{path
-^dirs.foreach[i;val]{$val}[^#0a]}]
+^dirs.foreach[i;val]{$val}[^#0A]}]
 ^$MAIN:CLASS_PATH.join{^$parsekitClassPath}
     ]
     ^string.save[/$DI:vaultDirName/classpath.p]

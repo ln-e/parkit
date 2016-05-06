@@ -20,6 +20,11 @@ DriverInterface
 ###
 
 
+#------------------------------------------------------------------------------
+#:constructor
+#
+#:param filesystem type Filesystem
+#------------------------------------------------------------------------------
 @create[filesystem]
     $self.filesystem[$filesystem]
 ###
@@ -42,7 +47,7 @@ DriverInterface
 #
 #:result bool
 #------------------------------------------------------------------------------
-@update[dir;package][result]
+@mount[dir;package][result]
 #   Update == Install for zip archive
     ^self.doInstall[$dir;$package]
 ###

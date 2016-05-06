@@ -19,9 +19,13 @@ ArchiveDriver
 @auto[]
 ###
 
+#------------------------------------------------------------------------------
+#:constructor
+#------------------------------------------------------------------------------
 @create[filesystem]
     ^BASE:create[$filesystem]
 ###
+
 
 #------------------------------------------------------------------------------
 #:param dir type string destination folder
@@ -47,11 +51,10 @@ ArchiveDriver
 
 #------------------------------------------------------------------------------
 #:param url type string
-#:param params type hash
 #
 #:result bool
 #------------------------------------------------------------------------------
-@supports[url;*params]
+@supports[url]
     $result(^url.match[(.zip^$)|(.tar.gz^$)|(api.github.com\/\S+\/zipball\/[a-zA-Z0-9]{40})][in] > 0)
 ###
 

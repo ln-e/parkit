@@ -41,12 +41,12 @@ ZipDriver.p
 #
 #:result bool
 #------------------------------------------------------------------------------
-@install[dir;package;options][result]
+@mount[dir;package;options][result]
     $result(false)
     $url[^if($options.preferDist){$package.distUrl}{$package.sourceUrl}]
     ^self.drivers.foreach[key;driver]{
         ^if(^driver.supports[$url]){
-            $result(^driver.update[$dir;$package])
+            $result(^driver.mount[$dir;$package])
             ^break[]
         }
     }
@@ -61,6 +61,6 @@ ZipDriver.p
 #
 #:result bool
 #------------------------------------------------------------------------------
-@uninstall[dir;package;options]
+@unmount[dir;package;options]
     $result[^self.filesystem.removeDir[$dir]]
 ###

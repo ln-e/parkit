@@ -77,7 +77,7 @@ CommandInterface
 #       In future this should be replaced. Current installed version should detected by exact dir.
 #       Git or some kind of lock file in case of zip distribution.
         ^if(^lockFile.save[] && ^lockFile.save[/$DI:vaultDirName/parsekit.lock]){
-            $result[$result^taint[^#0A]  Lockfile saved.^taint[^#0A]]
+            $result[$result^#0A  Lockfile saved.^#0A]
         }
     }
 ###
