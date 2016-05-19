@@ -75,8 +75,12 @@ CommandInterface
         ^if(!($resolvingResult is ResolvingResult)){
             $result[$result^#0ACould not update requirements, as it has conflicts. Soon you will see which package cause problem, but now try your luck. ^#0A]
         }{
-            $rootPackage.requires.[$newPackageName][$newPackageVersion] ^rem[ OR get the installed version and "downgrade" it version to "~1.2" view ]
-            ^rem[TODO ADD to rootpackage method save for ease save updated root package]
+#           Updates original file
+            $file[^JsonFile::create[/parsekit.json]]
+            $data[^file.read[]]
+            $data.require.[$newPackageName][$newPackageVersion] ^rem[ OR get the installed version and "downgrade" it version to "~1.2" view ]
+            ^file.write[$data;/parsekit.json]
+
             ^if($lockFile.empty){
                 ^lockFile.updateFromPackage[$rootPackage]
             }
