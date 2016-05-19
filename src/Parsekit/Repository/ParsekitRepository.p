@@ -28,8 +28,8 @@ BaseRepository
 @create[]
     $self.repoConfig[]
     $self.options[
-        $.parsekitURL[http://igor.bodnar.ws]
-        $.providerURL[http://igor.bodnar.ws/packages.json]
+        $.parsekitURL[http://parsekit.ru]
+        $.providerURL[http://parsekit.ru/packages.json]
         $.protocol[1]
     ]
     $self.lazyPackages[^hash::create[]]
@@ -47,7 +47,7 @@ BaseRepository
     ^validateConfig[]
 
     ^repoConfig.packages.foreach[packageName;packageInfo]{
-#        ^self.addPackage[^PackageFactory:createPackage[$packageName;$packageInfo]]
+#       ^self.addPackage[^PackageFactory:createPackage[$packageName;$packageInfo]]
         $self.lazyPackages.$packageName[$packageInfo]
     }
 

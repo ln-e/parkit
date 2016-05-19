@@ -41,11 +41,8 @@ CommandInterface
 @GET_argumentsConfig[]
     $result[
         ^hash::create[
-            $.packageName[
-                ^CommandArgument::create[packageName;true]
-            ]
-            $.packageVersion[
-                ^CommandArgument::create[packageVersion;false]
+            $.package[
+                ^CommandArgument::create[package;true]
             ]
         ]
     ]
@@ -56,8 +53,43 @@ CommandInterface
 #Command execution
 #
 #:param arguments type hash
+#:param options type hash
 #------------------------------------------------------------------------------
-@execute[arguments][result]
-    ^throw[NotImpelementedException;RequireCommand.p; Command is not impelemented yet. Change parserkit.json manually and run update command instead]
+@execute[arguments;options][result]
     $result[]
+    $pieces[^arguments.package.split[:;h]]
+    $newPackageName[^if(def $pieces.0){$pieces.0}{$arguments.package}]
+    $newPackageVersion[^if(def $pieces.1){$pieces.1}{*}] ^rem[ TODO somehow guess version ? ]
+    $lockFile[^LockFile::create[/parsekit.lock]]
+
+    $rootPackage[^DI:packageManager.createRootPackage[/parsekit.json]]
+    $requires[^hash::create[$rootPackage.requires]]
+
+    ^if(^requires.contains[$newPackageName]){
+        $result[Package $newPackageName already in parsekit.json]
+    }{
+        $requirements[^lockFile.getInstalledRequirements[]]
+        $requirements.[$newPackageName][$newPackageVersion]
+        $resolvingResult[^DI:resolver.resolve[$requirements](true)]
+
+        ^if(!($resolvingResult is ResolvingResult)){
+            $result[$result^#0ACould not update requirements, as it has conflicts. Soon you will see which package cause problem, but now try your luck. ^#0A]
+        }{
+            $rootPackage.requires.[$newPackageName][$newPackageVersion] ^rem[ OR get the installed version and "downgrade" it version to "~1.2" view ]
+            ^rem[TODO ADD to rootpackage method save for ease save updated root package]
+            ^if($lockFile.empty){
+                ^lockFile.updateFromPackage[$rootPackage]
+            }
+
+            $installResult[^DI:installer.update[$lockFile;$resolvingResult.packages;$rootPackage;$options]]
+            $result[$installResult.info]
+
+#           Temporary decision. write second lock to vault dir, to compare with them while install.
+#           In future this should be replaced. Current installed version should detected by exact dir.
+#           Git or some kind of lock file in case of zip distribution.
+            ^if(^lockFile.save[] && ^lockFile.save[/$DI:vaultDirName/parsekit.lock]){
+                $result[$result^#0A  Lockfile saved.^#0A]
+            }
+        }
+    }
 ###

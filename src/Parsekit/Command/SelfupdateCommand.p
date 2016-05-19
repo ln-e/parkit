@@ -43,7 +43,8 @@ CommandInterface
 
 #------------------------------------------------------------------------------
 #:param arguments type hash
+#:param options type hash
 #------------------------------------------------------------------------------
-@execute[arguments][result]
+@execute[arguments;options][result]
     $result[self update not yet implemented]
 ###

@@ -45,7 +45,7 @@ locals
             $requiredNumber($requiredNumber + 1)
         }
         $argumentsValue.$argumentName[$argument.defaultValue]
-        ^if(^arguments._count[]<$i){
+        ^if(^arguments._count[]>=$i){
             $argumentsValue.$argumentName[^arguments._at($i)]
         }
         $i($i+1)
@@ -54,7 +54,7 @@ locals
         $result[Wrong count of arguments. Expected $requiredNumber]
 #       TODO add description of missing arguments
     }{
-        $result[^self.execute[$argumentsValueж;$options]]
+        $result[^self.execute[$argumentsValue;$options]]
     }
 ###
 

@@ -70,6 +70,8 @@ CommandInterface
 # TODO add interactive questions like project name, author etc
     $hash[
         $.name[New Project]
+        $.type[library]
+        $.description[]
         $.require[
             $.parser[>=3.4.3]
         ]

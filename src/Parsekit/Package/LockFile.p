@@ -121,6 +121,19 @@ locals
 
 #------------------------------------------------------------------------------
 # Updates lock file on disk
+#
+#:result hash
+#------------------------------------------------------------------------------
+@getInstalledRequirements[]
+    $result[^hash::create[]]
+    ^self.data.packages.foreach[packageName;package]{
+        $result.$packageName[$package.version]
+    }
+###
+
+
+#------------------------------------------------------------------------------
+# Updates lock file on disk
 #:param path type string optional
 #------------------------------------------------------------------------------
 @save[path][result]
