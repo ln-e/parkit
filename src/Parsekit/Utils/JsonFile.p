@@ -121,9 +121,10 @@ locals
 @static:encode[data;options]
     $mergedOptions[
         $.indent(true)
+        $.table[array]
+        $.ParsekitRepository[$JsonFile:emptyHandler] # never store ParsekitRepository in lock file ?
     ]
     ^mergedOptions.add[$options]
-
     $result[^json:string[$data;$mergedOptions]]
 ###
 
@@ -139,4 +140,17 @@ locals
         $.distinct[first]
         $.taint[json]
     ]]
+###
+
+
+#------------------------------------------------------------------------------
+#Handler for exclude classes from json
+#
+#:param key type string
+#:param value
+#:param params type hash
+#:result hash
+#------------------------------------------------------------------------------
+@static:emptyHandler[key;value;params]
+    $result[null]
 ###
