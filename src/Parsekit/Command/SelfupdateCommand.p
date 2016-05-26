@@ -9,6 +9,7 @@ SelfupdateCommand
 
 @USE
 CommandInterface.p
+CommandOption.p
 Utils/JsonFile.p
 
 @OPTIONS
@@ -38,6 +39,16 @@ CommandInterface
 #------------------------------------------------------------------------------
 @GET_argumentsConfig[]
     $result[^hash::create[]]
+###
+
+
+#------------------------------------------------------------------------------
+#:result hash
+#------------------------------------------------------------------------------
+@GET_optionsConfig[]
+    $result[^hash::create[
+        $.0[^CommandOption::create[debug;d;;Enabling debug output]]
+    ]]
 ###
 
 

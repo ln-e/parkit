@@ -5,7 +5,7 @@
 # To change this template use File | Settings | File Templates.
 
 @CLASS
-CommandArgument
+CommandOption
 
 @OPTIONS
 locals
@@ -19,18 +19,9 @@ locals
 #:param default type string
 #:param description type string
 #------------------------------------------------------------------------------
-@create[name;required;default;description]
+@create[name;shortcut;default;description]
     $self.name[$name]
-    $self.required[$required]
+    $self.shortcut[$shortcut]
     $self.default[$default]
-###
-
-
-#------------------------------------------------------------------------------
-#Check whatever argument is required
-#
-#:result boolean
-#------------------------------------------------------------------------------
-@isRequired[]
-    $result[^self.required.bool[]]
+    $self.description[$description]
 ###

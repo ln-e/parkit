@@ -10,6 +10,7 @@ InstallCommand
 @USE
 CommandInterface.p
 CommandArgument.p
+CommandOption.p
 Parsekit/Repository/RepositoryFactory.p
 Parsekit/Package/PackageManager.p
 Parsekit/Package/LockFile.p
@@ -41,6 +42,16 @@ CommandInterface
 #------------------------------------------------------------------------------
 @GET_argumentsConfig[]
     $result[^hash::create[]]
+###
+
+
+#------------------------------------------------------------------------------
+#:result hash
+#------------------------------------------------------------------------------
+@GET_optionsConfig[]
+    $result[^hash::create[
+        $.0[^CommandOption::create[debug;d;;Enabling debug output]]
+    ]]
 ###
 
 

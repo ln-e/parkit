@@ -67,13 +67,12 @@ locals
 #Starts application
 #------------------------------------------------------------------------------
 @run[][result]
-    $result[^taint[^#0A]]
+    $result[^#0A]
     $commandName[$request:argv.1]
     ^if(!def $commandName || !^self.hasCommand[$commandName]){
         $result[$result^showHelp[]]
     }{
-        $params[^self.prepareParams[]]
-        $result[$result^self.commands.$commandName.run[$params.arguments;$params.options]]
+        $result[$result^self.commands.$commandName.run[]]
     }
 ###
 
@@ -89,34 +88,10 @@ locals
     }
     $result[
 Usage:
-  command [arguments] [--option[=value]]
+  command [arguments] [--option[=value]] [-o [value]]
 
 Available commands:
 ^ConsoleTable:formatTable[$t;  ]]
-###
-
-
-#------------------------------------------------------------------------------
-#Parses and converts arguments from command line
-#------------------------------------------------------------------------------
-@prepareParams[][result]
-    $result[^hash::create[
-        $.arguments[^hash::create[]]
-        $.options[^hash::create[]]
-    ]]
-    $i(2)
-    ^while($i < ^request:argv._count[]){
-        $param[$request:argv.$i]
-        ^if(def $param && ^param.pos[--] != 0){
-            $ind[^result.arguments._count[]]
-            $result.arguments.$ind[$param]
-        }(^param.pos[--] == 0){
-            $split[^param.match[--([^^\s=]+)=?(\S+)?][i]]
-            $result.options.[$split.1][$split.2]
-        }
-        ^i.inc[]
-    }
-    $Application:options[$result.options]
 ###
 
 
