@@ -15,7 +15,8 @@ locals
 
 
 #------------------------------------------------------------------------------
-#TODO change replace type from hash to table and use native method replace?
+#TODO should be removed due to new provider naming strategy?
+#
 #:param url type string
 #:param replace type hash
 #------------------------------------------------------------------------------

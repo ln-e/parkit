@@ -67,7 +67,7 @@ CommandInterface
 #:result hash
 #------------------------------------------------------------------------------
 @createBaseJson[]
-# TODO add interactive questions like project name, author etc
+#   TODO add interactive questions like project name, author etc
     $hash[
         $.name[New Project]
         $.type[library]

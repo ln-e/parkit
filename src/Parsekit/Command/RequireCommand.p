@@ -59,7 +59,7 @@ CommandInterface
     $result[]
     $pieces[^arguments.package.split[:;h]]
     $newPackageName[^if(def $pieces.0){$pieces.0}{$arguments.package}]
-    $newPackageVersion[^if(def $pieces.1){$pieces.1}{*}] ^rem[ TODO somehow guess version ? ]
+    $newPackageVersion[^if(def $pieces.1){$pieces.1}{*}]
     $lockFile[^LockFile::create[/parsekit.lock]]
 
     $rootPackage[^DI:packageManager.createRootPackage[/parsekit.json]]

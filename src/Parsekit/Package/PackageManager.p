@@ -35,7 +35,7 @@ RootPackage.p
 #:param name type string
 #------------------------------------------------------------------------------
 @getPackages[name][result]
-# TODO get list of repositories instead of direct access to parsekitRepository
+#   TODO get list of repositories instead of direct access to parsekitRepository
     $parsekitRepository[$self.repositoryManager.parsekitRepository]
 
     ^if(!def $parsekitRepository.lazyPackages.$name){

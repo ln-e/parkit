@@ -28,7 +28,7 @@ Repository/ParsekitRepository.p
 #:param rootPackage type RootPackage
 #------------------------------------------------------------------------------
 @getRpositories[rootPackage][result]
-# TODO gets extra repositories from rootPackage
+#   TODO gets extra repositories from rootPackage
     $result[
       $.0[$self.parsekitRepository]
     ]

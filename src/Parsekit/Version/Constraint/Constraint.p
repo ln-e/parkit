@@ -44,7 +44,7 @@ ConstraintInterface
         $.[$self.OP_NE][!=]
     ]
 
-    str < dev < alpha = a < beta = b < RC = rc < # < pl = p
+#   str < dev < alpha = a < beta = b < RC = rc < # < pl = p
     $self.tails[
         $.dev(1)
         $.a(1)
@@ -204,8 +204,8 @@ ConstraintInterface
 
     $tmp[$self.OP_EQ]
     ^for[i](0;$index){
-        ^rem[ TODO check all operators and $tableA.piece and $tableB.piece]
-#str < dev < alpha = a < beta = b < RC = rc < # < pl = p
+#       check all operators and $tableA.piece and $tableB.piece]
+#       str < dev < alpha = a < beta = b < RC = rc < # < pl = p
         ^if($tableA.piece is string && !($tableB.piece is string)){
             ^rem[number always bigger that string]
             $tmp[$self.OP_LT]

@@ -158,7 +158,6 @@ locals
                         ^if(!^self.semver.satisfies[$packageForUpdate.version;$newReq.[$packageForUpdate.name] $extraReq]){
                             ^rem[ conflict caused by $package ]
                             ^extendResult.addConflict[$package.name]
-                            ^rem[ TODO IMPORTANT! if package is not listened in origin we should add transivite parent packages to conflicts as well ]
                         }{
                             ^if(!def $iterationRequirement.$packageName){
                                 $hasNew(true)
@@ -234,11 +233,8 @@ locals
 
     $versions[^hash::create[]]
     ^packages.foreach[key;pack]{
-        ^rem[ TODO откуда берется не PackageInterface в packages ?]
-        ^if($pack is PackageInterface){
-            $index[^versions._count[]]
-            $versions.$index[$pack.version]
-        }
+        $index[^versions._count[]]
+        $versions.$index[$pack.version]
     }
 
     $versions[^self.semver.sort[^self.semver.satisfiedBy[$versions;$constraint]]]

@@ -34,7 +34,6 @@ ArchiveDriver
 #:result hash
 #------------------------------------------------------------------------------
 @unpack[dir;fileInfo]
-#   TODO TROUBLE with path relative to webroot and absolute path in commands
     ^if(^Exec:isWin[]){
         $command[^Exec::create[7z e -o.^file:basename[$fileInfo.filePath];$fileInfo.tempDir]]
     }{
