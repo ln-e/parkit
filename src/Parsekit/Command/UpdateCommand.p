@@ -66,7 +66,7 @@ CommandInterface
 @execute[arguments;options][result]
     $result[]
 
-    $lockFile[^LockFile::create[/parsekit.lock]]
+    $installedLockFile[^LockFile::create[/$DI:vaultDirName/parsekit.lock]]
 
     $rootPackage[^DI:packageManager.createRootPackage[/parsekit.json]]
     $requires[^hash::create[$rootPackage.requires]]
@@ -75,19 +75,17 @@ CommandInterface
 
 
     ^if(!($resolvingResult is ResolvingResult)){
-        $result[$result^taint[^#0A]Could not update requirements, as it has conflicts. Soon you will see which package cause problem, but now try your luck. ^taint[^#0A]]
+        $result[$result^#0ACould not update requirements, as it has conflicts. Soon you will see which package cause problem, but now try your luck. ^#0A]
     }{
-        ^if($lockFile.empty){
-            ^lockFile.updateFromPackage[$rootPackage]
+        ^if($installedLockFile.empty){
+            ^installedLockFile.updateFromPackage[$rootPackage]
         }
 
-        $installResult[^DI:installer.update[$lockFile;$resolvingResult.packages;$rootPackage;$options]]
+        $installResult[^DI:installer.update[$installedLockFile;$resolvingResult.packages;$rootPackage;$options]]
         $result[$installResult.info]
 
-#       Temporary decision. write second lock to vault dir, to compare with them while install.
-#       In future this should be replaced. Current installed version should detected by exact dir.
-#       Git or some kind of lock file in case of zip distribution.
-        ^if(^lockFile.save[] && ^lockFile.save[/$DI:vaultDirName/parsekit.lock]){
+#       Write second lock to vault dir, to know currently installed version
+        ^if(^installedLockFile.save[] && ^installedLockFile.save[/parsekit.lock]){
             $result[$result^#0A  Lockfile saved.^#0A]
         }
     }

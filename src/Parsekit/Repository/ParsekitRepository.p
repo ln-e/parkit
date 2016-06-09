@@ -101,3 +101,18 @@ Update your parsekit to latest version:
         ^throw[protocol.version.differ;ParsekitRepository.p;$errorText]
     }
 ###
+
+
+#------------------------------------------------------------------------------
+#Validates main repository configuration by protocol version.
+#------------------------------------------------------------------------------
+@notifyInstalls[packageName]
+    $url[^RepositoryUtils:maskedUrl[${self.options.parsekitURL}$self.repoConfig.notify;$.packages[$packageName]]]
+    $result[^curl:load[
+        $.url[^taint[as-is][$url]]
+        $.useragent[parsekit]
+        $.timeout(20)
+        $.ssl_verifypeer(0)
+        $.followlocation(1)
+    ]]
+###

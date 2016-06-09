@@ -116,12 +116,12 @@ RootPackage.p
 
     $package.type[$config.type]
     $package.targetDir[^if(def $config.targetDir){$config.targetDir}{$config.name}]
-    $package.sourceType[$config.source.type]
-    $package.sourceUrl[$config.source.url]
-    $package.sourceReference[$config.source.reference]
-    $package.distType[$config.dist.type]
-    $package.distUrl[$config.dist.url]
-    $package.distReference[$config.dist.reference]
+    $package.sourceType[$config.sourceType]
+    $package.sourceUrl[$config.sourceUrl]
+    $package.sourceReference[$config.sourceReference]
+    $package.distType[$config.distType]
+    $package.distUrl[$config.distUrl]
+    $package.distReference[$config.distReference]
     $package.releaseDate[$config.releaseDate]
     $package.classPath[^if($config.classPath is hash){$config.classPath}{^hash::create[]}]
 

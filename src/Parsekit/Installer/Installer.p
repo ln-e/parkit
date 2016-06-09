@@ -38,42 +38,42 @@ locals
         ^self.createVault[]
     }
 
-    $packageToUpdate[^hash::create[]]
-    $packageToRemove[^hash::create[]]
+    $packagesToUpdate[^hash::create[]]
+    $packagesToRemove[^hash::create[]]
     ^packages.foreach[packageName;package]{
         ^if(^lockFile.addPackage[$package]){
-            $packageToUpdate.$packageName[$package]
+            $packagesToUpdate.$packageName[$package]
         }
     }
 
     ^lockFile.packages.foreach[name;package]{
         ^if(!^packages.contains[$name]){
-            $packageToRemove.$name[$package]
+            $packagesToRemove.$name[$package]
         }
     }
 
     $preferDist($options is hash && ^options.contains[prefer-dist])
-    $successInstall[^self.install[$packageToUpdate;$.preferDist($preferDist)]]
-    $successUninstall[^self.uninstall[$packageToRemove]]
+    $successInstall[^self.install[$packagesToUpdate;$.preferDist($preferDist)]]
+    $successUninstall[^self.uninstall[$packagesToRemove]]
     ^self.dumpClassPath[$packages]
 
 #   Generates text representation. TODO replace by direct write to some outputinterface!
     $info[]
-    ^if(^packageToUpdate._count[] == 0 && ^packageToRemove._count[] == 0 ){
+    ^if(^packagesToUpdate._count[] == 0 && ^packagesToRemove._count[] == 0 ){
         $info[${info}  Nothing to install or update. All package is up to date.^taint[^#0A]]
     }{
         $info[${info}  Dependencies was updated. ^taint[^#0A]]
 
-        ^if(^packageToUpdate._count[] > 0){
+        ^if(^packagesToUpdate._count[] > 0){
             $info[$info ^taint[^#0A]  Updated/installed packages: ^taint[^#0A]]
-            ^packageToUpdate.foreach[name;package]{
+            ^packagesToUpdate.foreach[name;package]{
                 $info[$info    - $name^: $package.version^taint[^#0A]]
             }
         }
 
-        ^if(^packageToRemove._count[] > 0){
+        ^if(^packagesToRemove._count[] > 0){
             $info[${info}  Removed packages:^taint[^#0A]]
-            ^packageToRemove.foreach[name;package]{
+            ^packagesToRemove.foreach[name;package]{
                 ^if(^lockFile.remove[$package]){
                     $info[$info    - $name^: $package.version^taint[^#0A]]
                 }
@@ -82,8 +82,8 @@ locals
     }
 
     $result[
-        $.updated[$packageToUpdate]
-        $.uninstalled[$packageToRemove]
+        $.updated[$packagesToUpdate]
+        $.uninstalled[$packagesToRemove]
         $.info[$info]
     ]
 ###
@@ -96,8 +96,12 @@ locals
 #:result bool
 #------------------------------------------------------------------------------
 @install[packages;options][result]
+    $result(true)
     ^packages.foreach[key;package]{
-        $result[^self.driverManager.mount[/$DI:vaultDirName/$package.targetDir;$package;$options]]
+        $result($result && ^self.driverManager.mount[/$DI:vaultDirName/$package.targetDir;$package;$options])
+        ^if($package.repository.notifyInstalls is junction){
+            ^package.repository.notifyInstalls[$package.name]
+        }
     }
 ###
 
@@ -109,8 +113,9 @@ locals
 #:result bool
 #------------------------------------------------------------------------------
 @uninstall[packages;options][result]
+    $result(true)
     ^packages.foreach[key;package]{
-        $result[^self.driverManager.unmount[/$DI:vaultDirName/$package.targetDir;$package;$options]]
+        $result($result && ^self.driverManager.unmount[/$DI:vaultDirName/$package.targetDir;$package;$options])
     }
 ###
 
