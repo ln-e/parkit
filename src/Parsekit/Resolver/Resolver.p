@@ -194,7 +194,7 @@ locals
                     ^if(
                         !^self.semver.constraintIntersected[$reqI;$reqJ]
                         ||
-                        !def ^self.pickPackageByStrategy[max;^self.packageManager.getPackages[$newPackageName];$reqI $reqJ]
+                        !def ^self.pickPackageByStrategy[max;^self.packageManager.getPackage[$newPackageName];$reqI $reqJ]
                     ){
                         ^if($self.debug){$console:line[TRNASITIVNIY $newPackageName between $i $packages.$i.version [$reqI] and $j $packages.$j.version [$reqJ] ]}
                         ^rem[ conflict between $i and $j ]
@@ -259,7 +259,7 @@ locals
 @pickPackages[requirements][result]
     $result[^hash::create[]]
     ^requirements.foreach[packageName;baseConstraint]{
-        $packages[^self.packageManager.getPackages[$packageName]]
+        $packages[^self.packageManager.getPackage[$packageName]]
 # Pick package nearest to $constraint top boundary
 
         $package[^self.pickPackageByStrategy[max;$packages;^taint[as-is][$baseConstraint]]]

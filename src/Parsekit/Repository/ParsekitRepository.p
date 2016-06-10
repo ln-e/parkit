@@ -105,14 +105,47 @@ Update your parsekit to latest version:
 
 #------------------------------------------------------------------------------
 #Validates main repository configuration by protocol version.
+#
+#:param packageName type string
 #------------------------------------------------------------------------------
-@notifyInstalls[packageName]
+@notifyInstalls[packageName][result]
+    $result[]
     $url[^RepositoryUtils:maskedUrl[${self.options.parsekitURL}$self.repoConfig.notify;$.packages[$packageName]]]
-    $result[^curl:load[
+    $file[^curl:load[
         $.url[^taint[as-is][$url]]
         $.useragent[parsekit]
         $.timeout(20)
         $.ssl_verifypeer(0)
         $.followlocation(1)
     ]]
+#   Add check of success information? for what?
+###
+
+
+#------------------------------------------------------------------------------
+#:param searchString type string
+#
+#:result hash
+#------------------------------------------------------------------------------
+@searchPackages[searchString]
+    $url[^RepositoryUtils:maskedUrl[${self.options.parsekitURL}$self.repoConfig.search;$.query[$searchString]]]
+
+    $file[^curl:load[
+        $.url[^taint[as-is][$url]]
+        $.useragent[parsekit]
+        $.timeout(20)
+        $.ssl_verifypeer(0)
+        $.followlocation(1)
+    ]]
+
+    $res[^json:parse[^taint[as-is][$file.text]]]
+
+    ^if($res.protocol ne $self.options.protocol){
+        ^throw[UnsopprtedProtocolExeception;;Protocol $res.protocol not equal $self.options.protocol]
+    }
+
+    $result[^hash::create[]]
+    ^res.packages.foreach[key;package]{
+        $result.[$package.name][$self]
+    }
 ###

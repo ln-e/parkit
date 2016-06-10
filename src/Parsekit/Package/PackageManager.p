@@ -33,13 +33,15 @@ RootPackage.p
 
 #------------------------------------------------------------------------------
 #:param name type string
+#
+#:result PackageInterface
 #------------------------------------------------------------------------------
-@getPackages[name][result]
+@getPackage[name][result]
 #   TODO get list of repositories instead of direct access to parsekitRepository
     $parsekitRepository[$self.repositoryManager.parsekitRepository]
 
     ^if(!def $parsekitRepository.lazyPackages.$name){
-        ^throw[lazypackagenotfound;PackageManager.p; Package with name '$name' not found ]
+        ^throw[PackageNotFoundException;PackageManager.p; Package with name '$name' not found ]
     }
 
 #   if package is not listed yet
@@ -68,7 +70,11 @@ RootPackage.p
 ##
 
 
+#------------------------------------------------------------------------------
 #:param lockFile type LockFile
+#
+#:result hash of PackageInterface
+#------------------------------------------------------------------------------
 @packagesFromLock[lockFile]
     $packages[^hash::create[]]
     ^lockFile.packages.foreach[key;config]{
@@ -155,4 +161,25 @@ RootPackage.p
 
 
     $result[$package]
+###
+
+
+#------------------------------------------------------------------------------
+#:param searchString type string
+#
+#:result hash hash of assumptions
+#------------------------------------------------------------------------------
+@guessPackage[searchString][result]
+    $result[^hash::create[]]
+    $repositories[^self.repositoryManager.getRpositories[]]
+
+    ^repositories.foreach[key;repository]{
+        ^if($repository.searchPackages is junction){
+            $tempAssumptions[^repository.searchPackages[$searchString]]
+
+            ^tempAssumptions.foreach[packageName;repository]{
+                $result.[^result._count[]][$packageName]
+            }
+        }
+    }
 ###

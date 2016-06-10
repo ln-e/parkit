@@ -16,6 +16,7 @@ Repository/ParsekitRepository.p
 @auto[]
 ###
 
+
 #------------------------------------------------------------------------------
 #:constructor
 #------------------------------------------------------------------------------
@@ -26,6 +27,8 @@ Repository/ParsekitRepository.p
 
 #------------------------------------------------------------------------------
 #:param rootPackage type RootPackage
+#
+#:result hash of RepositoryInterface
 #------------------------------------------------------------------------------
 @getRpositories[rootPackage][result]
 #   TODO gets extra repositories from rootPackage
