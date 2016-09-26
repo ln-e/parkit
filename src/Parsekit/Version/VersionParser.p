@@ -376,11 +376,11 @@ $self.parsedConstraints[^hash::create[]]
             ^throw[UnexpectedValue;VersionParser.p;Invalid operator "~>", you probably meant to use the "~" operator]
         }
 
-        ^if($matches.4 && '' ne $matches.4){
+        ^if(def $matches.4 && '' ne $matches.4){
             $position[4]
-        }($matches.3 && '' ne $matches.3){
+        }(def $matches.3 && '' ne $matches.3){
             $position[3]
-        }($matches.2 && '' ne $matches.2){
+        }(def $matches.2 && '' ne $matches.2){
             $position[2]
         }{
             $position[1]
@@ -579,6 +579,9 @@ $self.parsedConstraints[^hash::create[]]
 #:result string
 #------------------------------------------------------------------------------
 @manipulateVersionString[matches;position;increment;pad][result;i;ind]
+    ^if(!def $pad){
+        $pad[0]
+    }
 
     ^for[ind](1;4){
         $i(5 - $ind)
@@ -586,14 +589,14 @@ $self.parsedConstraints[^hash::create[]]
         ^if($i > $position){
             $matches.$i[$pad]
         }($i == $position && $increment){
-            $matches.$i($matches.$i + $increment)
+            $matches.[$i]($matches.$i + $increment)
 
             ^if($matches.$i < 0){
                 $matches.$i[$pad]
                 $position($position - 1)
 
                 ^if($i == 1){
-                    ^throw[carry overflow;versionparser.p;carry overflow]
+                    ^throw[CarryOverflowException;versionparser.p;carry overflow]
                 }
             }
         }
