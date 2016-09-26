@@ -70,7 +70,10 @@ locals
     ^if(
         (
             def $self.data.packages.[$package.name] &&
-            $self.data.packages.[$package.name].version ne $package.version
+            (
+                $self.data.packages.[$package.name].version ne $package.version ||
+                $self.data.packages.[$package.name].sourceReference ne $package.sourceReference
+            )
         )
         ||
         (
