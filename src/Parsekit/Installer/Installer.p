@@ -53,30 +53,50 @@ locals
     }
 
     $preferDist($options is hash && ^options.contains[prefer-dist])
-    $successInstall[^self.install[$packagesToUpdate;$.preferDist($preferDist)]]
-    $successUninstall[^self.uninstall[$packagesToRemove]]
+    $failedInstall[^self.install[$packagesToUpdate;$.preferDist($preferDist)]]
+    $failedUninstall[^if(^failedInstall._count[] == 0){
+        ^self.uninstall[$packagesToRemove]
+    }{ ^hash::create[] }]
     ^self.dumpClassPath[$packages]
 
 #   Generates text representation. TODO replace by direct write to some outputinterface!
     $info[]
     ^if(^packagesToUpdate._count[] == 0 && ^packagesToRemove._count[] == 0 ){
-        $info[${info}  Nothing to install or update. All package is up to date.^taint[^#0A]]
-    }{
-        $info[${info}  Dependencies was updated. ^taint[^#0A]]
+        $info[${info}  Nothing to install or update. All package is up to date.^#0A]
+    }(^failedInstall._count[] == 0 && ^failedUninstall._count[] == 0){
+        $info[${info}  Dependencies was updated. ^#0A]
 
         ^if(^packagesToUpdate._count[] > 0){
-            $info[$info ^taint[^#0A]  Updated/installed packages: ^taint[^#0A]]
+            $info[$info ^taint[^#0A]  Updated/installed packages: ^#0A]
             ^packagesToUpdate.foreach[name;package]{
-                $info[$info    - $name^: $package.version^taint[^#0A]]
+                $info[$info    - $name^: $package.version^#0A]
             }
         }
 
         ^if(^packagesToRemove._count[] > 0){
-            $info[${info}  Removed packages:^taint[^#0A]]
+            $info[$info  Removed packages:^#0A]
             ^packagesToRemove.foreach[name;package]{
                 ^if(^lockFile.remove[$package]){
-                    $info[$info    - $name^: $package.version^taint[^#0A]]
+                    $info[$info    - $name^: $package.version^#0A]
                 }
+            }
+        }
+    }{
+        $info[${info}ERR!ERR!^#0AERR!ERR!^#0AERR!ERR!^#0A]
+
+        ^if(^failedInstall._count[]){
+            $info[$info^#0A  Failed to install or update next packages: ^#0A]
+
+            ^failedInstall.foreach[name;package]{
+               $info[$info    - $name^#0A]
+            }
+        }
+
+        ^if(^failedUninstall._count[]){
+            $info[$info^#0A  Failed to remove next packages: ^#0A]
+
+            ^failedUninstall.foreach[name;package]{
+               $info[$info    - $name^#0A]
             }
         }
     }
@@ -84,6 +104,8 @@ locals
     $result[
         $.updated[$packagesToUpdate]
         $.uninstalled[$packagesToRemove]
+        $.failedInstall[$failedInstall]
+        $.faileduninstall[$failedUninstall]
         $.info[$info]
     ]
 ###
@@ -93,12 +115,16 @@ locals
 #:param packages type hash
 #:param options type hash
 #
-#:result bool
+#:result hash of failed packages
 #------------------------------------------------------------------------------
 @install[packages;options][result]
-    $result(true)
+    $result[^hash::create[]]
     ^packages.foreach[key;package]{
-        $result($result && ^self.driverManager.mount[/$DI:vaultDirName/$package.targetDir;$package;$options])
+        ^if(!^self.driverManager.mount[/$DI:vaultDirName/$package.targetDir;$package;$options]){
+            $result.$key[$package]
+            ^break[]
+            ^rem[ TODO replace boolean indication by throwing exception ]
+        }
         ^if($package.repository.notifyInstalls is junction){
             ^package.repository.notifyInstalls[$package.name]
         }
@@ -110,12 +136,16 @@ locals
 #:param packages type hash
 #:param options type hash
 #
-#:result bool
+#:result hash of failed packages
 #------------------------------------------------------------------------------
 @uninstall[packages;options][result]
-    $result(true)
+    $result[^hash::create[]]
     ^packages.foreach[key;package]{
-        $result($result && ^self.driverManager.unmount[/$DI:vaultDirName/$package.targetDir;$package;$options])
+        ^if(!^self.driverManager.unmount[/$DI:vaultDirName/$package.targetDir;$package;$options]){
+            $result.$key[$package]
+            ^break[]
+            ^rem[ TODO replace boolean indication by throwing exception ]
+        }
     }
 ###
 

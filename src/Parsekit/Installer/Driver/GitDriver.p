@@ -66,7 +66,7 @@ VcsDriver
     $exec[^Exec::create[$command;$dir]]
     ^exec.execute[]
 
-    $result(!^self.checkoutToCommit[$dir;$package.sourceReference;$package.prettyVersion])
+    $result[^self.checkoutToCommit[$dir;$package.sourceReference;$package.prettyVersion]]
 ###
 
 
