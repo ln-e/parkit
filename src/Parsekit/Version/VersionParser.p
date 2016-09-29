@@ -489,8 +489,7 @@ $self.parsedConstraints[^hash::create[]]
 #nothing that would be greater than the provided tuple parts.
     $matches[^constraint.match[^^($versionRegex) +- +($versionRegex)(^$)][i]]
     ^if(!def $result && $matches){
-#^dstop[$matches]
-# Calculate the stability suffix
+#       Calculate the stability suffix
         $lowStabilitySuffix[]
         ^if(!$matches.6 && !$matches.8){
             $lowStabilitySuffix[-dev]
