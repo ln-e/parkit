@@ -149,6 +149,7 @@ $MAIN:CLASS_PATH[^table::create{path
 ../classes
 ../src
 ../src/Parsekit
+../tests
 }]
 
 #$SQL.connect-string[mysql://user:pass@host/db?charset=utf8]

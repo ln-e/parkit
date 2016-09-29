@@ -81,7 +81,7 @@ Version/VersionParser.p
 #------------------------------------------------------------------------------
 @static:getService[key]
     ^if(!^self.registry.contains[$key]){
-        ^throw[service.unknown;container.p;Service $key not found]
+        ^throw[service.unknown;container.p;Service '$key' not found]
     }
     ^if(!^self.instances.contains[$key]){
         $servise[$self.registry.$key]
