@@ -1,4 +1,6 @@
 #!cgi/parser3.cgi
+@USE
+../classes/Debug.p
 
 #------------------------------------------------------------------------------
 #Build
@@ -15,6 +17,7 @@
     ^self.collectFile[../classes;ConsoleTable.p]
 
     ^self.collectClasses[../src]
+    ^self.collectClasses[../vault/ln-e/console/src]
 
     $concatedClasses[^hash::create[]]
 
@@ -43,14 +46,17 @@
 
 
 @collectFile[dir;fileName][result]
-    $className[^fileName.replace[.p;]]
     $file[^file::load[text;$dir/$fileName]]
+    $matches[^file.text.match[@CLASS\n(\S+)][gi]]
+    $className[$matches.1]
     $matches[^file.text.match[@base\n([\S]+)][gim]]
+    $text[^file.text.match[@use\n(.*\.p\n)+][gmi]{}]
+    $text[^text.match[(\^^use\[\S*\])][giU]{}]
     $self.classes.[$className][
         $.file[$dir/$fileName]
         $.class[$className]
         $.base[$matches.1]
-        $.text[^file.text.match[@use\n(.*\.p\n)+][gmi]{}]
+        $.text[$text]
         $.concated(false)
     ]
 ###

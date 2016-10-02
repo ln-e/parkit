@@ -11,46 +11,35 @@ SelfupdateCommand
 locals
 
 @BASE
-CommandInterface
+Ln-e/Console/CommandInterface
 
 
 #------------------------------------------------------------------------------
 #:constructor
 #------------------------------------------------------------------------------
 @create[]
+    ^BASE:create[]
 ###
 
 
 #------------------------------------------------------------------------------
+#Configure command
+#------------------------------------------------------------------------------
+@configure[]
+    $self.name[selfupdate]
+    $self.description[updates parsekit to the latest version]
+    ^self.addOption[debug;d;;Enabling debug output]
+###
+
+
+#------------------------------------------------------------------------------
+#Command execution
+#
+#:param input type Ln-e/Console/Input/InputInterface
+#:param output type Ln-e/Console/Output/OutputInterface
+#
 #:result string
 #------------------------------------------------------------------------------
-@GET_description[]
-    $result[updates parsekit to the latest version]
-###
-
-
-#------------------------------------------------------------------------------
-#:result hash
-#------------------------------------------------------------------------------
-@GET_argumentsConfig[]
-    $result[^hash::create[]]
-###
-
-
-#------------------------------------------------------------------------------
-#:result hash
-#------------------------------------------------------------------------------
-@GET_optionsConfig[]
-    $result[^hash::create[
-        $.0[^CommandOption::create[debug;d;;Enabling debug output]]
-    ]]
-###
-
-
-#------------------------------------------------------------------------------
-#:param arguments type hash
-#:param options type hash
-#------------------------------------------------------------------------------
-@execute[arguments;options][result]
+@execute[input;output][result]
     $result[self update not yet implemented]
 ###

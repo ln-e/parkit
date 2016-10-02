@@ -11,50 +11,35 @@ InitCommand
 locals
 
 @BASE
-CommandInterface
+Ln-e/Console/CommandInterface
 
 #------------------------------------------------------------------------------
 #:constructor
 #------------------------------------------------------------------------------
 @create[]
+    ^BASE:create[]
 ###
 
 
 #------------------------------------------------------------------------------
-#:result string
+#Configure command
 #------------------------------------------------------------------------------
-@GET_description[]
-    $result[initialize new project in current directory]
-###
-
-
-#------------------------------------------------------------------------------
-#:result hash
-#------------------------------------------------------------------------------
-@GET_argumentsConfig[]
-    $result[^hash::create[]]
-###
-
-
-#------------------------------------------------------------------------------
-#:result hash
-#------------------------------------------------------------------------------
-@GET_optionsConfig[]
-    $result[^hash::create[
-        $.0[^CommandOption::create[debug;d;;Enabling debug output]]
-    ]]
+@configure[]
+    $self.name[init]
+    $self.description[initialize new project in current directory]
+    ^self.addOption[debug;d;;Enabling debug output]
 ###
 
 
 #------------------------------------------------------------------------------
 #Command execution
 #
-#:param arguments type hash
-#:param options type hash
+#:param input type Ln-e/Console/Input/InputInterface
+#:param output type Ln-e/Console/Output/OutputInterface
 #
 #:result string
 #------------------------------------------------------------------------------
-@execute[arguments;options]
+@execute[input;output][result]
     $jsonFile[^JsonFile::create[/parsekit.json]]
 
     ^if(^jsonFile.exists[]){

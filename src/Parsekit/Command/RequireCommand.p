@@ -11,60 +11,43 @@ RequireCommand
 locals
 
 @BASE
-CommandInterface
+Ln-e/Console/CommandInterface
 
 
 #------------------------------------------------------------------------------
 #:constructor
 #------------------------------------------------------------------------------
 @create[]
+    ^BASE:create[]
 ###
 
 
 #------------------------------------------------------------------------------
-#:result hash
+#Configure command
 #------------------------------------------------------------------------------
-@GET_description[]
-    $result[add dependency to project. NOT IMPELEMENTED YET.]
-###
-
-
-#------------------------------------------------------------------------------
-#:result hash
-#------------------------------------------------------------------------------
-@GET_argumentsConfig[]
-    $result[
-        ^hash::create[
-            $.package[
-                ^CommandArgument::create[package;true]
-            ]
-        ]
-    ]
-###
-
-
-#------------------------------------------------------------------------------
-#:result hash
-#------------------------------------------------------------------------------
-@GET_optionsConfig[]
-    $result[^hash::create[
-        $.0[^CommandOption::create[debug;d;;Enabling debug output]]
-    ]]
+@configure[]
+    $self.name[require]
+    $self.description[add dependency to project.]
+    ^self.addArgument[package;true]
+    ^self.addOption[debug;d;;Enabling debug output]
 ###
 
 
 #------------------------------------------------------------------------------
 #Command execution
 #
-#:param arguments type hash
-#:param options type hash
+#:param input type Ln-e/Console/Input/InputInterface
+#:param output type Ln-e/Console/Output/OutputInterface
+#
+#:result string
 #------------------------------------------------------------------------------
-@execute[arguments;options][result]
+@execute[input;output][result]
     $result[]
     $packageManager[$DI:packageManager]
+    $packageArgument[^input.getArgument[package]]
 
-    $pieces[^arguments.package.split[:;h]]
-    $newPackageName[^if(def $pieces.0){$pieces.0}{$arguments.package}]
+    $pieces[^packageArgument.split[:;h]]
+    $newPackageName[^if(def $pieces.0){$pieces.0}{$packageArgument}]
     $newPackageVersion[^if(def $pieces.1){$pieces.1}{*}]
 
     ^try{
@@ -94,7 +77,7 @@ CommandInterface
         }{
             $requirements[^lockFile.getInstalledRequirements[]]
             $requirements.[$newPackageName][$newPackageVersion]
-            $resolvingResult[^DI:resolver.resolve[$requirements](true)]
+            $resolvingResult[^DI:resolver.resolve[$requirements](true;^input.getArgument[debug])]
 
             ^if(!($resolvingResult is ResolvingResult)){
                 $result[$result^#0ACould not update requirements, as it has conflicts. Soon you will see which package cause problem, but now try your luck. ^#0A]
@@ -109,7 +92,7 @@ CommandInterface
                     ^lockFile.updateFromPackage[$rootPackage]
                 }
 
-                $installResult[^DI:installer.update[$lockFile;$resolvingResult.packages;$rootPackage;$options]]
+                $installResult[^DI:installer.update[$lockFile;$resolvingResult.packages;$rootPackage;$input.options]]
                 $result[$installResult.info]
 
 #               Temporary decision. write second lock to vault dir, to compare with them while install.

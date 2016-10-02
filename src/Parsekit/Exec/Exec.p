@@ -43,7 +43,7 @@ locals
     }
 #    $console:line[Execute '$cd $self.command']
     $self.file[^file::exec[eval.sh;;^self.toString[]]]
-    ^if(^Application:hasOption[debug]){$console:line[^self.toString[]]}
+#    ^if(^Application:hasOption[debug]){$console:line[^self.toString[]]}
     $result($self.status == $self.successCode)
 ###
 

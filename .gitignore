@@ -5,6 +5,5 @@ cgi/*
 !.gitkeep
 
 # temporary ignore json file
-parsekit.json
 parsekit.lock
 vault/

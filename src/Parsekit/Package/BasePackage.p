@@ -55,14 +55,3 @@ PackageInterface
 @addRequire[packageName;constraint][result]
     $self.requires.$packageName[^constraint.trim[]]
 ###
-
-
-#------------------------------------------------------------------------------
-#Adds to a hash of classPathes settings
-#
-#:param path type string
-#:param pathType type string
-#------------------------------------------------------------------------------
-@addClassPath[path;pathType][result]
-    $self.classPath.$path[$pathType]
-###

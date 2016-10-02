@@ -1,0 +1,17 @@
+{
+	"name":"New Project",
+	"require":{
+		"parser":">=3.4.3",
+		"ln-e\/console":"dev-master"
+	},
+	"autoload":{
+		"files":{},
+		"nested-classpath":{
+			"0":"..\/src"
+		},
+		"classpath":{
+			"0":"..\/classes",
+			"1":"..\/tests"
+		}
+	}
+}

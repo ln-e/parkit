@@ -29,11 +29,12 @@ locals
 #------------------------------------------------------------------------------
 #:param requirements type hash
 #:param returnSingle type bool
+#:param debug type bool
 #
 #:result hash
 #------------------------------------------------------------------------------
-@resolve[requirements;returnSingle][result]
-    $self.debug(^Application:hasOption[debug])
+@resolve[requirements;returnSingle;debug][result]
+    $self.debug(^debug.int(0))
     $requirements[^hash::create[$requirements]]
     $resolvedPackages[^self.step[$requirements][](1)]
     $result[$resolvedPackages]

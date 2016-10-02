@@ -11,51 +11,33 @@ UpdateCommand
 locals
 
 @BASE
-CommandInterface
+Ln-e/Console/CommandInterface
 
 
 #------------------------------------------------------------------------------
 #:constructor
 #------------------------------------------------------------------------------
 @create[]
+    ^BASE:create[]
 ###
 
 
-#------------------------------------------------------------------------------
-#:result hash
-#------------------------------------------------------------------------------
-@GET_description[]
-    $result[updates installed dependencies according to require constraints in parsekit.json]
-###
-
-
-#------------------------------------------------------------------------------
-#:result hash
-#------------------------------------------------------------------------------
-@GET_argumentsConfig[]
-    $result[^hash::create[]]
-###
-
-
-#------------------------------------------------------------------------------
-#:result hash
-#------------------------------------------------------------------------------
-@GET_optionsConfig[]
-    $result[^hash::create[
-        $.0[^CommandOption::create[debug;d;;Enabling debug output]]
-    ]]
+@configure[]
+    $self.name[update]
+    $self.description[updates installed dependencies according to require constraints in parsekit.json]
+    ^self.addOption[debug;d;;Enabling debug output]
 ###
 
 
 #------------------------------------------------------------------------------
 #Command execution
 #
-#:param arguments type hash
-#:param options type hash
+#:param input type Ln-e/Console/Input/InputInterface
+#:param output type Ln-e/Console/Output/OutputInterface
 #
 #:result string
 #------------------------------------------------------------------------------
-@execute[arguments;options][result]
+@execute[input;output][result]
     $result[]
 
     $installedLockFile[^LockFile::create[/$DI:vaultDirName/parsekit.lock]]
@@ -63,7 +45,7 @@ CommandInterface
     $rootPackage[^DI:packageManager.createRootPackage[/parsekit.json]]
     $requires[^hash::create[$rootPackage.requires]]
 
-    $resolvingResult[^DI:resolver.resolve[$requires](true)]
+    $resolvingResult[^DI:resolver.resolve[$requires](true;^input.getArgument[debug])]
 
 
     ^if(!($resolvingResult is ResolvingResult)){
@@ -73,7 +55,7 @@ CommandInterface
             ^installedLockFile.updateFromPackage[$rootPackage]
         }
 
-        $installResult[^DI:installer.update[$installedLockFile;$resolvingResult.packages;$rootPackage;$options]]
+        $installResult[^DI:installer.update[$installedLockFile;$resolvingResult.packages;$rootPackage;$input.options]]
         $result[$installResult.info]
 
 #       Write second lock to vault dir, to know currently installed version

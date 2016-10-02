@@ -31,7 +31,9 @@ locals
     $self.requires[^hash::create[]]
     $self.conflicts[^hash::create[]]
     $self.devRequires[^hash::create[]]
+#   TODO classPath is depricated in favour of autload
     $self.classPath[^hash::create[]]
+    $self.autoload[^hash::create[]]
     $self.repository[]
     $self.uniqueName[]
 ###
