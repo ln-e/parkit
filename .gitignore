@@ -3,7 +3,4 @@ cgi/*
 *.iml
 *usage.log
 !.gitkeep
-
-# temporary ignore json file
-parsekit.lock
 vault/

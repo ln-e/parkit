@@ -1,0 +1,38 @@
+{
+	"name":"New Project",
+	"version":null,
+	"type":null,
+	"stability":null,
+	"uniqueName":"New Project",
+	"packages":{
+		"ln-e\/console":{
+			"name":"ln-e\/console",
+			"type":"library",
+			"targetDir":"ln-e\/console",
+			"sourceType":"git",
+			"sourceUrl":"https:\/\/github.com\/ln-e\/console.git",
+			"sourceReference":"c5185b6385fcc1de90ab973d195077dc65eeba4d",
+			"distType":"zip",
+			"distUrl":"https:\/\/api.github.com\/repos\/ln-e\/console\/zipball\/c5185b6385fcc1de90ab973d195077dc65eeba4d",
+			"distReference":"c5185b6385fcc1de90ab973d195077dc65eeba4d",
+			"version":"master",
+			"prettyVersion":"master",
+			"releaseDate":null,
+			"stability":null,
+			"requiredPackages":{},
+			"requires":{},
+			"conflicts":{},
+			"devRequires":{},
+			"classPath":{},
+			"autoload":{
+				"namespace":{
+					"Ln-e\/Console":"src"
+				}
+			},
+			"repository":null,
+			"uniqueName":"ln-e\/consolemaster"
+		}
+	},
+	"releaseDate":"1475434454",
+	"updated":"1475442669"
+}
