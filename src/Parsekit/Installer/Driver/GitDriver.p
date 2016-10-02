@@ -10,9 +10,6 @@ GitDriver
 @OPTIONS
 locals
 
-@USE
-VcsDriver.p
-
 @BASE
 VcsDriver
 

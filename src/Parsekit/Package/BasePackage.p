@@ -7,9 +7,6 @@
 @CLASS
 BasePackage
 
-@USE
-PackageInterface.p
-
 @OPTIONS
 locals
 

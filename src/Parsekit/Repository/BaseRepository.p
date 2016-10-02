@@ -7,9 +7,6 @@
 @CLASS
 BaseRepository
 
-@USE
-RepositoryInterface.p
-
 @OPTIONS
 locals
 

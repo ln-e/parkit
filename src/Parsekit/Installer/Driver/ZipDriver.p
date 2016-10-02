@@ -10,9 +10,6 @@ ZipDriver
 @OPTIONS
 locals
 
-@USE
-ArchiveDriver.p
-
 @BASE
 ArchiveDriver
 

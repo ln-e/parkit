@@ -7,9 +7,6 @@
 @CLASS
 RootPackage
 
-@USE
-PackageInterface.p
-
 @OPTIONS
 locals
 

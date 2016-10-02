@@ -7,11 +7,6 @@
 @CLASS
 SelfupdateCommand
 
-@USE
-CommandInterface.p
-CommandOption.p
-Utils/JsonFile.p
-
 @OPTIONS
 locals
 

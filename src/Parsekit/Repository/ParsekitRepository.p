@@ -7,11 +7,6 @@
 @CLASS
 ParsekitRepository
 
-@USE
-BaseRepository.p
-RepositoryUtils.p
-Utils/JsonFile.p
-
 @OPTIONS
 locals
 

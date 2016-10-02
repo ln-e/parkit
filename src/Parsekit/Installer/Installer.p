@@ -173,7 +173,7 @@ locals
 
     $string[^$parsekitClassPath[^^table::create{path
 ^dirs.foreach[i;val]{$val}[^#0A]}]
-^$MAIN:CLASS_PATH.join{^$parsekitClassPath}
+^^MAIN:CLASS_PATH.join[^$parsekitClassPath]
     ]
     ^string.save[/$DI:vaultDirName/classpath.p]
 ###

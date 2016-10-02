@@ -10,11 +10,6 @@ VersionParser
 @OPTIONS
 locals
 
-@USE
-Constraint/Constraint.p
-Constraint/EmptyConstraint.p
-Constraint/MultiConstraint.p
-
 #------------------------------------------------------------------------------
 #Static constructor
 #------------------------------------------------------------------------------
@@ -270,14 +265,14 @@ $self.parsedConstraints[^hash::create[]]
         $constraints[$matches.1]
     }
 
-    $orConstraints[^rsplit[$constraints;(\s*\|\|?\s*)]]
+    $orConstraints[^self.rsplit[$constraints;(\s*\|\|?\s*)]]
     $orConstraints[^orConstraints.flip[]]
     ^orConstraints.offset(3)
     $orConstraints[$orConstraints.fields]
 
     $orGroups[^hash::create[]]
     ^orConstraints.foreach[key;constraint]{
-        $andConstraints[^rsplit[$constraint;(?<!^^|as|[=>< ,]) *(?<!-)[, ](?!-) *(?!,|as|^$)]]
+        $andConstraints[^self.rsplit[$constraint;(?<!^^|as|[=>< ,]) *(?<!-)[, ](?!-) *(?!,|as|^$)]]
         $andConstraints[^andConstraints.flip[]]
         ^andConstraints.offset(3)
         $andConstraints[$andConstraints.fields]
@@ -619,4 +614,25 @@ $self.parsedConstraints[^hash::create[]]
         ^case[rc]{$result[RC]}
         ^case[DEFAULT]{$result[$stability]}
     }
+###
+
+
+#------------------------------------------------------------------------------
+#Regexp split by Misha.v3
+#http://www.parser.ru/examples/rsplit/
+#------------------------------------------------------------------------------
+@rsplit[sText;sRegex;sDelimiter][result]
+^if(def $sText && def $sRegex){
+	$result[^sText.match[(.+?)(?:$sRegex|^$)][g]]
+}{
+	$result[^table::create{1}]
+}
+^if(def $sDelimiter){
+	^if($result && (^sDelimiter.pos[r]>=0 || ^sDelimiter.pos[R]>=0)){
+		$result[^table::create[$result;$.reverse(true)]]
+	}
+	^if(^sDelimiter.pos[v]>=0 || ^sDelimiter.pos[V]>=0){
+		$result[^result.flip[]]
+	}
+}
 ###

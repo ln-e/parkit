@@ -10,9 +10,6 @@ MultiConstraint
 @OPTIONS
 locals
 
-@USE
-ConstraintInterface.p
-
 @BASE
 ConstraintInterface
 

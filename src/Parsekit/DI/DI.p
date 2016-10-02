@@ -10,19 +10,6 @@ DI
 @OPTIONS
 locals
 
-@USE
-Installer/Driver/DriverManager.p
-Installer/Installer.p
-Package/PackageManager.p
-Repository/RepositoryManager.p
-Resolver/Resolver.p
-Service.p
-Utils/Filesystem.p
-Version/Comparator.p
-Version/Semver.p
-Version/VersionParser.p
-
-
 #------------------------------------------------------------------------------
 #Dummiest mock for future di container implementation
 #Sorry for name it DI, but someday we replace it by real IoC-container, I promise.

@@ -10,10 +10,6 @@ PackageManager
 @OPTIONS
 locals
 
-@USE
-BasePackage.p
-RootPackage.p
-
 @auto[]
 ###
 

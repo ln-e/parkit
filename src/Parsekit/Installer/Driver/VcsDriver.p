@@ -10,9 +10,6 @@ VcsDriver
 @OPTIONS
 locals
 
-@USE
-DriverInterface.p
-
 @BASE
 DriverInterface
 

@@ -7,14 +7,6 @@
 @CLASS
 InstallCommand
 
-@USE
-CommandInterface.p
-CommandArgument.p
-CommandOption.p
-Parsekit/Repository/RepositoryFactory.p
-Parsekit/Package/PackageManager.p
-Parsekit/Package/LockFile.p
-
 @OPTIONS
 locals
 

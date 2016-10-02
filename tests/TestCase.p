@@ -10,9 +10,6 @@ TestCase
 @OPTIONS
 locals
 
-@USE
-Parsekit/DI/DI.p
-
 @auto[]
 ###
 

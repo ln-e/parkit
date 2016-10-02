@@ -45,5 +45,5 @@ locals
 
 
 
-    ^dstop[$self.successAsserts]
+    $result[$self.successAsserts]
 ###

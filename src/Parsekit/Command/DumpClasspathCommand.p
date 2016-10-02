@@ -7,11 +7,6 @@
 @CLASS
 DumpClasspathCommand
 
-@USE
-CommandInterface.p
-CommandArgument.p
-CommandOption.p
-
 @OPTIONS
 locals
 
@@ -56,8 +51,11 @@ CommandInterface
 #Command execution
 #
 #:param arguments type hash
+#:param options type hash
+#
+#:result string
 #------------------------------------------------------------------------------
-@execute[arguments][result]
+@execute[arguments;options][result]
     $result[]
 
     $lockFile[^LockFile::create[/$DI:vaultDirName/parsekit.lock]]

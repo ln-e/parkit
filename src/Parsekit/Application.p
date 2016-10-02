@@ -7,20 +7,6 @@
 @CLASS
 Application
 
-@USE
-Command/DumpClasspathCommand.p
-Command/InitCommand.p
-Command/InstallCommand.p
-Command/RequireCommand.p
-Command/SelfupdateCommand.p
-Command/UpdateCommand.p
-DI/DI.p
-Exec/Exec.p
-Resolver/Resolver.p
-Version/Constraint/Constraint.p
-Version/VersionParser.p
-
-
 @OPTIONS
 locals
 

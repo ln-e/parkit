@@ -1,8 +1,8 @@
-parser/*
-#auto.p or not?
-!parser/auto.p
+build/
+cgi/*
 *.iml
 *usage.log
+!.gitkeep
 
 # temporary ignore json file
 parsekit.json

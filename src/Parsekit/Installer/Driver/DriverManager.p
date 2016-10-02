@@ -10,10 +10,6 @@ DriverManager
 @OPTIONS
 locals
 
-@USE
-GitDriver.p
-ZipDriver.p
-
 @auto[]
 ###
 

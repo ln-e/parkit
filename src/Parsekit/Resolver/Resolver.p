@@ -7,13 +7,6 @@
 @CLASS
 Resolver
 
-@USE
-Application.p
-Package/PackageManager.p
-Version/VersionParser.p
-ExtendingResult.p
-ResolvingResult.p
-
 @OPTIONS
 locals
 

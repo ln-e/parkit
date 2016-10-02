@@ -11,9 +11,6 @@ RepositoryFactory
 locals
 static
 
-@USE
-Parsekit/Repository/RepositoryManager.p
-
 @auto[]
 ###
 

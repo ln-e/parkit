@@ -7,13 +7,6 @@
 @CLASS
 RequireCommand
 
-@USE
-CommandInterface.p
-CommandArgument.p
-CommandOption.p
-Parsekit/Repository/RepositoryFactory.p
-Parsekit/Package/PackageManager.p
-
 @OPTIONS
 locals
 

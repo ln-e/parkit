@@ -10,9 +10,6 @@ RepositoryManager
 @OPTIONS
 locals
 
-@USE
-Repository/ParsekitRepository.p
-
 @auto[]
 ###
 
