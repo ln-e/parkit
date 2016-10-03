@@ -51,7 +51,7 @@
     $className[$matches.1]
     $matches[^file.text.match[@base\n([\S]+)][gim]]
     $text[^file.text.match[@use\n(.*\.p\n)+][gmi]{}]
-    $text[^text.match[(\^^use\[\S*\])][giU]{}]
+    $text[^text.match[[^^\^^](\^^use\[\S*\])][giU]{}]
     $self.classes.[$className][
         $.file[$dir/$fileName]
         $.class[$className]
