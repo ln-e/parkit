@@ -28,7 +28,7 @@ Ln-e/Console/CommandInterface
 @configure[]
     $self.name[require]
     $self.description[add dependency to project.]
-    ^self.addArgument[package;true]
+    ^self.addArgument[package;${Ln-e/Console/Input/CommandArgument:REQUIRED}]
     ^self.addOption[debug;d;;Enabling debug output]
 ###
 
