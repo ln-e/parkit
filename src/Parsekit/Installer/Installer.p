@@ -215,7 +215,11 @@ locals
     ]
 ]
 
-^^MAIN:CLASS_PATH.join[^$parsekitClasspath.classpath]
+^^if(^$MAIN:CLASS_PATH is table){
+    ^^MAIN:CLASS_PATH.join[^$parsekitClasspath.classpath]
+}{
+    ^$MAIN:CLASS_PATH[^$parsekitClasspath.classpath]
+}
 
 ^^parsekitClasspath.files.foreach[key^;path]{
     ^^use[^$path]
