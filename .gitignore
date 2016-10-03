@@ -1,4 +1,5 @@
 build/
+dists/*
 cgi/*
 *.iml
 *usage.log
