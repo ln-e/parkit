@@ -11,10 +11,10 @@
 			"targetDir":"ln-e\/console",
 			"sourceType":"git",
 			"sourceUrl":"https:\/\/github.com\/ln-e\/console.git",
-			"sourceReference":"c5185b6385fcc1de90ab973d195077dc65eeba4d",
+			"sourceReference":"4add6ecef0a1126de275be60731cc5af4e05f403",
 			"distType":"zip",
-			"distUrl":"https:\/\/api.github.com\/repos\/ln-e\/console\/zipball\/c5185b6385fcc1de90ab973d195077dc65eeba4d",
-			"distReference":"c5185b6385fcc1de90ab973d195077dc65eeba4d",
+			"distUrl":"https:\/\/api.github.com\/repos\/ln-e\/console\/zipball\/4add6ecef0a1126de275be60731cc5af4e05f403",
+			"distReference":"4add6ecef0a1126de275be60731cc5af4e05f403",
 			"version":"master",
 			"prettyVersion":"master",
 			"releaseDate":null,
@@ -33,6 +33,6 @@
 			"uniqueName":"ln-e\/consolemaster"
 		}
 	},
-	"releaseDate":"1475434454",
-	"updated":"1475442669"
+	"releaseDate":"1475532656",
+	"updated":"1475532656"
 }
