@@ -1,5 +1,6 @@
 #!/bin/bash
 
+DIR=`dirname "$0"`
 FILE_NAME="parser3 parser3.cgi"
 PATH="`pwd`/cgi `pwd`/../cgi"
 PARSER=
@@ -17,4 +18,4 @@ if [ -z "$PARSER" ]; then
     exit 1
 fi
 
-$PARSER $*
+bash -c "$PARSER \"$DIR/parsekit.p\" $*"
