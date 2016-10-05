@@ -1,16 +1,20 @@
 #!/bin/bash
 
-dir=$(d=$(dirname "$0"); cd "$d" && pwd)
-if [ -f "./cgi/parser3" ]; then
-    path="./cgi/parser3"
-elif [ -f "./cgi/parser3.cgi" ]; then
-    path="./cgi/parser3.cgi"
-elif hash parser3 2>/dev/null; then
-    path="parser3"
-elif hash parser3.cgi 2>/dev/null; then
-    path="parser3.cgi"
-else
-    path="${dir}/../cgi/parser3.cgi"
+FILE_NAME="parser3 parser3.cgi"
+PATH="`pwd`"
+PARSER=
+
+for file in $FILE_NAME; do
+    for dir in $PATH; do
+	if [ -f "$dir/$file" ]; then
+	    PARSER="$dir/$file"
+	fi;
+    done;
+done;
+
+if [ -z "$PARSER" ]; then
+    echo "Parser not found :("
+    exit 1
 fi
 
-bash -c "${path} \"${dir}/parsekit.p\" $*"
+$PARSER $*
