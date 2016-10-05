@@ -127,6 +127,8 @@ locals
     $package.releaseDate[$config.releaseDate]
     $package.classPath[^if($config.classPath is hash){$config.classPath}{^hash::create[]}]
     $package.autoload[^hash::create[$config.autoload]]
+    $package.docRoot[^if(def $config.docRoot){$config.docRoot}{www}]
+    $package.mainFileDir[$config.mainFileDir]
 
     $package.uniqueName[${config.name}$config.version]
     $package.version[$config.version]

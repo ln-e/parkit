@@ -4,14 +4,18 @@
 		"parser":">=3.4.3",
 		"ln-e\/console":"dev-master"
 	},
+    "mainFileDir": "bin",
 	"autoload":{
 		"files":{},
-		"nested-classpath":{
-			"0":"..\/src"
+		"nestedClasspath":{
+			"0":"src"
 		},
 		"classpath":{
-			"0":"..\/classes",
-			"1":"..\/tests"
-		}
+			"0":"classes",
+			"1":"tests"
+		},
+        "namespace": {
+            "fs": "classes/fs"
+        }
 	}
 }

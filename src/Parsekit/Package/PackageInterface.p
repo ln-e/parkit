@@ -34,6 +34,8 @@ locals
 #   TODO classPath is depricated in favour of autload
     $self.classPath[^hash::create[]]
     $self.autoload[^hash::create[]]
+    $self.mainFileDir[]
+    $self.docRoot[]
     $self.repository[]
     $self.uniqueName[]
 ###

@@ -167,31 +167,45 @@ locals
 
     $namespaces[^hash::create[]]
     $files[^hash::create[]]
-    $classpath[$.0[/$DI:vaultDirName/]]
+
+
+    ^if(def $rootPackage.mainFileDir){
+        $docRoot[^fs/Path:dirname[^fs/Path:relative[$rootPackage.mainFileDir;$DI:vaultDirName]]/]
+        $docRootPrefix[]
+    }{
+        $docRoot[^fs/Path:dirname[^fs/Path:relative[$rootPackage.docRoot;$DI:vaultDirName]]/]
+        $docRootPrefix[/]
+    }
+
+    $classpath[$.0[${docRootPrefix}${docRoot}$DI:vaultDirName]]
+
+
+#    ^dstop[$rootPackage.docRoot $DI:vaultDirName ** $docRoot]
 
     ^mergedPackages.foreach[name;package]{
 
-        $basePath[^if($package is RootPackage){}{/$DI:vaultDirName/${name}/}]
+        $basePath[$docRoot^if($package is RootPackage){}{$DI:vaultDirName/${name}/}]
 
 
         ^if($package.autoload is hash){
             $files[^hash::create[$package.autoload.files]]
 
             ^if($package.autoload.classpath is hash){
-
-                ^package.autoload.classpath.foreach[i;dir]{$classpath.[^classpath._count[]][^taint[as-is][$dir]]}
+                ^package.autoload.classpath.foreach[key;path]{
+                    $classpath.[^classpath._count[]][${docRootPrefix}$basePath^taint[as-is][$path]]
+                }
             }
 
-            ^if($package.autoload.[nested-classpath] is hash){
-                ^package.autoload.[nested-classpath].foreach[key;path]{
-                    $hash[^self.filesystem.subDirs[${basePath}$path]]
-                    ^hash.foreach[i;dir]{$classpath.[^classpath._count[]][$dir]}
+            ^if($package.autoload.nestedClasspath is hash){
+                ^package.autoload.nestedClasspath.foreach[key;path]{
+                    $hash[^self.filesystem.subDirs[$basePath^taint[as-is][$path]]]
+                    ^hash.foreach[i;dir]{$classpath.[^classpath._count[]][${docRootPrefix}$dir]}
                 }
             }
 
             ^if($package.autoload.namespace is hash){
                 ^package.autoload.namespace.foreach[type;path]{
-                    $namespaces.$type[${basePath}$path]
+                    $namespaces.$type[${docRootPrefix}${basePath}^taint[as-is][$path]]
                 }
             }
         }
@@ -202,8 +216,7 @@ locals
 ^$parsekitClasspath[
     ^$.namespaces[
         ^^hash::create[
-            ^namespaces.foreach[key;value]{^$.[$key][$value]}[^#0A]
-        ]
+            ^namespaces.foreach[key;value]{^$.[$key][$value]}[^#0A            ]]
     ]
     ^$.classpath[^^table::create{path
 ^classpath.foreach[i;val]{$val}[^#0A]
