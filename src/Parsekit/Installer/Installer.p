@@ -165,10 +165,6 @@ locals
 #   TODO warning. What if root is another package ?
     ^mergedPackages.add[$packages]
 
-    $namespaces[^hash::create[]]
-    $files[^hash::create[]]
-
-
     ^if(def $rootPackage.mainFileDir){
         $docRoot[^fs/Path:dirname[^fs/Path:relative[$rootPackage.mainFileDir;$DI:vaultDirName]]/]
         $docRootPrefix[]
@@ -177,14 +173,20 @@ locals
         $docRootPrefix[/]
     }
 
+    $namespaces[^hash::create[]]
+    $files[^hash::create[]]
     $classpath[$.0[${docRootPrefix}${docRoot}$DI:vaultDirName]]
-
-
-#    ^dstop[$rootPackage.docRoot $DI:vaultDirName ** $docRoot]
 
     ^mergedPackages.foreach[name;package]{
 
-        $basePath[$docRoot^if($package is RootPackage){}{$DI:vaultDirName/${name}/}]
+#       installationBasePath - base path during installation (when document root is differ from execution document root)
+        ^if($package is RootPackage){
+            $basePath[$docRoot]
+            $installationBasePath[/]
+        }{
+            $basePath[${docRoot}$DI:vaultDirName/${name}/]
+            $installationBasePath[/$DI:vaultDirName/${name}/]
+        }
 
 
         ^if($package.autoload is hash){
@@ -198,8 +200,8 @@ locals
 
             ^if($package.autoload.nestedClasspath is hash){
                 ^package.autoload.nestedClasspath.foreach[key;path]{
-                    $hash[^self.filesystem.subDirs[$basePath^taint[as-is][$path]]]
-                    ^hash.foreach[i;dir]{$classpath.[^classpath._count[]][${docRootPrefix}$dir]}
+                    $hash[^self.filesystem.subDirs[$installationBasePath^taint[as-is][$path]]]
+                    ^hash.foreach[i;dir]{$classpath.[^classpath._count[]][${docRootPrefix}${docRoot}^dir.trim[left;/]]}
                 }
             }
 
