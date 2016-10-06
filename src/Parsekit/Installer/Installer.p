@@ -166,10 +166,10 @@ locals
     ^mergedPackages.add[$packages]
 
     ^if(def $rootPackage.mainFileDir){
-        $docRoot[^fs/Path:dirname[^fs/Path:relative[$rootPackage.mainFileDir;$DI:vaultDirName]]/]
+        $docRoot[^als/fs/Path:dirname[^als/fs/Path:relative[$rootPackage.mainFileDir;$DI:vaultDirName]]/]
         $docRootPrefix[]
     }{
-        $docRoot[^fs/Path:dirname[^fs/Path:relative[$rootPackage.docRoot;$DI:vaultDirName]]/]
+        $docRoot[^als/fs/Path:dirname[^als/fs/Path:relative[$rootPackage.docRoot;$DI:vaultDirName]]/]
         $docRootPrefix[/]
     }
 

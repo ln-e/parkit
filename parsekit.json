@@ -2,9 +2,10 @@
 	"name":"New Project",
 	"require":{
 		"parser":">=3.4.3",
-		"ln-e\/console":"dev-master"
+		"ln-e\/console":"dev-master",
+		"als\/fs":"*"
 	},
-    "mainFileDir": "bin",
+	"mainFileDir":"bin",
 	"autoload":{
 		"files":{},
 		"nestedClasspath":{
@@ -14,8 +15,6 @@
 			"0":"classes",
 			"1":"tests"
 		},
-        "namespace": {
-            "fs": "classes/fs"
-        }
+		"namespace":{}
 	}
 }
