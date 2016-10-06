@@ -214,8 +214,12 @@ locals
 
                     ^packageNamespacedFiles.foreach[key;value]{
                         $className[$type^value.replace[$searchDir;]]
-                        $filePath[^value.replace[$searchDir;$namespaceRoot]]
-                        $namespaces.[^className.match[\.p^$][i]{}][$filePath]
+                        $className[^className.match[\.p^$][i]{}]
+                        $file[^file::load[text;$value]]
+                        ^if(^file.text.match[^@class\n$className][giUn] > 0){
+                            $filePath[^value.replace[$searchDir;$namespaceRoot]]
+                            $namespaces.[$className][$filePath]
+                        }
                     }
 
 #                    $namespaces.$type[$namespaceRoot]
