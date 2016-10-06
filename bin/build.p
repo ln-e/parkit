@@ -12,18 +12,22 @@
     $self.classes[^hash::create[]]
     $self.files[^hash::create[]]
 
-    ^self.collectFile[.;parsekit.p]
-    ^self.collectFile[../classes;Erusage.p]
-    ^self.collectFile[../classes;ConsoleTable.p]
+    ^self.collectFile[../bin;parsekit.p]
+    ^self.collectClass[../classes;Erusage.p]
+    ^self.collectClass[../classes;ConsoleTable.p]
 
     ^self.collectClasses[../src]
-    ^self.collectClasses[../vault/ln-e/console/src]
+    ^self.collectClasses[../vault/ln-e/]
 
     $concatedClasses[^hash::create[]]
 
     $loop(true)
     ^while($loop){
         $loop(false)
+
+        ^self.files.foreach[key;data]{
+            $builded[$builded^#0A$data^#0A]
+        }
 
         ^self.classes.foreach[className;data]{
             ^if(!$data.concated && (!def $data.base || ^concatedClasses.contains[$data.base])){
@@ -47,6 +51,13 @@
 
 @collectFile[dir;fileName][result]
     $file[^file::load[text;$dir/$fileName]]
+    $text[^file.text.match[\s([^^\^^]?\^^use\[\S*\])][giU]{}]
+    $self.files.[^self.files._count[]][$text]
+###
+
+
+@collectClass[dir;fileName][result]
+    $file[^file::load[text;$dir/$fileName]]
     $matches[^file.text.match[@CLASS\n(\S+)][gi]]
     $className[$matches.1]
     $matches[^file.text.match[@base\n([\S]+)][gim]]
@@ -68,7 +79,7 @@
         ^if($list.dir){
             ^self.collectClasses[$dir/$list.name]
         }(^list.name.match[.p^$][in]>0){
-            ^self.collectFile[$dir;$list.name]
+            ^self.collectClass[$dir;$list.name]
         }
     }
 ###
