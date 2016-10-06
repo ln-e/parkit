@@ -92,17 +92,23 @@ locals
 #:result hash
 #------------------------------------------------------------------------------
 @subDirs[dir][result]
+    $result[^self.subFiles[$dir](true)]
+###
+
+@subFiles[dir;onlyDirs;onlyFiles][result]
     $dir[^self.normalize[$dir]]
     $result[^hash::create[]]
     $list[^file:list[^self.normalize[$dir/];^^[^^\.]]]
     ^list.menu{
-        ^if($list.dir == 1){
-            $result.[^result._count[]][^self.normalize[${dir}/$list.name]]
-            $dirs[^self.subDirs[${dir}/$list.name/]]
-            ^dirs.foreach[key;value]{
-                $result.[^result._count[]][^self.normalize[$value/]]
+        ^if(!^onlyDirs.int(0) || $list.dir == 1){
+            ^if(!(^onlyFiles.int(0) && $list.dir == 1)){
+                $result.[^result._count[]][^self.normalize[${dir}/$list.name^if($list.dir == 1){/}]]
+            }
+            ^if($list.dir == 1){
+                $dirs[^self.subFiles[${dir}/$list.name/]($onlyDirs)($onlyFiles)]
+                ^dirs.foreach[key;value]{
+                    $result.[^result._count[]][^self.normalize[$value]]
+                }
             }
         }
     }
-
-###

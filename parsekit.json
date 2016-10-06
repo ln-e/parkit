@@ -7,7 +7,9 @@
 	},
 	"mainFileDir":"bin",
 	"autoload":{
-		"files":{},
+		"files":{
+            "0": "Debug.p"
+        },
 		"nestedClasspath":{
 			"0":"src"
 		},
