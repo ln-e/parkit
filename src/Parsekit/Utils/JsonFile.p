@@ -123,6 +123,7 @@ locals
         $.indent(true)
         $.table[array]
         $.ParsekitRepository[$JsonFile:emptyHandler] # never store ParsekitRepository in lock file ?
+        $.hash[$JsonFile:hashHandler]
     ]
     ^mergedOptions.add[$options]
     $result[^json:string[$data;$mergedOptions]]
@@ -149,8 +150,43 @@ locals
 #:param key type string
 #:param value
 #:param params type hash
-#:result hash
+#:result string
 #------------------------------------------------------------------------------
 @static:emptyHandler[key;value;params]
     $result[null]
+###
+
+
+#------------------------------------------------------------------------------
+#If all keys is increasing integers (from zero to hash length) parse as array
+#
+#:param key type string
+#:param value
+#:param params type hash
+#:result string
+#------------------------------------------------------------------------------
+@static:hashHandler[key;value;params][locals]
+    $isArray(true)
+    $ind(0)
+    ^if($value is hash){
+        ^value.foreach[k;v]{
+            ^if($k ne $ind){
+                $isArray(false)
+                ^break[]
+            }
+            ^ind.inc[]
+        }
+    }
+
+#    $indent[$params.indent]
+    $params.indent[$params.indent    ]
+    $console:line[dobavlaem indent "$params.indent"]
+#    $oldBr[^#0A$indent]
+#    $br[^#0A$indent]
+
+    ^if(!$isArray){
+        $result[{^#0A^value.foreach[k;v]{"$k": ^json:string[$v;$params]}[,^#0A$params.indent]}]
+    }{
+        $result[[^#0A^value.foreach[k;v]{^json:string[$v;$params]}[,^#0A$params.indent]]]
+    }
 ###
