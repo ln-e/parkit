@@ -201,6 +201,7 @@ locals
             ^if($package.autoload.nestedClasspath is hash){
                 ^package.autoload.nestedClasspath.foreach[key;path]{
                     $hash[^self.filesystem.subDirs[$installationBasePath^taint[as-is][$path]]]
+                    $classpath.[^classpath._count[]][${docRootPrefix}${docRoot}^taint[as-is][^path.trim[left;/]]]
                     ^hash.foreach[i;dir]{$classpath.[^classpath._count[]][${docRootPrefix}${docRoot}^dir.trim[left;/]]}
                 }
             }
