@@ -17,6 +17,7 @@
 #------------------------------------------------------------------------------
 @main[][result]
     $app[^Application::create[]]
+    ^app.initialize[]
 
     $result[$result^info[]]
     $result[$result^app.run[]]

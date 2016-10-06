@@ -28,3 +28,37 @@ locals
     ^self.registerCommand[^UpdateCommand::create[]]
     ^self.registerCommand[^SelfupdateCommand::create[]]
 ###
+
+
+#------------------------------------------------------------------------------
+#Make preparations
+#------------------------------------------------------------------------------
+@initialize[][result]
+    $result[]
+    ^self.foundRoot[]
+###
+
+
+#------------------------------------------------------------------------------
+#Change docroot to containt parsekit.json directory (current or one of parent)
+#------------------------------------------------------------------------------
+@foundRoot[][result]
+    $result[]
+    $attempts(10)
+    $i(0)
+    $rootPostfix[]
+    $filepathPrefix[]
+
+#   TODO fix als/fs and loop while not reached root directory
+    ^while($i<$attempts){
+        ^i.inc[]
+
+        ^if(-f "${filepathPrefix}/parsekit.json"){
+            $request:document-root[${request:document-root}$rootPostfix]
+            ^break[]
+        }{
+            $filepathPrefix[/..$filepathPrefix]
+            $rootPostfix[${rootPostfix}../]
+        }
+    }
+###
