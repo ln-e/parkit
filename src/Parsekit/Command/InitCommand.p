@@ -36,19 +36,17 @@ Ln-e/Console/CommandInterface
 #
 #:param input type Ln-e/Console/Input/InputInterface
 #:param output type Ln-e/Console/Output/OutputInterface
-#
-#:result string
 #------------------------------------------------------------------------------
 @execute[input;output][result]
     $jsonFile[^JsonFile::create[/parsekit.json]]
 
     ^if(^jsonFile.exists[]){
-        $result[Cound not reinitialize parsekit.json]
+        ^output.writeln[Cound not reinitialize parsekit.json]
     }{
         ^if(^jsonFile.write[^createBaseJson[]]){
-            $result[parsekit.json has been created]
+            ^output.writeln[parsekit.json has been created]
         }{
-            $result[Could not create parsekit.json file. Check file permissions.]
+            ^output.writeln[Could not create parsekit.json file. Check file permissions.]
         }
     }
 ###

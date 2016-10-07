@@ -22,6 +22,9 @@ Ln-e/Console/CommandInterface
 ###
 
 
+#------------------------------------------------------------------------------
+#Configure command
+#------------------------------------------------------------------------------
 @configure[]
     $self.name[update]
     $self.description[updates installed dependencies according to require constraints in parsekit.json]
@@ -34,11 +37,8 @@ Ln-e/Console/CommandInterface
 #
 #:param input type Ln-e/Console/Input/InputInterface
 #:param output type Ln-e/Console/Output/OutputInterface
-#
-#:result string
 #------------------------------------------------------------------------------
 @execute[input;output][result]
-    $result[]
 
     $installedLockFile[^LockFile::create[/$DI:vaultDirName/parsekit.lock]]
 
@@ -49,18 +49,20 @@ Ln-e/Console/CommandInterface
 
 
     ^if(!($resolvingResult is ResolvingResult)){
-        $result[$result^#0ACould not update requirements, as it has conflicts. Soon you will see which package cause problem, but now try your luck. ^#0A]
+        ^output.writeln[]
+        ^output.writeln[Could not update requirements, as it has conflicts. Soon you will see which package cause problem, but now try your luck.]
     }{
         ^if($installedLockFile.empty){
             ^installedLockFile.updateFromPackage[$rootPackage]
         }
 
         $installResult[^DI:installer.update[$installedLockFile;$resolvingResult.packages;$rootPackage;$input.options]]
-        $result[$installResult.info]
+        ^output.writeln[$installResult.info]
 
 #       Write second lock to vault dir, to know currently installed version
         ^if(^installedLockFile.save[] && ^installedLockFile.save[/parsekit.lock]){
-            $result[$result^#0A  Lockfile saved.^#0A]
+            ^output.writeln[]
+            ^output.writeln[  Lockfile saved.]
         }
     }
 ###

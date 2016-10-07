@@ -16,18 +16,8 @@
 #Main Do application initialization
 #------------------------------------------------------------------------------
 @main[][result]
+    $result[]
     $app[^Application::create[]]
     ^app.initialize[]
-
-    $result[$result^info[]]
-    $result[$result^app.run[]]
-    $result[$result^#0A]
+    ^app.run[]
 #--- end of main
-
-
-#------------------------------------------------------------------------------
-#Main::info - Prints information for each call
-#------------------------------------------------------------------------------
-@info[][result]
-    $result[Parsekit 0.0.1 by Igor Bodnar. Tool for managing project dependencies in parser3.]
-#---

@@ -62,3 +62,22 @@ locals
         }
     }
 ###
+
+
+#------------------------------------------------------------------------------
+#:param input type Ln-e/Console/Input/InputInterface
+#:param output type Ln-e/Console/Output/OutputInterface
+#------------------------------------------------------------------------------
+@preExecute[input;output][result]
+    ^output.writeln[^self.info[]]
+###
+
+
+#------------------------------------------------------------------------------
+#Returns information for each call
+#
+#:result string
+#------------------------------------------------------------------------------
+@info[][result]
+    $result[Parsekit 0.0.1 by Igor Bodnar. Tool for managing project dependencies in parser3.]
+#---

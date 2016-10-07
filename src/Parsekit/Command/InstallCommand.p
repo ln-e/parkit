@@ -37,22 +37,18 @@ Ln-e/Console/CommandInterface
 #
 #:param input type Ln-e/Console/Input/InputInterface
 #:param output type Ln-e/Console/Output/OutputInterface
-#
-#:result string
 #------------------------------------------------------------------------------
 @execute[input;output][result]
-    $result[]
-
     $lockFile[^LockFile::create[/parsekit.lock]]
     $installedLockFile[^LockFile::create[/$DI:vaultDirName/parsekit.lock]]
     $rootPackage[^DI:packageManager.createRootPackage[/parsekit.json]]
 
     ^if($lockFile.empty){
-        $result[parsekit.lock file not found! Could not install dependency. May be you mean `parsekit update` command ?]
+        ^output.writeln[parsekit.lock file not found! Could not install dependency. May be you mean `parsekit update` command ?]
     }{
         $packages[^DI:packageManager.packagesFromLock[$lockFile]]
         $installResult[^DI:installer.update[$installedLockFile;$packages;$rootPackage;$input.options]]
         ^installedLockFile.save[]
-        $result[$installResult.info]
+        ^output.writeln[$installResult.info]
     }
 ###

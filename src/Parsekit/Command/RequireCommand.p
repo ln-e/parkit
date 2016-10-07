@@ -38,8 +38,6 @@ Ln-e/Console/CommandInterface
 #
 #:param input type Ln-e/Console/Input/InputInterface
 #:param output type Ln-e/Console/Output/OutputInterface
-#
-#:result string
 #------------------------------------------------------------------------------
 @execute[input;output][result]
     $result[]
@@ -57,10 +55,14 @@ Ln-e/Console/CommandInterface
         ^if($exception.type eq PackageNotFoundException){
             $exception.handled(true)
             $assumptions[^packageManager.guessPackage[$newPackageName]]
-            $result[$result^#0A  Package '$newPackageName' not found^#0A]
+            ^output.writeln[]
+            ^output.writeln[  Package '$newPackageName' not found]
             ^if(^assumptions._count[] > 0){
-                $result[$result^#0A  Do you mean one of:^#0A]
-                $result[$result^assumptions.foreach[key;value]{    -  $value}[^#0A]]
+                ^output.writeln[]
+                ^output.writeln[  Do you mean one of:]
+                ^assumptions.foreach[key;value]{
+                    ^output.writeln[    -  $value]
+                }
             }
 
             $newPackageName[] ^rem[ clear new package name to prevent all futher actions]
@@ -73,14 +75,15 @@ Ln-e/Console/CommandInterface
         $requires[^hash::create[$rootPackage.requires]]
 
         ^if(^requires.contains[$newPackageName]){
-            $result[Package $newPackageName already in parsekit.json]
+            ^output.writeln[Package $newPackageName already in parsekit.json]
         }{
             $requirements[^lockFile.getInstalledRequirements[]]
             $requirements.[$newPackageName][$newPackageVersion]
             $resolvingResult[^DI:resolver.resolve[$requirements](true;^input.getArgument[debug])]
 
             ^if(!($resolvingResult is ResolvingResult)){
-                $result[$result^#0ACould not update requirements, as it has conflicts. Soon you will see which package cause problem, but now try your luck. ^#0A]
+                ^output.writeln[]
+                ^output.writeln[Could not update requirements, as it has conflicts. Soon you will see which package cause problem, but now try your luck.]
             }{
 #               Updates original file
                 $file[^JsonFile::create[/parsekit.json]]
@@ -93,13 +96,14 @@ Ln-e/Console/CommandInterface
                 }
 
                 $installResult[^DI:installer.update[$lockFile;$resolvingResult.packages;$rootPackage;$input.options]]
-                $result[$installResult.info]
+                ^output.writeln[$installResult.info]
 
 #               Temporary decision. write second lock to vault dir, to compare with them while install.
 #               In future this should be replaced. Current installed version should detected by exact dir.
 #               Git or some kind of lock file in case of zip distribution.
                 ^if(^lockFile.save[] && ^lockFile.save[/$DI:vaultDirName/parsekit.lock]){
-                    $result[$result^#0A  Lockfile saved.^#0A]
+                    ^output.writeln[]
+                    ^output.writeln[  Lockfile saved.]
                 }
             }
         }

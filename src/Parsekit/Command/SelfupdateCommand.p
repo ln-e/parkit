@@ -37,9 +37,7 @@ Ln-e/Console/CommandInterface
 #
 #:param input type Ln-e/Console/Input/InputInterface
 #:param output type Ln-e/Console/Output/OutputInterface
-#
-#:result string
 #------------------------------------------------------------------------------
 @execute[input;output][result]
-    $result[self update not yet implemented]
+    ^output.writeln[self update not yet implemented]
 ###

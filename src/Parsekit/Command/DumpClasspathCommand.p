@@ -37,21 +37,16 @@ Ln-e/Console/CommandInterface
 #
 #:param input type Ln-e/Console/Input/InputInterface
 #:param output type Ln-e/Console/Output/OutputInterface
-#
-#:result string
 #------------------------------------------------------------------------------
 @execute[input;output][result]
-    $result[]
-
     $rootPackage[^DI:packageManager.createRootPackage[/parsekit.json]]
     $lockFile[^LockFile::create[/$DI:vaultDirName/parsekit.lock]]
 
     ^if($lockFile.empty){
-        $result[parsekit.lock file not found! Could not dump autoload file. May be you mean `parsekit update` command ?]
+        ^output.writeln[parsekit.lock file not found! Could not dump autoload file. May be you mean `parsekit update` command ?]
     }{
         $packages[^DI:packageManager.packagesFromLock[$lockFile]]
         ^DI:installer.dumpClassPath[$rootPackage;$packages]
-
-        $result[Classpath file $DI:vaultDirName/classpath.p was updated]
+        ^output.writeln[Classpath file $DI:vaultDirName/classpath.p was updated]
     }
 ###
