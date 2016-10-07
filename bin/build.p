@@ -17,7 +17,7 @@
     ^self.collectClass[../classes;ConsoleTable.p]
 
     ^self.collectClasses[../src]
-    ^self.collectClasses[../vault/ln-e/]
+    ^self.collectClasses[../vault]
 
     $concatedClasses[^hash::create[]]
 
