@@ -57,8 +57,9 @@ Ln-e/Console/CommandInterface
 #------------------------------------------------------------------------------
 @createBaseJson[]
 #   TODO add interactive questions like project name, author etc
+    $directory[^als/fs/Path:basename[$env:PWD]]
     $hash[
-        $.name[New Project]
+        $.name[^if(def $directory){$directory}{New Project}]
         $.type[library]
         $.description[]
         $.require[
