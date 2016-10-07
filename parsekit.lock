@@ -1,9 +1,9 @@
 {
-	"name":null,
+	"name":"New Project",
 	"version":null,
 	"type":null,
 	"stability":null,
-	"uniqueName":"",
+	"uniqueName":"New Project",
 	"packages":{
 		"ln-e\/console":{
 			"name":"ln-e\/console",
@@ -11,10 +11,10 @@
 			"targetDir":"ln-e\/console",
 			"sourceType":"git",
 			"sourceUrl":"https:\/\/github.com\/ln-e\/console.git",
-			"sourceReference":"4add6ecef0a1126de275be60731cc5af4e05f403",
+			"sourceReference":"598ad4c620df9bdba19f1082cfe5b943aea2c3e9",
 			"distType":"zip",
-			"distUrl":"https:\/\/api.github.com\/repos\/ln-e\/console\/zipball\/4add6ecef0a1126de275be60731cc5af4e05f403",
-			"distReference":"4add6ecef0a1126de275be60731cc5af4e05f403",
+			"distUrl":"https:\/\/api.github.com\/repos\/ln-e\/console\/zipball\/598ad4c620df9bdba19f1082cfe5b943aea2c3e9",
+			"distReference":"598ad4c620df9bdba19f1082cfe5b943aea2c3e9",
 			"version":"master",
 			"prettyVersion":"master",
 			"releaseDate":null,
@@ -64,6 +64,6 @@
 			"uniqueName":"als\/fsmaster"
 		}
 	},
-	"releaseDate":"1475490397",
-	"updated":"1475770023"
+	"releaseDate":"1475789238",
+	"updated":"1475880779"
 }
