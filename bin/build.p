@@ -14,7 +14,6 @@
 
     ^self.collectFile[../bin;parsekit.p]
     ^self.collectClass[../classes;Erusage.p]
-    ^self.collectClass[../classes;ConsoleTable.p]
 
     ^self.collectClasses[../src]
     ^self.collectClasses[../vault]
