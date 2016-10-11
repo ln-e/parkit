@@ -90,7 +90,7 @@ locals
     }
     $saveTo[^if(def $path){$path}{$self.path}]
     ^try{
-        $self.rawData[^JsonFile:encode[$data]]
+        $self.rawData[^JsonFile:encode[$data]^#0A]
         ^self.rawData.save[$saveTo]
         $result(-f $saveTo)
     }{
