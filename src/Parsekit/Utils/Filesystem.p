@@ -41,8 +41,6 @@ locals
 #Attempt to delete directory
 #
 #:param dir type string
-#
-#:result bool
 #------------------------------------------------------------------------------
 @removeDir[path;mask][result]
 
@@ -55,13 +53,12 @@ locals
 			^if(-f "^self.normalize[${path}/$list.name]"){
 				^file:delete[^self.normalize[${path}/$list.name]]
 			}(-d "^self.normalize[${path}/$list.name]"){
-          $test[]
-          ^test.save[^self.normalize[^self.normalize[${path}/$list.name/.delete]]] ^rem[hack to delete empty directories]
-			    ^self.removeDir[^self.normalize[${path}/${list.name}/];$mask]
+                $test[]
+                ^test.save[^self.normalize[^self.normalize[${path}/$list.name/.delete]]] ^rem[hack to delete empty directories]
+			    $temp[^self.removeDir[^self.normalize[${path}/${list.name}/];$mask]]
 			}
 		}
 	}
-
 }
 ###
 

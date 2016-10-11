@@ -58,5 +58,6 @@ locals
 #:result bool
 #------------------------------------------------------------------------------
 @unmount[dir;package;options]
-    $result[^self.filesystem.removeDir[$dir]]
+    ^self.filesystem.removeDir[$dir]
+    $result(!(-f $dir))
 ###
