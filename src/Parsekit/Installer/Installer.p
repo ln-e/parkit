@@ -194,7 +194,7 @@ locals
 
             ^if($package.autoload.classpath is hash){
                 ^package.autoload.classpath.foreach[key;path]{
-                    $classpath.[^classpath._count[]][${docRootPrefix}$basePath^taint[as-is][$path]]
+                    $classpath.[^classpath._count[]][${docRootPrefix}$basePath^taint[as-is][^path.trim[left;/]]]
                 }
             }
 
