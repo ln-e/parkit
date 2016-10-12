@@ -31,7 +31,7 @@ PackageInterface
 #:param package type PackageInterface
 #------------------------------------------------------------------------------
 @addConflict[package]
-    $self.conflicts.[$package.name][$package]
+    $self.conflict.[$package.name][$package]
 ###
 
 
@@ -42,7 +42,7 @@ PackageInterface
 #:param constraint type string
 #------------------------------------------------------------------------------
 @addDevRequire[packageName;constraint][result]
-    $self.devRequires.[$packageName][^constraint.trim[]]
+    $self.devRequire.[$packageName][^constraint.trim[]]
 ###
 
 
@@ -53,5 +53,5 @@ PackageInterface
 #:param constraint type string
 #------------------------------------------------------------------------------
 @addRequire[packageName;constraint][result]
-    $self.requires.$packageName[^constraint.trim[]]
+    $self.require.$packageName[^constraint.trim[]]
 ###

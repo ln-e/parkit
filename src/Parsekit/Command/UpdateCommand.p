@@ -43,7 +43,7 @@ Ln-e/Console/CommandInterface
     $installedLockFile[^LockFile::create[/$DI:vaultDirName/parsekit.lock]]
 
     $rootPackage[^DI:packageManager.createRootPackage[/parsekit.json]]
-    $requires[^hash::create[$rootPackage.requires]]
+    $requires[^hash::create[$rootPackage.require]]
 
     $resolvingResult[^DI:resolver.resolve[$requires](true;^input.getArgument[debug])]
 

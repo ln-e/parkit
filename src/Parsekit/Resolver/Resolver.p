@@ -141,7 +141,7 @@ locals
             $packages[^self.pickPackages[$iterationRequirement]]
 
             ^packages.foreach[key;package]{
-                ^package.requires.foreach[packageName;extraReq]{
+                ^package.require.foreach[packageName;extraReq]{
 
                     ^rem[collect overall requirements by picked packages]
                     ^extendResult.appendConstraint[$packageName;$extraReq]

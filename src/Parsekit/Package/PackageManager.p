@@ -82,7 +82,7 @@ locals
 
 
 #------------------------------------------------------------------------------
-#:param config type hash
+#:param filePath type string
 #
 #:result PackageInterface
 #------------------------------------------------------------------------------
@@ -125,9 +125,9 @@ locals
     $package.distUrl[$config.distUrl]
     $package.distReference[$config.distReference]
     $package.releaseDate[$config.releaseDate]
-    $package.classPath[^if($config.classPath is hash){$config.classPath}{^hash::create[]}]
     $package.autoload[^hash::create[$config.autoload]]
-    $package.docRoot[^if(def $config.docRoot){$config.docRoot}{www}]
+    $package.aliases[^hash::create[$config.aliases]]
+    $package.docRoot[^if(def $config.docRoot){$config.docRoot}(!def $config.mainFileDir){www}]
     $package.mainFileDir[$config.mainFileDir]
 
     $package.uniqueName[${config.name}$config.version]
@@ -145,18 +145,16 @@ locals
         }
     }
 
-    ^rem{^if($config.devRequire is hash){
+    ^rem{
+    ^if($config.devRequire is hash){
         ^config.devRequire.foreach[packageName;constraint]{
-# ho ho ho but we should have here PackageInterface ?
             ^package.addDevRequire[
                 $.name[$packageName]
                 $.constraint[$constraint]
             ]
         }
-    }}
-
-#    $package.requires[$config.requires]
-#    $package.devRequires[$config.devRequires]
+    }
+    }
 
 
     $result[$package]
