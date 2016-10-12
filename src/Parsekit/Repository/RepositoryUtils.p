@@ -19,6 +19,8 @@ locals
 #
 #:param url type string
 #:param replace type hash
+#
+#:result string
 #------------------------------------------------------------------------------
 @static:maskedUrl[url;replace][result]
     $result[$url]

@@ -57,6 +57,7 @@ locals
 
 #------------------------------------------------------------------------------
 #:param requirements type hash
+#:param transitiveMap type number
 #:param iteration type number
 #
 #:result hash

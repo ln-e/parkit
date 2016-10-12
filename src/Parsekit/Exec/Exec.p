@@ -21,6 +21,7 @@ locals
 #
 #:param command type string
 #:param dir type string optional
+#:param successCode type string optional
 #------------------------------------------------------------------------------
 @create[command;dir;successCode]
     $self.command[$command]

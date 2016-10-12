@@ -17,6 +17,8 @@ locals
 
 
 #------------------------------------------------------------------------------
+#:constructor
+#
 #:param versionParser type VersionParser
 #:param comparator type Comparator
 #------------------------------------------------------------------------------

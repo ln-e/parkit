@@ -40,7 +40,8 @@ locals
 #------------------------------------------------------------------------------
 #Attempt to delete directory
 #
-#:param dir type string
+#:param path type string
+#:param mask type string
 #------------------------------------------------------------------------------
 @removeDir[path;mask][result]
 
@@ -92,6 +93,14 @@ locals
     $result[^self.subFiles[$dir](true)]
 ###
 
+
+#------------------------------------------------------------------------------
+#:param dir type string
+#:param onlyDirs type bool
+#:param onlyFiles type bool
+#
+#:result hash
+#------------------------------------------------------------------------------
 @subFiles[dir;onlyDirs;onlyFiles][result]
     $dir[^self.normalize[$dir]]
     $result[^hash::create[]]
@@ -109,3 +118,4 @@ locals
             }
         }
     }
+###

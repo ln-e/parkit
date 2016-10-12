@@ -15,6 +15,8 @@ locals
 
 
 #------------------------------------------------------------------------------
+#:constructor
+#
 #:param requirements type hash
 #------------------------------------------------------------------------------
 @create[requirements]
@@ -26,6 +28,10 @@ locals
 ###
 
 
+#------------------------------------------------------------------------------
+#:param transitiveName type string
+#:param baseName type string
+#------------------------------------------------------------------------------
 @addToTransitiveMap[transitiveName;baseName]
     ^if(!^self.transitiveMap.contains[$transitiveName]){
         $self.transitiveMap.$transitiveName[^hash::create[]]
@@ -40,6 +46,7 @@ locals
 
 #------------------------------------------------------------------------------
 #:param packageName type string
+#:param count type int
 #------------------------------------------------------------------------------
 @addConflict[packageName;count][result]
     ^if(!def $count){$count(1)}
@@ -48,7 +55,7 @@ locals
 
 
 #------------------------------------------------------------------------------
-#:param packageName type string
+#
 #------------------------------------------------------------------------------
 @extendConflictsByTransitiveMap[][result]
     $newConflicts[^hash::create[]]

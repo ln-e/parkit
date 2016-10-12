@@ -12,6 +12,8 @@ locals
 
 #------------------------------------------------------------------------------
 #:constructor
+#
+#:param name type string
 #------------------------------------------------------------------------------
 @create[name]
     $self.name[$name]
@@ -58,7 +60,7 @@ locals
 
 #------------------------------------------------------------------------------
 #Returns the pretty version string plus a git or hg commit hash of this package
-#$truncate If the source reference is a sha1 hash, truncate it
+#:param truncate type bool If the source reference is a sha1 hash, truncate it
 #
 #:result string
 #------------------------------------------------------------------------------

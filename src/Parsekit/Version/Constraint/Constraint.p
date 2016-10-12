@@ -60,6 +60,9 @@ ConstraintInterface
 
 #------------------------------------------------------------------------------
 #:constructor
+#
+#:param operator type string
+#:param version type string
 #------------------------------------------------------------------------------
 @create[operator;version]
     ^if(!^self.opString.contains[$operator]){

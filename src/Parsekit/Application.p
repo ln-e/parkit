@@ -80,4 +80,4 @@ locals
 #------------------------------------------------------------------------------
 @info[][result]
     $result[Parsekit 0.0.1 by Igor Bodnar. Tool for managing project dependencies in parser3.]
-#---
+###

@@ -18,6 +18,7 @@ locals
 #:constructor
 #
 #:param driverManager type DriverManager
+#:param filesystem type Filesystem
 #------------------------------------------------------------------------------
 @create[driverManager;filesystem]
     $self.driverManager[$driverManager]

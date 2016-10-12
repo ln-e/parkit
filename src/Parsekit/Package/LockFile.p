@@ -17,6 +17,7 @@ locals
 #------------------------------------------------------------------------------
 #:constructor
 #
+#:param file type string
 #:param package type RootPackage
 #------------------------------------------------------------------------------
 @create[file;package]

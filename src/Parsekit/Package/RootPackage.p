@@ -19,6 +19,8 @@ BasePackage
 
 #------------------------------------------------------------------------------
 #:constructor
+#
+#:param name type string
 #------------------------------------------------------------------------------
 @create[name]
     ^BASE:create[$name]
@@ -27,7 +29,7 @@ BasePackage
 
 
 #------------------------------------------------------------------------------
-#:param packageInterface type RepositoryInterface
+#:param repository type RepositoryInterface
 #------------------------------------------------------------------------------
 @addCustomRepository[repository][result]
     $self.customRepositories.[$repository.name][$repository]

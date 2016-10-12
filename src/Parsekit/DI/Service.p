@@ -16,7 +16,7 @@ locals
 
 #------------------------------------------------------------------------------
 #:param class type string
-#:param arguments type hash optional
+#:param services type hash optional
 #------------------------------------------------------------------------------
 @create[class;services]
     $self.class[$class]

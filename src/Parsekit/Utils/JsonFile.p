@@ -16,6 +16,7 @@ locals
 
 #------------------------------------------------------------------------------
 #:constructor
+#
 #:param path type string Path to the json file
 #------------------------------------------------------------------------------
 @create[path]
@@ -133,6 +134,7 @@ locals
 #Decodes string
 #
 #:param string type string
+#
 #:result hash
 #------------------------------------------------------------------------------
 @static:decode[string]
@@ -149,6 +151,7 @@ locals
 #:param key type string
 #:param value
 #:param params type hash
+#
 #:result hash
 #------------------------------------------------------------------------------
 @static:emptyHandler[key;value;params]

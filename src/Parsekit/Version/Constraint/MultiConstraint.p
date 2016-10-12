@@ -112,4 +112,3 @@ ConstraintInterface
 @isDisjunctive[][result]
     $result(!$self.conjunctive)
 ###
-

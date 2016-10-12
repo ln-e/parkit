@@ -54,6 +54,7 @@ locals
 #
 #:param dir type string
 #:param package type string optional
+#:param options type hash optional
 #
 #:result bool
 #------------------------------------------------------------------------------

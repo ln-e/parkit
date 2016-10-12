@@ -18,6 +18,8 @@ ArchiveDriver
 
 #------------------------------------------------------------------------------
 #:constructor
+#
+#:param filesystem type Filesystem
 #------------------------------------------------------------------------------
 @create[filesystem]
     ^BASE:create[$filesystem]
@@ -30,7 +32,7 @@ ArchiveDriver
 #
 #:result hash
 #------------------------------------------------------------------------------
-@unpack[dir;fileInfo]
+@unpack[dir;fileInfo][result]
     ^if(^Exec:isWin[]){
         $command[^Exec::create[7z e -o.^file:basename[$fileInfo.filePath];$fileInfo.tempDir]]
     }{

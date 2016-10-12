@@ -31,9 +31,9 @@ DriverInterface
 #:param dir type string destination folder
 #:param file type file unpacking archive
 #
-#:result hash
+#:result bool
 #------------------------------------------------------------------------------
-@unpack[dir;file]
+@unpack[dir;file][result]
     ^throw[Abstract method not implemented]
 ###
 
