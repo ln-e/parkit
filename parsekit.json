@@ -6,10 +6,12 @@
 		"als\/fs":"*"
 	},
 	"mainFileDir":"bin",
-	"autoload":{
+	"devAutoload":{
 		"files":{
-            "0": "Debug.p"
-        },
+			"0":"Debug.p"
+		}
+	},
+	"autoload":{
 		"nestedClasspath":{
 			"0":"src"
 		},

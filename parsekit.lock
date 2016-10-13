@@ -28,6 +28,7 @@
 					"Ln-e\/Console":"src"
 				}
 			},
+			"devAutoload":{},
 			"aliases":{},
 			"mainFileDir":null,
 			"docRoot":"www",
@@ -57,6 +58,7 @@
 					"als\/fs":"src"
 				}
 			},
+			"devAutoload":{},
 			"aliases":{},
 			"mainFileDir":null,
 			"docRoot":"www",
@@ -65,5 +67,5 @@
 		}
 	},
 	"releaseDate":"1476375115",
-	"updated":"1476378145"
+	"updated":"1476393577"
 }

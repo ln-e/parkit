@@ -23,6 +23,7 @@ locals
 @create[driverManager;filesystem]
     $self.driverManager[$driverManager]
     $self.filesystem[$filesystem]
+    $self.autoloadData[^hash::create[]]
 ###
 
 
@@ -166,66 +167,34 @@ locals
 #   TODO warning. What if root is another package ?
     ^mergedPackages.add[$packages]
 
+    $self.autoloadData[
+        $.namespaces[^hash::create[]]
+        $.files[^hash::create[]]
+        $.classpath[
+            $.0[${docRoot}$DI:vaultDirName]
+        ]
+    ]
+
     ^if(def $rootPackage.mainFileDir){
         $docRoot[^als/fs/Path:dirname[^als/fs/Path:relative[$rootPackage.mainFileDir;$DI:vaultDirName]]/]
-        $docRootPrefix[]
     }{
-        $docRoot[^als/fs/Path:dirname[^als/fs/Path:relative[$rootPackage.docRoot;$DI:vaultDirName]]/]
-        $docRootPrefix[/]
+        $docRoot[/^als/fs/Path:dirname[^als/fs/Path:relative[$rootPackage.docRoot;$DI:vaultDirName]]/]
     }
 
-    $namespaces[^hash::create[]]
-    $files[^hash::create[]]
-    $classpath[$.0[${docRootPrefix}${docRoot}$DI:vaultDirName]]
-
     ^mergedPackages.foreach[name;package]{
-
-#       installationBasePath - base path during installation (when document root is differ from execution document root)
         ^if($package is RootPackage){
             $basePath[$docRoot]
             $installationBasePath[/]
         }{
-            $basePath[${docRoot}$DI:vaultDirName/${name}/]
-            $installationBasePath[/$DI:vaultDirName/${name}/]
+            $basePath[${docRoot}$DI:vaultDirName/${package.targetDir}/]
+            $installationBasePath[/$DI:vaultDirName/${package.targetDir}/]
         }
 
-
+        ^if($package.devAutoload is hash){
+            ^self._processAutoload[$package.devAutoload;$basePath;$installationBasePath;$docRoot]
+        }
         ^if($package.autoload is hash){
-            ^files.add[^hash::create[$package.autoload.files]]
-
-            ^if($package.autoload.classpath is hash){
-                ^package.autoload.classpath.foreach[key;path]{
-                    $classpath.[^classpath._count[]][${docRootPrefix}$basePath^taint[as-is][^path.trim[left;/]]]
-                }
-            }
-
-            ^if($package.autoload.nestedClasspath is hash){
-                ^package.autoload.nestedClasspath.foreach[key;path]{
-                    $hash[^self.filesystem.subDirs[$installationBasePath^taint[as-is][$path]]]
-                    $classpath.[^classpath._count[]][${docRootPrefix}${docRoot}^taint[as-is][^path.trim[left;/]]]
-                    ^hash.foreach[i;dir]{$classpath.[^classpath._count[]][${docRootPrefix}${docRoot}^dir.trim[left;/]]}
-                }
-            }
-
-            ^if($package.autoload.namespace is hash){
-                ^package.autoload.namespace.foreach[type;path]{
-                    $searchDir[$installationBasePath^taint[as-is][^path.trim[left;/]]]
-                    $packageNamespacedFiles[^self.filesystem.subFiles[$searchDir](false)(true)]
-                    $namespaceRoot[${docRootPrefix}${basePath}^taint[as-is][^path.trim[left;/]]]
-
-                    ^packageNamespacedFiles.foreach[key;value]{
-                        $className[$type^value.replace[$searchDir;]]
-                        $className[^className.match[\.p^$][i]{}]
-                        $file[^file::load[text;$value]]
-                        ^if(^file.text.match[^@class\n$className][giUn] > 0){
-                            $filePath[^value.replace[$searchDir;$namespaceRoot]]
-                            $namespaces.[$className][$filePath]
-                        }
-                    }
-
-#                    $namespaces.$type[$namespaceRoot]
-                }
-            }
+            ^self._processAutoload[$package.autoload;$basePath;$installationBasePath;$docRoot]
         }
     }
 
@@ -234,14 +203,14 @@ locals
 ^$parsekitClasspath[
     ^$.namespaces[
         ^^hash::create[
-            ^namespaces.foreach[key;value]{^$.[$key][$value]}[^#0A            ]]
+            ^self.autoloadData.namespaces.foreach[key;value]{^$.[$key][$value]}[^#0A            ]]
     ]
     ^$.classpath[^^table::create{path
-^classpath.foreach[i;val]{$val}[^#0A]
+^self.autoloadData.classpath.foreach[i;val]{$val}[^#0A]
     }]
     ^$.files[
         ^^hash::create[
-            ^files.foreach[key;value]{^$.[$key][$value]}[^#0A]
+            ^self.autoloadData.files.foreach[key;value]{^$.[$key][$value]}[^#0A]
         ]
     ]
 ]
@@ -267,6 +236,59 @@ locals
 ^###
 ]
     ^string.save[/$DI:vaultDirName/classpath.p]
+###
+
+
+#------------------------------------------------------------------------------
+#Process autoload section to populate self.autoloadData with autoload data
+#
+#:param autoload type hash autoload section from config (autoload or devAutoload)
+#:param basePath type string base path for package
+#:param installationBasePath type string base path during installation (when document root is differ from execution document root)
+#:param docRoot type string
+#------------------------------------------------------------------------------
+@_processAutoload[autoload;basePath;installationBasePath;docRoot]
+
+    ^self.autoloadData.files.add[^hash::create[$autoload.files]]
+
+    ^if($autoload.classpath is hash){
+        ^autoload.classpath.foreach[key;path]{
+            $path[^taint[as-is][^path.trim[left;/]]]
+            $self.autoloadData.classpath.[^self.autoloadData.classpath._count[]][${basePath}$path/]
+        }
+    }
+
+    ^if($autoload.nestedClasspath is hash){
+        ^autoload.nestedClasspath.foreach[key;path]{
+#           Handle as usual classpath
+            $path[^taint[as-is][^path.trim[left;/]]]
+            $self.autoloadData.classpath.[^self.autoloadData.classpath._count[]][${basePath}$path/]
+#           And iterate all sub dirs
+            $hash[^self.filesystem.subDirs[${installationBasePath}$path]]
+            ^hash.foreach[i;dir]{
+                $self.autoloadData.classpath.[^self.autoloadData.classpath._count[]][${docRoot}^dir.trim[left;/]]
+            }
+        }
+    }
+
+#   For namespace we pre-search classes and build map.
+    ^if($autoload.namespace is hash){
+        ^autoload.namespace.foreach[namespacePrefix;path]{
+            $path[^taint[as-is][^path.trim[left;/]]]
+            $searchDir[${installationBasePath}$path]
+            $files[^self.filesystem.subFiles[$searchDir](false)(true)]
+
+            ^files.foreach[key;value]{
+                $className[$namespacePrefix^value.replace[$searchDir;]]
+                $className[^className.match[\.p^$][i]{}]
+                $file[^file::load[text;$value]]
+                ^if(^file.text.match[^@class\n$className][giUn] > 0){
+                    $value[^value.trim[left;/]]
+                    $self.autoloadData.namespaces.[$className][${docRoot}$value]
+                }
+            }
+        }
+    }
 ###
 
 

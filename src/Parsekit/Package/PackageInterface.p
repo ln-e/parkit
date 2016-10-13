@@ -34,6 +34,7 @@ locals
     $self.conflict[^hash::create[]]
     $self.devRequire[^hash::create[]]
     $self.autoload[^hash::create[]]
+    $self.devAutoload[^hash::create[]]
     $self.aliases[^hash::create[]]
     $self.mainFileDir[]
     $self.docRoot[]
