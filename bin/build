@@ -2,8 +2,8 @@
 
 dir=$(d=$(dirname "$0"); cd "$d" && pwd)
 bash -c "${dir}/../cgi/parser3.cgi \"${dir}/build.p\" $*"
-chmod +x "${dir}/../build/eval.sh"
-chmod +x "${dir}/../build/parsekit"
+chmod +x "${dir}/../build/bin/eval.sh"
+chmod +x "${dir}/../build/bin/parsekit"
 timestamp=$(date +%s)
 branch=$(git rev-parse --abbrev-ref HEAD)
 commit=$(git rev-parse HEAD)

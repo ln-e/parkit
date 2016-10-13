@@ -39,10 +39,13 @@
         }
     }
 
-    ^builded.save[../build/parsekit.p]
-    ^self.copy[parsekit;../build/parsekit]
-    ^self.copy[parsekit.bat;../build/parsekit.bat]
-    ^self.copy[eval.sh;../build/eval.sh]
+    ^builded.save[../build/bin/parsekit.p]
+    ^self.copy[parsekit;../build/bin/parsekit]
+    ^self.copy[parsekit.bat;../build/bin/parsekit.bat]
+    ^self.copy[eval.sh;../build/bin/eval.sh]
+
+    $empty[]
+    ^empty.save[../build/cgi/.gitkeep]
 
     $result[Build success^#0A]
 #--- end of main
