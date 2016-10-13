@@ -145,15 +145,10 @@ locals
         }
     }
 
-    ^rem{
     ^if($config.devRequire is hash){
         ^config.devRequire.foreach[packageName;constraint]{
-            ^package.addDevRequire[
-                $.name[$packageName]
-                $.constraint[$constraint]
-            ]
+            ^package.addDevRequire[$packageName;$constraint]
         }
-    }
     }
 
 

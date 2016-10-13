@@ -29,6 +29,7 @@ Ln-e/Console/CommandInterface
     $self.name[update]
     $self.description[updates installed dependencies according to require constraints in parsekit.json]
     ^self.addOption[debug;d;;Enabling debug output]
+    ^self.addOption[no-dev;](true)[Install without dev dependencies]
 ###
 
 
@@ -43,9 +44,8 @@ Ln-e/Console/CommandInterface
     $installedLockFile[^LockFile::create[/$DI:vaultDirName/parsekit.lock]]
 
     $rootPackage[^DI:packageManager.createRootPackage[/parsekit.json]]
-    $requires[^hash::create[$rootPackage.require]]
 
-    $resolvingResult[^DI:resolver.resolve[$requires](true;^input.getArgument[debug])]
+    $resolvingResult[^DI:resolver.resolve[^rootPackage.getRequireByEnv[^input.hasOption[no-dev]]](true;^input.hasOption[debug])]
 
 
     ^if(!($resolvingResult is ResolvingResult)){

@@ -39,7 +39,7 @@ locals
     $resolvedPackages[^self.step[$requirements][](1)]
     $result[$resolvedPackages]
 
-    ^if($returnSingle){
+    ^if(^returnSingle.bool(true)){
         ^rem[ TODO Refactor this piece of shit ]
         $minIterations(99999)
         $minKey[]

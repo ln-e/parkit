@@ -34,3 +34,19 @@ BasePackage
 @addCustomRepository[repository][result]
     $self.customRepositories.[$repository.name][$repository]
 ###
+
+
+#------------------------------------------------------------------------------
+#:param noDev type bool optional
+#
+#:result hash
+#------------------------------------------------------------------------------
+@getRequireByEnv[noDev][result]
+    $result[^hash::create[$self.require]]
+
+    ^if(!^noDev.bool(false)){
+        ^self.devRequire.foreach[packageName;constraint]{
+            $result.$packageName[$constraint]
+        }
+    }
+###

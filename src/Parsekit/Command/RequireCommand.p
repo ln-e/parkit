@@ -72,7 +72,7 @@ Ln-e/Console/CommandInterface
     ^if(def $newPackageName){
         $lockFile[^LockFile::create[/parsekit.lock]]
         $rootPackage[^packageManager.createRootPackage[/parsekit.json]]
-        $requires[^hash::create[$rootPackage.require]]
+        $requires[^rootPackage.getRequireByEnv[]]
 
         ^if(^requires.contains[$newPackageName]){
             ^output.writeln[Package $newPackageName already in parsekit.json]

@@ -11,24 +11,24 @@
 			"targetDir":"ln-e\/console",
 			"sourceType":"git",
 			"sourceUrl":"https:\/\/github.com\/ln-e\/console.git",
-			"sourceReference":"598ad4c620df9bdba19f1082cfe5b943aea2c3e9",
+			"sourceReference":"a745bafa9afdb6f2b571a18fba72a6c894f9f0e1",
 			"distType":"zip",
-			"distUrl":"https:\/\/api.github.com\/repos\/ln-e\/console\/zipball\/598ad4c620df9bdba19f1082cfe5b943aea2c3e9",
-			"distReference":"598ad4c620df9bdba19f1082cfe5b943aea2c3e9",
+			"distUrl":"https:\/\/api.github.com\/repos\/ln-e\/console\/zipball\/a745bafa9afdb6f2b571a18fba72a6c894f9f0e1",
+			"distReference":"a745bafa9afdb6f2b571a18fba72a6c894f9f0e1",
 			"version":"master",
 			"prettyVersion":"master",
 			"releaseDate":null,
 			"stability":null,
 			"requiredPackages":{},
-			"requires":{},
-			"conflicts":{},
-			"devRequires":{},
-			"classPath":{},
+			"require":{},
+			"conflict":{},
+			"devRequire":{},
 			"autoload":{
 				"namespace":{
 					"Ln-e\/Console":"src"
 				}
 			},
+			"aliases":{},
 			"mainFileDir":null,
 			"docRoot":"www",
 			"repository":null,
@@ -49,21 +49,21 @@
 			"releaseDate":null,
 			"stability":null,
 			"requiredPackages":{},
-			"requires":{},
-			"conflicts":{},
-			"devRequires":{},
-			"classPath":{},
+			"require":{},
+			"conflict":{},
+			"devRequire":{},
 			"autoload":{
 				"namespace":{
 					"als\/fs":"src"
 				}
 			},
+			"aliases":{},
 			"mainFileDir":null,
 			"docRoot":"www",
 			"repository":null,
 			"uniqueName":"als\/fsmaster"
 		}
 	},
-	"releaseDate":"1475789238",
-	"updated":"1476225472"
+	"releaseDate":"1476375115",
+	"updated":"1476378145"
 }
