@@ -41,10 +41,10 @@
 			"targetDir":"als\/fs",
 			"sourceType":"git",
 			"sourceUrl":"https:\/\/github.com\/ln-e\/fs.git",
-			"sourceReference":"63c139361f31efc664c0c44885f0469e8b6f7275",
+			"sourceReference":"7045154785460c12982752ed0c69b5683e496a0a",
 			"distType":"zip",
-			"distUrl":"https:\/\/api.github.com\/repos\/als\/fs\/zipball\/63c139361f31efc664c0c44885f0469e8b6f7275",
-			"distReference":"63c139361f31efc664c0c44885f0469e8b6f7275",
+			"distUrl":"https:\/\/api.github.com\/repos\/als\/fs\/zipball\/7045154785460c12982752ed0c69b5683e496a0a",
+			"distReference":"7045154785460c12982752ed0c69b5683e496a0a",
 			"version":"master",
 			"prettyVersion":"master",
 			"releaseDate":null,
@@ -67,5 +67,5 @@
 		}
 	},
 	"releaseDate":"1476375115",
-	"updated":"1476423625"
+	"updated":"1476441173"
 }
