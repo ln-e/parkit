@@ -5,7 +5,8 @@
 		"ln-e\/console":"dev-master",
 		"als\/fs":"*"
 	},
-	"mainFileDir":"bin",
+	"docRoot": "bin",
+	"dynamicDocRoot": true,
 	"devAutoload":{
 		"files":{
 			"0":"Debug.p"

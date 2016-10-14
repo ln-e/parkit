@@ -30,7 +30,7 @@
 			},
 			"devAutoload":{},
 			"aliases":{},
-			"mainFileDir":null,
+			"dynamicDocRoot":false,
 			"docRoot":"www",
 			"repository":null,
 			"uniqueName":"ln-e\/consolemaster"
@@ -60,12 +60,12 @@
 			},
 			"devAutoload":{},
 			"aliases":{},
-			"mainFileDir":null,
+			"dynamicDocRoot":false,
 			"docRoot":"www",
 			"repository":null,
 			"uniqueName":"als\/fsmaster"
 		}
 	},
 	"releaseDate":"1476375115",
-	"updated":"1476393577"
+	"updated":"1476423625"
 }

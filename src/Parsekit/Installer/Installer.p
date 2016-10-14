@@ -167,19 +167,15 @@ locals
 #   TODO warning. What if root is another package ?
     ^mergedPackages.add[$packages]
 
+    $docRoot[^if(!^rootPackage.dynamicDocRoot.bool(false)){/}^als/fs/Path:dirname[^als/fs/Path:relative[$rootPackage.docRoot;$DI:vaultDirName]]/]
+
     $self.autoloadData[
         $.namespaces[^hash::create[]]
         $.files[^hash::create[]]
         $.classpath[
-            $.0[${docRoot}$DI:vaultDirName]
+            $.0[${docRoot}$DI:vaultDirName/]
         ]
     ]
-
-    ^if(def $rootPackage.mainFileDir){
-        $docRoot[^als/fs/Path:dirname[^als/fs/Path:relative[$rootPackage.mainFileDir;$DI:vaultDirName]]/]
-    }{
-        $docRoot[/^als/fs/Path:dirname[^als/fs/Path:relative[$rootPackage.docRoot;$DI:vaultDirName]]/]
-    }
 
     ^mergedPackages.foreach[name;package]{
         ^if($package is RootPackage){
