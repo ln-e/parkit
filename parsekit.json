@@ -10,15 +10,17 @@
 	"devAutoload":{
 		"files":{
 			"0":"Debug.p"
-		}
+		},
+		"nestedClasspath": [
+			"tests"
+		]
 	},
 	"autoload":{
 		"nestedClasspath":{
 			"0":"src"
 		},
 		"classpath":{
-			"0":"classes",
-			"1":"tests"
+			"0":"classes"
 		},
 		"namespace":{}
 	}

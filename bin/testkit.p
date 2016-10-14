@@ -1,38 +1,7 @@
 #!cgi/parser3.cgi
 
 @auto[][locals]
-$temp[^table::create{path
-../classes
-../src
-../src/Parsekit
-../src/Parsekit/Command
-../src/Parsekit/DI
-../src/Parsekit/Exec
-../src/Parsekit/Installer
-../src/Parsekit/Installer/Driver
-../src/Parsekit/Package
-../src/Parsekit/Repository
-../src/Parsekit/Resolver
-../src/Parsekit/Utils
-../src/Parsekit/Version
-../src/Parsekit/Version/Constraint
-../tests
-../tests/Parsekit
-}]
-    ^MAIN:CLASS_PATH.join[$temp]
-    ^if($is_developer is junction && ^is_developer[]){
-        ^use[Debug.p]
-    }
-###
-
-
-#-----------------------------------------------------------------------------
-#autouse
-#
-#:param className type string
-#-----------------------------------------------------------------------------
-@autouse[className]
-    ^use[${className}.p]
+    ^use[../vault/classpath.p]
 ###
 
 
