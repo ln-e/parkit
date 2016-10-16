@@ -111,7 +111,16 @@ leads to `/../src` or `/../data` classpath.
 
 * `dymanicDocRoot` is useful flag for console programs (when document root
  is not permanent each call). All path generates relative to files
- inside `docRoot`. If main executed file stores is bin/starterDir/main.p than the `"docRoot": "bin/starterDir", "dynamicDocRoot": true` leads to `../../src` or `../../data` classpath.
+ inside `docRoot`. If main executed file stores is bin/starterDir/main.p than the
+ `"docRoot": "bin/starterDir", "dynamicDocRoot": true` leads to `../../src` or `../../data` classpath.
+
+Stability
+---------
+
+`parsekit.json` can contain `minimumStability` option (only root package) which is defaults to `dev`.
+If you prefer use more stable versions you may set one of: `alpha`, `beta`, `RC` or `stable`. If you update package
+without upper bound constraint and with minimumStability set to dev you always get the latest commit
+from master branch.
 
 Requirements
 ------------

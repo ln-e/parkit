@@ -29,11 +29,16 @@ locals
 
 #------------------------------------------------------------------------------
 #:param name type string
+#:param minStability type string
 #
-#:result PackageInterface
+#:result hash of PackageInterface
 #------------------------------------------------------------------------------
-@getPackage[name][result]
+@getPackage[name;minStability][result]
 #   TODO get list of repositories instead of direct access to parsekitRepository
+
+    $minStabilityPriority[$self.versionParser.stabilities.[^self.versionParser.normalizeStability[$minStability]]]
+    $minStabilityPriority[^minStabilityPriority.int($self.versionParser.stabilities.dev)]
+
     $parsekitRepository[$self.repositoryManager.parsekitRepository]
 
     ^if(!def $parsekitRepository.lazyPackages.$name){
@@ -51,13 +56,18 @@ locals
 #           iterate it and create packages
             ^packagesConfig.foreach[tag;config]{
                 $package[^self.createPackage[$parsekitRepository;$config]]
-                $index[^self.packages.$packageName._count[]]
-                $self.packages.$packageName.$index[$package]
+                $packageStabilityPriority[$self.versionParser.stabilities.[$package.stability]]
+
+#               Adds package only if stability is in bounds.
+                ^if($packageStabilityPriority <= $minStabilityPriority){
+                    $index[^self.packages.$packageName._count[]]
+                    $self.packages.$packageName.$index[$package]
+                }
             }
         }
 
         ^if(!def $self.packages.$name){
-            ^throw[PackageNotFoundException;PackageManager.p; Package with name '$name' not found ]
+            ^throw[PackageNotFoundException;;Package '$name' ^if(def $minStability){with minimum stability '$minStability' }not found ]
         }
 
     }
@@ -130,11 +140,14 @@ locals
     $package.aliases[^hash::create[$config.aliases]]
     $package.docRoot[^if(def $config.docRoot){$config.docRoot}{www}]
     $package.dynamicDocRoot(^config.dynamicDocRoot.bool(false))
+    $package.minimumStability[^if(def $config.minimumStability){^self.versionParser.normalizeStability[$config.minimumStability]}{dev}]
 
-    $package.uniqueName[${config.name}$config.version]
-    $package.version[$config.version]
-    $package.prettyVersion[$config.version]
-    $package.stability[$config.stability]
+    ^if(def $config.version){
+        $package.prettyVersion[$config.version]
+        $package.version[^self.versionParser.normalize[$config.version]]
+        $package.stability[^self.versionParser.normalizeStability[^self.versionParser.parseStability[$package.version]]]
+        $package.uniqueName[${package.name}$package.version]
+    }
 
     ^if($config.require is hash){
         ^config.require.foreach[packageName;constraint]{

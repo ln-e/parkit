@@ -42,6 +42,7 @@ Ln-e/Console/CommandInterface
 @execute[input;output][result]
     $result[]
     $packageManager[$DI:packageManager]
+    $rootPackage[^packageManager.createRootPackage[/parsekit.json]]
     $packageArgument[^input.getArgument[package]]
 
     $pieces[^packageArgument.split[:;h]]
@@ -49,7 +50,7 @@ Ln-e/Console/CommandInterface
     $newPackageVersion[^if(def $pieces.1){$pieces.1}{*}]
 
     ^try{
-        $tempPackage[^packageManager.getPackage[$newPackageName]]
+        $tempPackage[^packageManager.getPackage[$newPackageName;$rootPackage.minimumStability]]
     }{
 #       TODO make mo complicated and interactive select right version
         ^if($exception.type eq PackageNotFoundException){
@@ -71,7 +72,6 @@ Ln-e/Console/CommandInterface
 
     ^if(def $newPackageName){
         $lockFile[^LockFile::create[/parsekit.lock]]
-        $rootPackage[^packageManager.createRootPackage[/parsekit.json]]
         $requires[^rootPackage.getRequireByEnv[]]
 
         ^if(^requires.contains[$newPackageName]){
@@ -79,7 +79,7 @@ Ln-e/Console/CommandInterface
         }{
             $requirements[^lockFile.getInstalledRequirements[]]
             $requirements.[$newPackageName][$newPackageVersion]
-            $resolvingResult[^DI:resolver.resolve[$requirements](true;^input.getArgument[debug])]
+            $resolvingResult[^DI:resolver.resolve[$requirements;$rootPackage.minimumStability](true;^input.getArgument[debug])]
 
             ^if(!($resolvingResult is ResolvingResult)){
                 ^output.writeln[]

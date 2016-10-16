@@ -15,10 +15,11 @@
 			"distType":"zip",
 			"distUrl":"https:\/\/api.github.com\/repos\/ln-e\/console\/zipball\/a745bafa9afdb6f2b571a18fba72a6c894f9f0e1",
 			"distReference":"a745bafa9afdb6f2b571a18fba72a6c894f9f0e1",
-			"version":"master",
+			"version":"9999999-dev",
 			"prettyVersion":"master",
 			"releaseDate":null,
-			"stability":null,
+			"minimumStability":"dev",
+			"stability":"dev",
 			"requiredPackages":{},
 			"require":{},
 			"conflict":{},
@@ -33,7 +34,7 @@
 			"dynamicDocRoot":false,
 			"docRoot":"www",
 			"repository":null,
-			"uniqueName":"ln-e\/consolemaster"
+			"uniqueName":"ln-e\/console9999999-dev"
 		},
 		"als\/fs":{
 			"name":"als\/fs",
@@ -45,10 +46,11 @@
 			"distType":"zip",
 			"distUrl":"https:\/\/api.github.com\/repos\/als\/fs\/zipball\/7045154785460c12982752ed0c69b5683e496a0a",
 			"distReference":"7045154785460c12982752ed0c69b5683e496a0a",
-			"version":"master",
+			"version":"9999999-dev",
 			"prettyVersion":"master",
 			"releaseDate":null,
-			"stability":null,
+			"minimumStability":"dev",
+			"stability":"dev",
 			"requiredPackages":{},
 			"require":{},
 			"conflict":{},
@@ -63,9 +65,9 @@
 			"dynamicDocRoot":false,
 			"docRoot":"www",
 			"repository":null,
-			"uniqueName":"als\/fsmaster"
+			"uniqueName":"als\/fs9999999-dev"
 		}
 	},
 	"releaseDate":"1476375115",
-	"updated":"1476441173"
+	"updated":"1476653168"
 }

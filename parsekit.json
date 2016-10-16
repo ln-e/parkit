@@ -5,6 +5,7 @@
 		"ln-e\/console":"dev-master",
 		"als\/fs":"*"
 	},
+	"minimumStability": "dev",
 	"docRoot": "bin",
 	"dynamicDocRoot": true,
 	"devAutoload":{

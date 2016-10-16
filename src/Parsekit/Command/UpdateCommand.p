@@ -45,7 +45,7 @@ Ln-e/Console/CommandInterface
 
     $rootPackage[^DI:packageManager.createRootPackage[/parsekit.json]]
 
-    $resolvingResult[^DI:resolver.resolve[^rootPackage.getRequireByEnv[^input.hasOption[no-dev]]](true;^input.hasOption[debug])]
+    $resolvingResult[^DI:resolver.resolve[^rootPackage.getRequireByEnv[^input.hasOption[no-dev]];$rootPackage.minimumStability](true;^input.hasOption[debug])]
 
 
     ^if(!($resolvingResult is ResolvingResult)){

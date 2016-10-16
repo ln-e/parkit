@@ -71,7 +71,7 @@ locals
         ^if(^packagesToUpdate._count[] > 0){
             $info[$info ^taint[^#0A]  Updated/installed packages: ^#0A]
             ^packagesToUpdate.foreach[name;package]{
-                $info[$info    - $name^: $package.version^#0A]
+                $info[$info    - $name^: $package.prettyVersion^#0A]
             }
         }
 
@@ -79,7 +79,7 @@ locals
             $info[$info  Removed packages:^#0A]
             ^packagesToRemove.foreach[name;package]{
                 ^if(^lockFile.remove[$package]){
-                    $info[$info    - $name^: $package.version^#0A]
+                    $info[$info    - $name^: $package.prettyVersion^#0A]
                 }
             }
         }

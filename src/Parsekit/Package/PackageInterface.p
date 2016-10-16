@@ -28,6 +28,7 @@ locals
     $self.version[]
     $self.prettyVersion[]
     $self.releaseDate[]
+    $self.minimumStability[]
     $self.stability[]
     $self.requiredPackages[^hash::create[]]
     $self.require[^hash::create[]]

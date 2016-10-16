@@ -26,15 +26,15 @@ locals
 # [major].[minor].[patch] -[pre-release] +[build-metadata]
 $self.modifierRegex[[._-]?(?:(stable|beta|b|RC|alpha|a|patch|pl|p)((?:[.-]?\d+)*+)?)?([.-]?dev)?]
 
-$self.stabilities[^table::create{stability
-stable
-RC
-beta
-alpha
-dev
-}]
+$self.stabilities[
+    $.stable[0]
+    $.RC[1]
+    $.beta[2]
+    $.alpha[3]
+    $.dev[4]
+]
 
-$self.implodedStabilities[^self.stabilities.menu{$self.stabilities.stability}[|]]
+$self.implodedStabilities[^self.stabilities.foreach[stability;priority]{$stability}[|]]
 
 $self.normalizedVersions[^hash::create[]]
 $self.parsedConstraint[^hash::create[]]
@@ -60,7 +60,7 @@ $self.parsedConstraints[^hash::create[]]
 @parseStability[version][result]
     $version[^version.match[#.*^$][i]{}] ^rem[Stripped out #hash of version]
 
-    ^version.match[$self.modifierRegex][i]{
+    ^version.match[$self.modifierRegex^(?:\+.*)?^$][i]{
         ^if($match.3 eq dev){
             $result[dev]
         }($match.1 eq beta || $match.1 eq b){
