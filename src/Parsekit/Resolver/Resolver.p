@@ -11,12 +11,12 @@ Resolver
 locals
 
 @auto[]
-
-
 ###
 
 
 #------------------------------------------------------------------------------
+#:constructor
+#
 #:param packageManager type PackageManager
 #:param semver type Semver
 #------------------------------------------------------------------------------
@@ -28,6 +28,7 @@ locals
 
 #------------------------------------------------------------------------------
 #:param requirements type hash
+#:param minimumStability type string
 #:param returnSingle type bool
 #:param debug type bool
 #
@@ -67,6 +68,7 @@ locals
     $result[^hash::create[]]
 
     ^try{
+#       We should try catch only extendRequirements and in case of pacakgeNotFoundExceotion return empty hash
         $extendResult[^self.extendRequirements[$requirements;$transitiveMap;$minimumStability]]
         $pickedPackages[$extendResult.pickedPackages]
 
@@ -201,7 +203,7 @@ locals
                     ^if(
                         !^self.semver.constraintIntersected[$reqI;$reqJ]
                         ||
-                        !def ^self.pickPackageByStrategy[max;^self.packageManager.getPackage[$newPackageName;$minimumStability];$reqI $reqJ]
+                        !def ^self.pickPackages[$.$newPackageName[$reqI $reqJ];$minimumStability]
                     ){
                         ^if($self.debug){$console:line[TRNASITIVNIY $newPackageName between $i $packages.$i.version [$reqI] and $j $packages.$j.version [$reqJ] ]}
                         ^rem[ conflict between $i and $j ]
@@ -268,8 +270,8 @@ locals
     $result[^hash::create[]]
     ^requirements.foreach[packageName;baseConstraint]{
         $packages[^self.packageManager.getPackage[$packageName;$minimumStability]]
-# Pick package nearest to $constraint top boundary
 
+#       Pick package nearest to $constraint top boundary
         $package[^self.pickPackageByStrategy[max;$packages;^taint[as-is][$baseConstraint]]]
 
         ^if(!($package is PackageInterface)){
