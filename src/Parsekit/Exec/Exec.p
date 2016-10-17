@@ -43,7 +43,8 @@ locals
         ^self.updateDir[$dir]
     }
 #    $console:line[Execute '$cd $self.command']
-    $self.file[^file::exec[eval.sh;;^self.toString[]]]
+    $file[^if(^env:PARSER_VERSION.match[pc-win][in] > 0){eval.bat}{eval.sh}]
+    $self.file[^file::exec[$file;;^self.toString[]]]
 #    ^if(^Application:hasOption[debug]){$console:line[^self.toString[]]}
     $result($self.status == $self.successCode)
 ###
@@ -57,7 +58,7 @@ locals
         $self.dir[$dir]
     }
     $fullPath[${self.root}$self.dir]
-    $self.cd[cd^if(^Exec:isWin[]){/D } ^fullPath.replace[//;/] && ]
+    $self.cd[cd^if(^Exec:isWin[]){ /D} ^fullPath.replace[//;/] && ]
 ###
 
 
@@ -85,6 +86,9 @@ locals
 #------------------------------------------------------------------------------
 @toString[][result]
     $result[^taint[as-is][$self.cd $self.command]]
+    ^if(^env:PARSER_VERSION.match[pc-win][in] > 0){
+        $result[^result.replace[ && ; ^^&& ]]
+    }
 ###
 
 #------------------------------------------------------------------------------
