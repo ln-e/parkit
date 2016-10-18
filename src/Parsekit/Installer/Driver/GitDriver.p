@@ -135,7 +135,7 @@ VcsDriver
         $fallbackCommand[^Exec::create[git checkout -f -B $branch parsekit/$branch --;$dir]]
 
         ^if( ^command.execute[] || ^fallbackCommand.execute[]){
-            $resetCommand[^Exec::create[git reset --hard $reference --]]
+            $resetCommand[^Exec::create[git reset --hard $reference --;$dir]]
             ^if(^resetCommand.execute[]){
                 $complete(true)
             }
