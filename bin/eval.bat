@@ -1,2 +1,2 @@
-set cmd=%*
+@set "cmd=%*"
 %cmd%

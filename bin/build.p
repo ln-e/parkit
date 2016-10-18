@@ -43,6 +43,7 @@
     ^self.copy[parsekit;../build/bin/parsekit]
     ^self.copy[parsekit.bat;../build/bin/parsekit.bat]
     ^self.copy[eval.sh;../build/bin/eval.sh]
+    ^self.copy[eval.sh;../build/bin/eval.bat]
 
     $empty[]
     ^empty.save[../build/cgi/.gitkeep]
