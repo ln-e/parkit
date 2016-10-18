@@ -43,13 +43,13 @@ locals
     $packagesToUpdate[^hash::create[]]
     $packagesToRemove[^hash::create[]]
     ^packages.foreach[packageName;package]{
-        ^if(^lockFile.addPackage[$package]){
+        ^if(!($package is SystemPackage) && ^lockFile.addPackage[$package]){
             $packagesToUpdate.$packageName[$package]
         }
     }
 
     ^lockFile.packages.foreach[name;package]{
-        ^if(!^packages.contains[$name]){
+        ^if(!($package is SystemPackage) && !^packages.contains[$name]){
             $packagesToRemove.$name[$package]
         }
     }

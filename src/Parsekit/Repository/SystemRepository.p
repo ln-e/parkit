@@ -1,46 +1,68 @@
 # Created by IntelliJ IDEA.
 # User: ibodnar
-# Date: 23.02.2016
-# Time: 0:08
+# Date: 19.10.16
+# Time: 0:52
 # To change this template use File | Settings | File Templates.
 
 @CLASS
-RepositoryInterface
+SystemRepository
 
 @OPTIONS
 locals
 
+
+@BASE
+BaseRepository
+
+@auto[]
+###
+
+
 #------------------------------------------------------------------------------
 #:constructor
+#
+# Repository contains only OS "packages". Like parser itselt or any
+# extensions/modules if needed
 #------------------------------------------------------------------------------
 @create[]
+    ^BASE:create[]
+
+    ^self.configurePackages[]
+###
+
+
+#------------------------------------------------------------------------------
+# Register all supported packages
+#------------------------------------------------------------------------------
+@configurePackages[]
+    $parserVersion[^env:PARSER_VERSION.mid(0;^env:PARSER_VERSION.pos[ ])]
+
+    $self.packages.parser[
+        $.parser[
+            $.$parserVersion[
+                $.name[parser]
+                $.version[$parserVersion]
+            ]
+        ]
+    ]
 ###
 
 
 #------------------------------------------------------------------------------
 #:param packageName type string
 #
-#:result boolean
+#:result bool
 #------------------------------------------------------------------------------
-@hasPackage[packageName]
-    ^throw[Abstract method not implemented]
+@hasPackage[packageName][result]
+    $result[^self.packages.contains[$packageName]]
 ###
 
 
 #------------------------------------------------------------------------------
-#:param name type string
-#:param constraint
+#:param packageName type string
 #
-#:result PackageInterface
-#------------------------------------------------------------------------------
-@findPackage[name;constraint]
-    ^throw[Abstract method not implemented]
-###
-
-
-#------------------------------------------------------------------------------
 #:result hash
 #------------------------------------------------------------------------------
-@getPackages[]
-    ^throw[Abstract method not implemented]
+@loadPackages[packageName][result]
+    $result[$self.packages.$packageName]
 ###

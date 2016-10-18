@@ -117,8 +117,8 @@ locals
 #       package version or stability. But not conflicts. We should somehow to
 #       separate this two cases: conflict and missing version by stability requirement.
         ^if($exception.type eq PackageNotFoundException){
-            $exception.handled(true)
-            $result[^hash::create[]]
+#            $exception.handled(true)
+#            $result[^hash::create[]]
         }
     }
 ###

@@ -18,7 +18,6 @@ locals
 #:constructor
 #------------------------------------------------------------------------------
 @create[]
-    $self.parsekitRepository[^ParsekitRepository::create[]]
 ###
 
 
@@ -27,9 +26,10 @@ locals
 #
 #:result hash of RepositoryInterface
 #------------------------------------------------------------------------------
-@getRpositories[rootPackage][result]
+@getRepositories[rootPackage][result]
 #   TODO gets extra repositories from rootPackage
     $result[
-      $.0[$self.parsekitRepository]
+      $.0[^SystemRepository::create[]]
+      $.10[^ParsekitRepository::create[]]
     ]
 ###

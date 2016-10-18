@@ -123,7 +123,9 @@ locals
     $mergedOptions[
         $.indent(true)
         $.table[array]
-        $.ParsekitRepository[$JsonFile:emptyHandler] # never store ParsekitRepository in lock file ?
+        $.SystemPackage[$JsonFile:emptyHandler]
+        $.SystemRepository[$JsonFile:emptyHandler]
+        $.ParsekitRepository[$JsonFile:emptyHandler]
     ]
     ^mergedOptions.add[$options]
     $result[^json:string[$data;$mergedOptions]]
@@ -156,4 +158,23 @@ locals
 #------------------------------------------------------------------------------
 @static:emptyHandler[key;value;params]
     $result[null]
+###
+
+
+#------------------------------------------------------------------------------
+#Handler for exclude classes from json
+#
+#:param key type string
+#:param value
+#:param params type hash
+#
+#:result hash
+#------------------------------------------------------------------------------
+@static:systemPackageHandler[key;value;params][result]
+    $newValue[
+        $.name[$value.name]
+        $.version[$value.version]
+    ]
+
+    $result[^json:string[{asdasd};$params]]
 ###

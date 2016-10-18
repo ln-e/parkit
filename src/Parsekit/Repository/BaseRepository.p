@@ -51,20 +51,18 @@ RepositoryInterface
 
 #------------------------------------------------------------------------------
 #:param package type PackageInterface
-#:result boolean
+#
+#:result bool
 #------------------------------------------------------------------------------
-@hasPackage[package][result]
-    ^if(!$package is PackageInterface){
-        ^throw[Argument package should be type PackageInterface $package.CLASS_NAME found]
-    }
-
-    $result[^self.packages.contains[$package.uniqueName]]
+@hasPackage[packageName][result]
+    $result[^self.packages.contains[$packageName]]
 ###
 
 
 #------------------------------------------------------------------------------
-#:param name type String
-#:param constraint
+#:param name type string
+#:param constraint type string
+#
 #:result PackageInterface
 #------------------------------------------------------------------------------
 @findPackage[name;constraint][result]

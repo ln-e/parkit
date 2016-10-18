@@ -69,7 +69,17 @@ BaseRepository
 
 
 #------------------------------------------------------------------------------
-#:param packageName param
+#:param packageName type string
+#
+#:result bool
+#------------------------------------------------------------------------------
+@hasPackage[packageName][result]
+    $result[^self.lazyPackages.contains[$packageName]]
+###
+
+
+#------------------------------------------------------------------------------
+#:param packageName type string
 #
 #:result hash
 #------------------------------------------------------------------------------

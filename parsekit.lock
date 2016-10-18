@@ -21,7 +21,9 @@
 			"minimumStability":"dev",
 			"stability":"dev",
 			"requiredPackages":{},
-			"require":{},
+			"require":{
+				"parser":">=3.4.3"
+			},
 			"conflict":{},
 			"devRequire":{},
 			"autoload":{
@@ -52,7 +54,9 @@
 			"minimumStability":"dev",
 			"stability":"dev",
 			"requiredPackages":{},
-			"require":{},
+			"require":{
+				"parser":">=3.4.3"
+			},
 			"conflict":{},
 			"devRequire":{},
 			"autoload":{
@@ -69,5 +73,5 @@
 		}
 	},
 	"releaseDate":"1476375115",
-	"updated":"1476775117"
+	"updated":"1476831837"
 }

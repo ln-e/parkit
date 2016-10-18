@@ -41,35 +41,45 @@ locals
 
     $parsekitRepository[$self.repositoryManager.parsekitRepository]
 
-    ^if(!def $parsekitRepository.lazyPackages.$name){
-        ^throw[PackageNotFoundException;PackageManager.p; Package with name '$name' not found ]
-    }
+#   TODO pass root package to getRepositories[] ?
+    $repositories[^self.repositoryManager.getRepositories[]]
+    ^repositories.foreach[key;repository]{
+        ^if(!^repository.hasPackage[$name]){
+            ^continue[]
+        }
 
-#   if package is not listed yet
-    ^if(!def $self.packages.$name){
-        $config[^parsekitRepository.loadPackages[$name]]
+#       if package is not listed yet
+        ^if(!def $self.packages.$name){
+            $loadedConfig[^repository.loadPackages[$name]]
 
-        ^config.foreach[packageName;packagesConfig]{
-            ^if(!def $self.packages.$packageName){
-                $self.packages.$packageName[^hash::create[]]
-            }
-#           iterate it and create packages
-            ^packagesConfig.foreach[tag;config]{
-                $package[^self.createPackage[$parsekitRepository;$config]]
-                $packageStabilityPriority[$self.versionParser.stabilities.[$package.stability]]
+            ^loadedConfig.foreach[packageName;packagesConfig]{
+                ^if(!def $self.packages.$packageName){
+                    $self.packages.$packageName[^hash::create[]]
+                }
 
-#               Adds package only if stability is in bounds.
-                ^if($packageStabilityPriority <= $minStabilityPriority){
-                    $index[^self.packages.$packageName._count[]]
-                    $self.packages.$packageName.$index[$package]
+#               iterate it and create packages
+                ^packagesConfig.foreach[tag;config]{
+                    ^if($repository is SystemRepository){
+                        $package[^self.createSystemPackage[$repository;$config]]
+                    }{
+                        $package[^self.createPackage[$repository;$config]]
+                    }
+
+                    $packageStabilityPriority[$self.versionParser.stabilities.[$package.stability]]
+
+#                   Adds package only if stability is in bounds.
+                    ^if($packageStabilityPriority <= $minStabilityPriority){
+                        $index[^self.packages.$packageName._count[]]
+                        $self.packages.$packageName.$index[$package]
+                    }
                 }
             }
-        }
 
-        ^if(!def $self.packages.$name){
-            ^throw[PackageNotFoundException;;Package '$name' ^if(def $minStability){with minimum stability '$minStability' }not found ]
-        }
+            ^if(!def $self.packages.$name){
+                ^throw[PackageNotFoundException;;Package '$name' ^if(def $minStability){with minimum stability '$minStability' }not found ]
+            }
 
+        }
     }
 
     $result[$self.packages.$name]
@@ -88,6 +98,19 @@ locals
     }
 
     $result[$packages]
+###
+
+
+#------------------------------------------------------------------------------
+#:param repository type RepositoryInterface
+#:param config type hash
+#
+#:result PackageInterface
+#------------------------------------------------------------------------------
+@createSystemPackage[repository;config][result]
+    $package[^SystemPackage::create[$config.name;$config.version]]
+    $package.repository[$repository]
+    $result[$package]
 ###
 
 
@@ -153,7 +176,7 @@ locals
         ^config.require.foreach[packageName;constraint]{
             ^if(^packageName.pos[/] == -1){
 #               custom requirements which is not package, like parser version on commandline tools
-                ^continue[]
+#                ^continue[]
             }
             ^package.addRequire[$packageName;$constraint]
         }
