@@ -63,7 +63,7 @@ VcsDriver
     $exec[^Exec::create[$command;$dir]]
     ^exec.execute[]
 
-    $result[^self.checkoutToCommit[$dir;$package.sourceReference;$package.prettyVersion]]
+    $result[^self.checkoutToCommit[$dir;$package.sourceReference;$package.version]]
 ###
 
 
@@ -85,7 +85,7 @@ VcsDriver
 
         $fetchCommand[^Exec::create[git remote set-url parsekit $package.sourceUrl && git fetch parsekit && git fetch --tags parsekit;$dir]]
         ^fetchCommand.execute[]
-        $result[^self.checkoutToCommit[$dir;$package.sourceReference;$package.prettyVersion]]
+        $result[^self.checkoutToCommit[$dir;$package.sourceReference;$package.version]]
     }
 ###
 

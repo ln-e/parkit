@@ -143,9 +143,9 @@ locals
     $package.minimumStability[^if(def $config.minimumStability){^self.versionParser.normalizeStability[$config.minimumStability]}{dev}]
 
     ^if(def $config.version){
-        $package.prettyVersion[$config.version]
-        $package.version[^self.versionParser.normalize[$config.version]]
-        $package.stability[^self.versionParser.normalizeStability[^self.versionParser.parseStability[$package.version]]]
+        $package.version[$config.version]
+        $package.normilizedVersion[^self.versionParser.normalize[$config.version]]
+        $package.stability[^self.versionParser.normalizeStability[^self.versionParser.parseStability[$package.normilizedVersion]]]
         $package.uniqueName[${package.name}$package.version]
     }
 

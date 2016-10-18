@@ -5,16 +5,16 @@
 		"ln-e\/console":"dev-master",
 		"als\/fs":"*"
 	},
-	"minimumStability": "dev",
-	"docRoot": "bin",
-	"dynamicDocRoot": true,
+	"minimumStability":"dev",
+	"docRoot":"bin",
+	"dynamicDocRoot":true,
 	"devAutoload":{
 		"files":{
 			"0":"Debug.p"
 		},
-		"nestedClasspath": [
-			"tests"
-		]
+		"nestedClasspath":{
+			"0":"tests"
+		}
 	},
 	"autoload":{
 		"nestedClasspath":{

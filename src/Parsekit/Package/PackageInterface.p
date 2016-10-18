@@ -26,7 +26,7 @@ locals
     $self.distUrl[]
     $self.distReference[]
     $self.version[]
-    $self.prettyVersion[]
+    $self.normilizedVersion[]
     $self.releaseDate[]
     $self.minimumStability[]
     $self.stability[]
