@@ -23,6 +23,8 @@
 		"classpath":{
 			"0":"classes"
 		},
-		"namespace":{}
+		"namespace":{
+			"Parsekit\/Semver":"src\/Parsekit\/Component\/Semver\/src"
+		}
 	}
 }

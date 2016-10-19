@@ -18,7 +18,7 @@ locals
 #:constructor
 #
 #:param packageManager type PackageManager
-#:param semver type Semver
+#:param semver type Parsekit/Semver/Semver
 #------------------------------------------------------------------------------
 @create[packageManager;semver]
     $self.packageManager[$packageManager]

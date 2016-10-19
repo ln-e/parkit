@@ -18,7 +18,7 @@ locals
 #:constructor
 #
 #:param repositoryManager type RepositoryManager
-#:param versionParser type VersionParser
+#:param versionParser type Parsekit/Semver/VersionParser
 #------------------------------------------------------------------------------
 @create[repositoryManager;versionParser]
     $self.versionParser[$versionParser]

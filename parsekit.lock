@@ -1,9 +1,9 @@
 {
-	"name":"New Project",
+	"name":null,
 	"version":null,
 	"type":null,
 	"stability":null,
-	"uniqueName":"New Project",
+	"uniqueName":"",
 	"packages":{
 		"ln-e\/console":{
 			"name":"ln-e\/console",
@@ -72,6 +72,6 @@
 			"uniqueName":"als\/fsmaster"
 		}
 	},
-	"releaseDate":"1476375115",
-	"updated":"1476831837"
+	"releaseDate":"1476831933",
+	"updated":"1476914761"
 }

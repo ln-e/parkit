@@ -20,8 +20,8 @@ locals
     $self.registry[
         $.filesystem[^Service::create[Filesystem]]
         $.repositoryManager[^Service::create[RepositoryManager]]
-        $.versionParser[^Service::create[VersionParser]]
-        $.comparator[^Service::create[Comparator]]
+        $.versionParser[^Service::create[Parsekit/Semver/VersionParser]]
+        $.comparator[^Service::create[Parsekit/Semver/Comparator]]
         $.driverManager[^Service::create[DriverManager;
             $.0[filesystem]
         ]]
@@ -33,7 +33,7 @@ locals
             $.0[repositoryManager]
             $.1[versionParser]
         ]]
-        $.semver[^Service::create[Semver;
+        $.semver[^Service::create[Parsekit/Semver/Semver;
             $.0[versionParser]
             $.1[comparator]
         ]]
