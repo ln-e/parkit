@@ -171,6 +171,7 @@ locals
 
     $self.autoloadData[
         $.namespaces[^hash::create[]]
+        $.namespacesMap[^hash::create[]]
         $.files[^hash::create[]]
         $.classpath[
             $.0[${docRoot}$DI:vaultDirName/]
@@ -181,16 +182,18 @@ locals
         ^if($package is RootPackage){
             $basePath[$docRoot]
             $installationBasePath[/]
+            $addMap(true)
         }{
             $basePath[${docRoot}$DI:vaultDirName/${package.targetDir}/]
             $installationBasePath[/$DI:vaultDirName/${package.targetDir}/]
+            $addMap(false)
         }
 
         ^if($package.devAutoload is hash){
-            ^self._processAutoload[$package.devAutoload;$basePath;$installationBasePath;$docRoot]
+            ^self._processAutoload[$package.devAutoload;$basePath;$installationBasePath;$docRoot;$addMap]
         }
         ^if($package.autoload is hash){
-            ^self._processAutoload[$package.autoload;$basePath;$installationBasePath;$docRoot]
+            ^self._processAutoload[$package.autoload;$basePath;$installationBasePath;$docRoot;$addMap]
         }
     }
 
@@ -200,6 +203,11 @@ locals
     ^$.namespaces[
         ^^hash::create[
             ^self.autoloadData.namespaces.foreach[key;value]{^$.[$key][$value]}[^#0A            ]]
+    ]
+    ^$.namespacesMap[
+        ^^hash::create[
+            ^self.autoloadData.namespacesMap.foreach[key;value]{^$.[$key][$value]}[^#0A            ]
+        ]
     ]
     ^$.classpath[^^table::create{path
 ^self.autoloadData.classpath.foreach[i;val]{$val}[^#0A]
@@ -226,6 +234,12 @@ locals
 ^@autouse^[className^]
     ^^if(^^parsekitClasspath.namespaces.contains^[^$className^])^{
         ^^use^[^$parsekitClasspath.namespaces.^$className^]
+    ^}(def ^$parsekitClasspath.namespacesMap && ^^className.pos^[/^] != -1)^{
+        ^^parsekitClasspath.namespacesMap.foreach^[namespace^;path^]^{
+            ^^if(^^className.pos^[^$namespace^] == 0)^{
+                ^^use^[^$path^^className.mid(^^namespace.length^[^]).p^]
+            ^}
+        ^}
     ^}^{
         ^^use^[^$^{className^}.p^]
     ^}
@@ -242,8 +256,9 @@ locals
 #:param basePath type string base path for package
 #:param installationBasePath type string base path during installation (when document root is differ from execution document root)
 #:param docRoot type string
+#:param addMap type bool add namespace to map for runtime class search
 #------------------------------------------------------------------------------
-@_processAutoload[autoload;basePath;installationBasePath;docRoot]
+@_processAutoload[autoload;basePath;installationBasePath;docRoot;addMap]
 
     ^self.autoloadData.files.add[^hash::create[$autoload.files]]
 
@@ -271,6 +286,9 @@ locals
     ^if($autoload.namespace is hash){
         ^autoload.namespace.foreach[namespacePrefix;path]{
             $path[^taint[as-is][^path.trim[left;/]]]
+            ^if($addMap){
+                $self.autoloadData.namespacesMap.$namespacePrefix[$path]
+            }
             $searchDir[${installationBasePath}$path]
             $files[^self.filesystem.subFiles[$searchDir](false)(true)]
 
