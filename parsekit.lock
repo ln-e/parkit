@@ -38,16 +38,16 @@
 			"repository":null,
 			"uniqueName":"ln-e\/consolemaster"
 		},
-		"als\/fs":{
-			"name":"als\/fs",
+		"als\/path":{
+			"name":"als\/path",
 			"type":"library",
-			"targetDir":"als\/fs",
+			"targetDir":"als\/path",
 			"sourceType":"git",
-			"sourceUrl":"https:\/\/github.com\/ln-e\/fs.git",
-			"sourceReference":"7045154785460c12982752ed0c69b5683e496a0a",
+			"sourceUrl":"https:\/\/github.com\/ln-e\/als.path.git",
+			"sourceReference":"f06b49fb016ec9c3d85b14f94b8b53a2fdb5f9fc",
 			"distType":"zip",
-			"distUrl":"https:\/\/api.github.com\/repos\/als\/fs\/zipball\/7045154785460c12982752ed0c69b5683e496a0a",
-			"distReference":"7045154785460c12982752ed0c69b5683e496a0a",
+			"distUrl":"https:\/\/api.github.com\/repos\/als\/path\/zipball\/f06b49fb016ec9c3d85b14f94b8b53a2fdb5f9fc",
+			"distReference":"f06b49fb016ec9c3d85b14f94b8b53a2fdb5f9fc",
 			"version":"master",
 			"normilizedVersion":"9999999-dev",
 			"releaseDate":null,
@@ -61,7 +61,7 @@
 			"devRequire":{},
 			"autoload":{
 				"namespace":{
-					"als\/fs":"src"
+					"Als\/Path":"src"
 				}
 			},
 			"devAutoload":{},
@@ -69,9 +69,9 @@
 			"dynamicDocRoot":false,
 			"docRoot":"www",
 			"repository":null,
-			"uniqueName":"als\/fsmaster"
+			"uniqueName":"als\/pathmaster"
 		}
 	},
 	"releaseDate":"1476375115",
-	"updated":"1476953394"
+	"updated":"1479640141"
 }

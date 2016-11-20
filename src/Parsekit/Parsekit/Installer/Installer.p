@@ -167,7 +167,7 @@ locals
 #   TODO warning. What if root is another package ?
     ^mergedPackages.add[$packages]
 
-    $docRoot[^if(!^rootPackage.dynamicDocRoot.bool(false)){/}^als/fs/Path:dirname[^als/fs/Path:relative[$rootPackage.docRoot;$DI:vaultDirName]]/]
+    $docRoot[^if(!^rootPackage.dynamicDocRoot.bool(false)){/}^Als/Path/Path:dirname[^Als/Path/Path:relative[$rootPackage.docRoot;$DI:vaultDirName]]/]
 
     $self.autoloadData[
         $.namespaces[^hash::create[]]
