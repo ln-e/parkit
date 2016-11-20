@@ -1,9 +1,9 @@
 {
-	"name":"New Project",
+	"name":"parsekit/parsekit",
 	"require":{
 		"parser":">=3.4.3",
 		"ln-e\/console":"dev-master",
-		"als\/fs":"*"
+		"als\/path":"*"
 	},
 	"minimumStability":"dev",
 	"docRoot":"bin",
