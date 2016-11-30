@@ -39,6 +39,7 @@
         }
     }
 
+    $builded[^minify[$builded]]
     ^builded.save[../build/bin/parsekit.p]
     ^self.copy[parsekit;../build/bin/parsekit]
     ^self.copy[parsekit.bat;../build/bin/parsekit.bat]
@@ -92,3 +93,10 @@
     $file[^file::load[text;$from]]
     ^file.save[text;$to]
 ###
+
+
+@minify[text][result]
+    $parts[^text.split[^#0A]]
+    $parts[^parts.select(def ^parts.piece.trim[]
+     && ^parts.piece.mid(0;1) ne '#')]
+    $result[^parts.menu{$parts.piece}[^#0A]]
