@@ -2,7 +2,7 @@
 
 DIR=`dirname "$0"`
 FILE_NAME="parser3 parser3.cgi *.parser3.cgi *.parser3"
-SEARCH_IN=$(echo "`pwd`/cgi:`pwd`/cgi-bin:$PATH" | tr ':' '\n')
+SEARCH_IN=$(echo "`pwd`/cgi:`pwd`/cgi-bin:$PATH:$DIR/../cgi" | tr ':' '\n')
 PARSER=
 
 for dir in $SEARCH_IN; do

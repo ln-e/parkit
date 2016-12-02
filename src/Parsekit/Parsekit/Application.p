@@ -44,21 +44,20 @@ locals
 #------------------------------------------------------------------------------
 @foundRoot[][result]
     $result[]
-    $attempts(10)
-    $i(0)
-    $rootPostfix[]
-    $filepathPrefix[]
 
-#   TODO fix als/fs and loop while not reached root directory
-    ^while($i<$attempts){
-        ^i.inc[]
+    $currentDir[$request:document-root]
+    $root[/]
+    $found(false)
 
-        ^if(-f "${filepathPrefix}/parsekit.json"){
-            $request:document-root[${request:document-root}$rootPostfix]
+    ^while(def $currentDir && $currentDir ne $root){
+        $parsekitPath[^Als/Path/Path:relative[$request:document-root;$currentDir]]
+
+        ^if(-f "/$parsekitPath/parsekit.json"){
+            $request:document-root[^Als/Path/Path:normalize[${request:document-root}$parsekitPath]]
+            $found(true)
             ^break[]
         }{
-            $filepathPrefix[/..$filepathPrefix]
-            $rootPostfix[${rootPostfix}../]
+            $currentDir[^Als/Path/Path:dirname[$currentDir]]
         }
     }
 ###
