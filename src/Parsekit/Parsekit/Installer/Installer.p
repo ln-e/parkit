@@ -287,7 +287,7 @@ locals
         ^autoload.namespace.foreach[namespacePrefix;path]{
             $path[^taint[as-is][^path.trim[left;/]]]
             ^if($addMap){
-                $self.autoloadData.namespacesMap.$namespacePrefix[$path]
+                $self.autoloadData.namespacesMap.$namespacePrefix[${docRoot}$path]
             }
             $searchDir[${installationBasePath}$path]
             $files[^self.filesystem.subFiles[$searchDir](false)(true)]
