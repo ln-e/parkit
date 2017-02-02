@@ -8,7 +8,7 @@
 SemverTest
 
 @BASE
-TestCase
+Testkit/TestCase
 
 @OPTIONS
 locals
@@ -19,7 +19,7 @@ locals
 
 @create[]
     ^BASE:create[]
-    $self.semver[$DI:semver]
+    $self.semver[^Parsekit/Semver/Semver::create[^Parsekit/Semver/VersionParser::create[];^Parsekit/Semver/Comparator::create[]]]
 ###
 
 
