@@ -226,8 +226,7 @@ locals
     }
 ^###
 ]
-    $file[^file::load[text;../src/Parsekit/Parsekit/templates/ClassLoader.p]]
-    ^file.text.save[/$DI:vaultDirName/parsekit/ClassLoader.p]
+    ^self.saveClassLoader[]
     ^string.save[/$DI:vaultDirName/classpath.p]
 ###
 
@@ -294,4 +293,17 @@ locals
 #------------------------------------------------------------------------------
 @createVault[]
     ^self.filesystem.createDir[/$DI:vaultDirName]
+###
+
+
+#------------------------------------------------------------------------------
+# Move ClassLoader.p to vault/parsekit/ClassLoader.p
+# While build Process method body will be replaced by
+#
+# $text[real content of ../src/Parsekit/Parsekit/templates/ClassLoader.p]
+# ^text.save[/$DI:vaultDirName/parsekit/ClassLoader.p]
+#------------------------------------------------------------------------------
+@saveClassLoader[]
+    $file[^file::load[text;../src/Parsekit/Parsekit/templates/ClassLoader.p]]
+    ^file.text.save[/$DI:vaultDirName/parsekit/ClassLoader.p]
 ###

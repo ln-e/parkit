@@ -39,7 +39,7 @@
         }
     }
 
-    $builded[^minify[$builded]]
+    $builded[^minify[^processTemplates[$builded]]]
     ^builded.save[../build/bin/parsekit.p]
     ^self.copy[parsekit;../build/bin/parsekit]
     ^self.copy[parsekit.bat;../build/bin/parsekit.bat]
@@ -100,3 +100,10 @@
     $parts[^parts.select(def ^parts.piece.trim[]
      && ^parts.piece.mid(0;1) ne '#')]
     $result[^parts.menu{$parts.piece}[^#0A]]
+###
+
+# inject files in build
+@processTemplates[text][result]
+    $realFile[^file::load[text;../src/Parsekit/Parsekit/templates/ClassLoader.p]]
+    $result[^text.replace[^^file::load[text^;../src/Parsekit/Parsekit/templates/ClassLoader.p;^$.text[^taint[parser-code][$realFile.text]]]]]
+###
