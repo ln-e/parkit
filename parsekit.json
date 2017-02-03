@@ -7,7 +7,6 @@
 	},
 	"minimumStability":"dev",
 	"docRoot":"bin",
-	"dynamicDocRoot":true,
 	"devAutoload":{
 		"files":{
 			"0":"Debug.p"

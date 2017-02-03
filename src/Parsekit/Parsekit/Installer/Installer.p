@@ -167,7 +167,8 @@ locals
 #   TODO warning. What if root is another package ?
     ^mergedPackages.add[$packages]
 
-    $docRoot[^if(!^rootPackage.dynamicDocRoot.bool(false)){/}^Als/Path/Path:dirname[^Als/Path/Path:relative[$rootPackage.docRoot;$DI:vaultDirName]]/]
+    $docRootRealDirectory[${request:document-root}$rootPackage.docRoot/]
+    $docRoot[/^Als/Path/Path:dirname[^Als/Path/Path:relative[$rootPackage.docRoot;$DI:vaultDirName]]/]
 
     $self.autoloadData[
         $.classes[^hash::create[]]
@@ -208,6 +209,7 @@ locals
 }
 
 ^$${loaderName}[^^Parsekit/Parsekit/ClassLoader::create[]]
+^^${loaderName}.setDocumentRoot[$docRootRealDirectory]
 ^self.autoloadData.classes.foreach[key;value]{^^${loaderName}.addClass[$key^;$value]}[^#0A]
 ^self.autoloadData.namespaces.foreach[key;value]{^^${loaderName}.addNamespace[$key^;$value]}[^#0A]
 ^self.autoloadData.classpath.foreach[i;val]{^^${loaderName}.addClasspath[$val]}[^#0A]
@@ -220,9 +222,7 @@ locals
 ^@autouse^[className^]
     ^$found(false)
     ^^MAIN:parsekitClassLoaders.foreach[key^;loader]{
-        ^$path[^^loader.findClass[^$className]]
-        ^^if(-f "^$path"){
-            ^^use[^$path]
+        ^^if(^^loader.loadClass[^$className]){
             ^$found(true)
             ^^break[]
         }

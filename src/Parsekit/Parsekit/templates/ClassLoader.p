@@ -16,6 +16,7 @@ locals
     $self.namespaces[^hash::create[]]
     $self.files[^hash::create[]]
     $self.classpath[^table::create{path}]
+    $self.docroot[$request:document-root]
 ###
 
 
@@ -65,6 +66,16 @@ locals
 ###
 
 
+#------------------------------------------------------------------------------
+# Set docroot for that particular loader. @findClass return path relative from
+# docroot set at the moment we call @findClass to that  stored docroot.
+#
+#:param path type string
+#------------------------------------------------------------------------------
+@setDocumentRoot[path]
+  $self.docroot[$path]
+###
+
 
 #------------------------------------------------------------------------------
 #Make all common preparations like update $MAIN:classpath or ^use files
@@ -77,8 +88,22 @@ locals
     }
 
     ^self.files.foreach[key;path]{
-        ^use[$path]
+        ^self.use[$path]
     }
+###
+
+#------------------------------------------------------------------------------
+# Try to use in $self.docroot
+# Todo probably it will be better to just resolve path and not change
+# document-root each class call
+#
+#:param path type string
+#------------------------------------------------------------------------------
+@use[path]
+    $docRootOrigin[$request:document-root]
+    $request:document-root[$self.docroot]
+    ^use[$path]
+    $request:document-root[$docRootOrigin]
 ###
 
 
@@ -87,17 +112,28 @@ locals
 #
 #:param class type string
 #
-#:result string
+#:result boolean
 #------------------------------------------------------------------------------
-@findClass[className][result]
-    $result[]
+@loadClass[className][result]
+    $result(false)
     ^if(^self.classes.contains[$className]){
-        $result[$self.classes.$className]
+        ^self.use[$self.classes.$className]
+        $result(true)
     }(def $self.namespaces && ^className.pos[/] != -1){
         ^self.namespaces.foreach[namespace;path]{
             ^if(^className.pos[$namespace] == 0){
-                $result[$path^className.mid(^namespace.length[]).p]
+                ^self.use[$path^className.mid(^namespace.length[]).p]
+                $result(true)
+                ^break[]
             }
+        }
+    }
+    ^if(!$result){
+        ^try{
+            ^self.use[${className}.p]
+            $result(true)
+        }{
+            $exception.handled(true)
         }
     }
 ###

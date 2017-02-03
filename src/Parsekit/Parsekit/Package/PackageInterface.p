@@ -37,7 +37,7 @@ locals
     $self.autoload[^hash::create[]]
     $self.devAutoload[^hash::create[]]
     $self.aliases[^hash::create[]]
-    $self.dynamicDocRoot(false)
+
     $self.docRoot[]
     $self.repository[]
     $self.uniqueName[]

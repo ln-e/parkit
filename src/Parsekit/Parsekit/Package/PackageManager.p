@@ -161,8 +161,7 @@ locals
     $package.autoload[^hash::create[$config.autoload]]
     $package.devAutoload[^hash::create[$config.devAutoload]]
     $package.aliases[^hash::create[$config.aliases]]
-    $package.docRoot[^if(def $config.docRoot){$config.docRoot}{www}]
-    $package.dynamicDocRoot(^config.dynamicDocRoot.bool(false))
+    $package.docRoot[^if(def $config.docRoot){^config.docRoot.trim[both;/\]}{www}]
     $package.minimumStability[^if(def $config.minimumStability){^self.versionParser.normalizeStability[$config.minimumStability]}{dev}]
 
     ^if(def $config.version){
