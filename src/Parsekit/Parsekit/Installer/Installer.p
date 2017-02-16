@@ -168,7 +168,7 @@ locals
     ^mergedPackages.add[$packages]
 
     $docRootRealDirectory[${request:document-root}$rootPackage.docRoot/]
-    $docRoot[/^Als/Path/Path:dirname[^Als/Path/Path:relative[$rootPackage.docRoot;$DI:vaultDirName]]/]
+    $docRoot[/^file:dirname[^Als/Path/Path:relative[$rootPackage.docRoot;$DI:vaultDirName]]/]
 
     $self.autoloadData[
         $.classes[^hash::create[]]

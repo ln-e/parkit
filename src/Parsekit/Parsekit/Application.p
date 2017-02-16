@@ -57,7 +57,7 @@ locals
             $found(true)
             ^break[]
         }{
-            $currentDir[^Als/Path/Path:dirname[$currentDir]]
+            $currentDir[^file:dirname[$currentDir]]
         }
     }
 ###
